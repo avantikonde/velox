@@ -1,31 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { Navbar } from './components/Navbar';
+import { PumpSidebar } from './components/PumpSidebar';
+import { PumpTopHeader } from './components/PumpTopHeader';
 import { KingOfTheHill } from './components/KingOfTheHill';
 import { TokenCard } from './components/TokenCard';
+import { PumpTerminal } from './components/PumpTerminal';
 import { LaunchModal } from './components/LaunchModal';
 import { TradeModal } from './components/TradeModal';
 import { HowItWorksModal } from './components/HowItWorksModal';
 import { LiveActivityTicker } from './components/LiveActivityTicker';
+import { AuthModal } from './components/AuthModal';
 import { AuroraButton } from './components/AuroraButton';
-import { INITIAL_TOKENS } from './data/mockTokens';
-import { Token, Trade, WalletState } from './types';
-import { Search, Flame, Sparkles, Trophy, CheckCircle, Code2, RefreshCw, PlusCircle, ExternalLink } from 'lucide-react';
+import { FallingCoinsBackground } from './components/FallingCoinsBackground';
+import { INITIAL_TOKENS, MOCK_HOT_CALLOUTS, MOCK_LEADERBOARD } from './data/mockTokens';
+import { Token, Trade, WalletState, ViewMode, HotCallout, LeaderboardEntry, User } from './types';
+import { authService } from './services/authService';
+import { Search, Flame, Sparkles, Trophy, CheckCircle, Code2, PlusCircle, ExternalLink, Activity, Zap, Columns3, LayoutGrid } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [tokens, setTokens] = useState<Token[]>(INITIAL_TOKENS);
+  const [callouts, setCallouts] = useState<HotCallout[]>(MOCK_HOT_CALLOUTS);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>(MOCK_LEADERBOARD);
   const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState<ViewMode>('terminal');
+  const [activeTab, setActiveTab] = useState<'home' | 'explore' | 'leaderboard' | 'callouts' | 'terminal'>('home');
   const [activeFilter, setActiveFilter] = useState<'trending' | 'new' | 'graduating' | 'graduated'>('trending');
   
+  // Left Sidebar Expand/Collapse State (Image 1 vs Image 2)
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
+
   // Wallet State
   const [wallet, setWallet] = useState<WalletState>({
     isConnected: true,
     address: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e',
     monBalance: 25.0,
     tokens: {
-      'pune-purple': 150000,
+      'chog-monad': 150000,
       'giga-parallel': 50000
     }
   });
+
+  // Authentication State (Google + Email)
+  const [currentUser, setCurrentUser] = useState<User | null>(() => authService.getCurrentUser());
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   // Modals
   const [isLaunchOpen, setIsLaunchOpen] = useState(false);
@@ -33,12 +49,13 @@ export const App: React.FC = () => {
   const [selectedToken, setSelectedToken] = useState<Token | null>(null);
   const [showContractsModal, setShowContractsModal] = useState(false);
 
-  // Live Simulated Trades
+  // Live Trades with token logos
   const [recentTrades, setRecentTrades] = useState<Trade[]>([
     {
       id: 'tx-1',
-      tokenId: 'pune-purple',
-      tokenSymbol: 'PUNE',
+      tokenId: 'chog-monad',
+      tokenSymbol: 'CHOG',
+      tokenImageUrl: INITIAL_TOKENS[0].imageUrl,
       type: 'BUY',
       user: '0x84f...19e',
       monAmount: 0.5,
@@ -51,6 +68,7 @@ export const App: React.FC = () => {
       id: 'tx-2',
       tokenId: 'giga-parallel',
       tokenSymbol: 'PARALLEL',
+      tokenImageUrl: INITIAL_TOKENS[1].imageUrl,
       type: 'BUY',
       user: '0x32a...49f',
       monAmount: 1.2,
@@ -61,8 +79,9 @@ export const App: React.FC = () => {
     },
     {
       id: 'tx-3',
-      tokenId: 'chai-wala',
-      tokenSymbol: 'CHAI',
+      tokenId: 'aurora-blossom',
+      tokenSymbol: 'AURORA',
+      tokenImageUrl: INITIAL_TOKENS[2].imageUrl,
       type: 'SELL',
       user: '0x12c...aa8',
       monAmount: 0.35,
@@ -73,7 +92,7 @@ export const App: React.FC = () => {
     }
   ]);
 
-  // Simulate continuous Monad 10k TPS trade activity every 6 seconds
+  // Simulate continuous high-throughput trade activity
   useEffect(() => {
     const interval = setInterval(() => {
       if (tokens.length === 0) return;
@@ -81,12 +100,13 @@ export const App: React.FC = () => {
       const isBuy = Math.random() > 0.3;
       const monAmt = parseFloat((Math.random() * 0.8 + 0.1).toFixed(2));
       const tokenAmt = Math.round(monAmt / randomToken.priceMon);
-      const latency = Math.floor(Math.random() * 150 + 720); // 720ms - 870ms
+      const latency = Math.floor(Math.random() * 140 + 740);
 
       const newTrade: Trade = {
         id: `tx-${Date.now()}`,
         tokenId: randomToken.id,
         tokenSymbol: randomToken.symbol,
+        tokenImageUrl: randomToken.imageUrl,
         type: isBuy ? 'BUY' : 'SELL',
         user: `0x${Math.random().toString(16).slice(2, 6)}...${Math.random().toString(16).slice(2, 5)}`,
         monAmount: monAmt,
@@ -98,7 +118,7 @@ export const App: React.FC = () => {
 
       setRecentTrades(prev => [newTrade, ...prev.slice(0, 15)]);
 
-      // Dynamically bump bonding curve progress
+      // Dynamically update bonding curve metrics
       setTokens(prev => prev.map(t => {
         if (t.id === randomToken.id) {
           const newMonRaised = t.monRaised + (isBuy ? monAmt : -monAmt * 0.5);
@@ -119,7 +139,6 @@ export const App: React.FC = () => {
     return () => clearInterval(interval);
   }, [tokens]);
 
-  // Connect / Disconnect Wallet Simulator
   const toggleWallet = () => {
     setWallet(prev => ({
       ...prev,
@@ -127,7 +146,6 @@ export const App: React.FC = () => {
     }));
   };
 
-  // Faucet claim (+10 MON)
   const claimFaucet = () => {
     setWallet(prev => ({
       ...prev,
@@ -135,7 +153,6 @@ export const App: React.FC = () => {
     }));
   };
 
-  // Launch New Token Handler
   const handleLaunchToken = (newToken: Token, initialBuyMon: number) => {
     if (initialBuyMon > 0) {
       setWallet(prev => ({
@@ -151,9 +168,7 @@ export const App: React.FC = () => {
     setSelectedToken(newToken);
   };
 
-  // Execute Trade Handler (Buy / Sell)
   const handleExecuteTrade = (tokenId: string, type: 'BUY' | 'SELL', monAmount: number, tokenAmount: number) => {
-    // Update Wallet
     setWallet(prev => {
       const currentTokenBal = prev.tokens[tokenId] || 0;
       return {
@@ -166,7 +181,6 @@ export const App: React.FC = () => {
       };
     });
 
-    // Update Token in list
     setTokens(prev => prev.map(t => {
       if (t.id === tokenId) {
         const delta = type === 'BUY' ? monAmount : -monAmount;
@@ -184,13 +198,13 @@ export const App: React.FC = () => {
       return t;
     }));
 
-    // Record trade
     const activeTok = tokens.find(t => t.id === tokenId);
     if (activeTok) {
       const newTrade: Trade = {
         id: `tx-${Date.now()}`,
         tokenId,
         tokenSymbol: activeTok.symbol,
+        tokenImageUrl: activeTok.imageUrl,
         type,
         user: `${wallet.address.slice(0, 6)}...${wallet.address.slice(-4)}`,
         monAmount,
@@ -203,7 +217,6 @@ export const App: React.FC = () => {
     }
   };
 
-  // Filter Tokens
   const filteredTokens = tokens.filter(tok => {
     const matchesSearch = 
       tok.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -214,164 +227,192 @@ export const App: React.FC = () => {
     if (activeFilter === 'new') return tok.createdAt.includes('now') || tok.createdAt.includes('m ago');
     if (activeFilter === 'graduating') return tok.bondingProgress >= 60 && !tok.isGraduated;
     if (activeFilter === 'graduated') return tok.isGraduated;
-    return true; // 'trending'
+    return true;
   });
 
   const kingOfTheHillToken = tokens[0] || INITIAL_TOKENS[0];
 
-  return (
-    <div className="min-h-screen flex flex-col bg-[#09101c] tech-grid-bg text-white relative overflow-hidden">
-      
-      {/* Background Aurora Ambient Lights (Aurora Blossom Theme) */}
-      <div className="aurora-ambient-glow -top-40 -left-40 w-[600px] h-[600px] bg-[#EB96FF]/20"></div>
-      <div className="aurora-ambient-glow top-[30%] -right-40 w-[600px] h-[600px] bg-[#0B5777]/25"></div>
-      <div className="aurora-ambient-glow -bottom-40 left-1/3 w-[700px] h-[500px] bg-[#193153]/40"></div>
+  const handleSelectSidebarTab = (tab: 'home' | 'explore' | 'leaderboard' | 'callouts' | 'terminal') => {
+    setActiveTab(tab);
+    if (tab === 'home' || tab === 'explore') {
+      setViewMode('grid');
+    } else {
+      setViewMode('terminal');
+    }
+  };
 
-      {/* Top Navbar */}
-      <Navbar
-        wallet={wallet}
-        onConnectWallet={toggleWallet}
+  return (
+    <div className="min-h-screen flex bg-[#070c16] beveled-tile-matrix text-white relative overflow-x-hidden">
+      
+      {/* Background Aurora Ambient Lights (Aurora Blossom Palette: #193153, #0B5777, #EB96FF, #F9D4E0) */}
+      <div className="aurora-ambient-glow -top-32 -left-32 w-[650px] h-[650px] bg-[#EB96FF]/20"></div>
+      <div className="aurora-ambient-glow top-[35%] -right-32 w-[650px] h-[650px] bg-[#0B5777]/30"></div>
+      <div className="aurora-ambient-glow -bottom-32 left-1/3 w-[750px] h-[550px] bg-[#193153]/45"></div>
+
+      {/* 3D Falling Coins & Transmutation Portal Wonder (Pinterest Inspired) */}
+      <FallingCoinsBackground />
+
+      {/* LEFT SIDEBAR: Collapsible with Theme Glowing Arrow (Image 1 & Image 2) */}
+      <PumpSidebar
+        isExpanded={isSidebarExpanded}
+        onToggleExpand={() => setIsSidebarExpanded(!isSidebarExpanded)}
+        activeTab={activeTab}
+        onSelectTab={handleSelectSidebarTab}
         onOpenLaunchModal={() => setIsLaunchOpen(true)}
         onOpenHowItWorks={() => setIsHowItWorksOpen(true)}
+        onOpenContractsModal={() => setShowContractsModal(true)}
+        viewMode={viewMode}
+        onToggleViewMode={setViewMode}
       />
 
-      {/* Real-time Ticker */}
-      <LiveActivityTicker recentTrades={recentTrades} />
-
-      {/* Hackathon Faucet & Demo Bar */}
-      <div className="w-full bg-[#193153]/50 border-b border-[#EB96FF]/15 py-2 px-4">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#EB96FF]/15 text-[#EB96FF] font-semibold border border-[#EB96FF]/30">
-              <Sparkles className="w-3 h-3" /> Monad Blitz Pune V3 Ready
-            </span>
-            <span className="text-slate-300 hidden sm:inline">
-              Testing on local/devnet state. Sub-second parallel settlement active.
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={claimFaucet}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EB96FF]/20 hover:bg-[#EB96FF]/30 text-[#F9D4E0] border border-[#EB96FF]/40 font-mono text-[11px] transition-colors"
-            >
-              <PlusCircle className="w-3 h-3" /> Faucet: +10 MON
-            </button>
-            <button
-              onClick={() => setShowContractsModal(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 text-[11px] transition-colors"
-            >
-              <Code2 className="w-3 h-3 text-[#EB96FF]" /> View Solidity Contracts
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Hero: King of the Hill Spotlight */}
-      <KingOfTheHill
-        token={kingOfTheHillToken}
-        onSelectToken={(t) => setSelectedToken(t)}
-        onQuickBuy={(t) => setSelectedToken(t)}
-      />
-
-      {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-1">
+      {/* RIGHT MAIN CONTENT AREA: Adjusts padding based on sidebar state */}
+      <div 
+        className={`
+          flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out
+          ${isSidebarExpanded ? 'pl-[240px]' : 'pl-[68px]'}
+        `}
+      >
         
-        {/* Controls: Search & Filter Tabs */}
-        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 mb-8">
-          
-          {/* Filter Tabs */}
-          <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[#193153]/40 border border-white/10 overflow-x-auto">
-            <button
-              onClick={() => setActiveFilter('trending')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-                activeFilter === 'trending' ? 'bg-[#EB96FF] text-[#09101c] shadow-lg shadow-[#EB96FF]/20' : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Flame className="w-3.5 h-3.5" /> Trending
-            </button>
-            <button
-              onClick={() => setActiveFilter('new')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-                activeFilter === 'new' ? 'bg-[#EB96FF] text-[#09101c] shadow-lg shadow-[#EB96FF]/20' : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Sparkles className="w-3.5 h-3.5" /> Newly Launched
-            </button>
-            <button
-              onClick={() => setActiveFilter('graduating')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-                activeFilter === 'graduating' ? 'bg-[#EB96FF] text-[#09101c] shadow-lg shadow-[#EB96FF]/20' : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Trophy className="w-3.5 h-3.5" /> Near Graduation (60%+)
-            </button>
-            <button
-              onClick={() => setActiveFilter('graduated')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-                activeFilter === 'graduated' ? 'bg-[#EB96FF] text-[#09101c] shadow-lg shadow-[#EB96FF]/20' : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <CheckCircle className="w-3.5 h-3.5" /> Graduated
-            </button>
-          </div>
+        {/* TOP BAR: Clean Minimalist Top Strip (Image 3 Reference Format) */}
+        <PumpTopHeader
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onOpenLaunchModal={() => setIsLaunchOpen(true)}
+          onOpenAuthModal={() => setIsAuthOpen(true)}
+          onClaimFaucet={claimFaucet}
+          currentUser={currentUser}
+          onLogout={() => {
+            authService.logout();
+            setCurrentUser(null);
+          }}
+          wallet={wallet}
+          onConnectWallet={toggleWallet}
+        />
 
-          {/* Search Bar */}
-          <div className="relative w-full md:w-80">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              placeholder="Search coin name or symbol..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[#193153]/30 border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-[#EB96FF] transition-colors"
+        {/* Real-time Ticker: Compact Live Swaps Bar with Token Logos */}
+        <LiveActivityTicker
+          recentTrades={recentTrades}
+          tokens={tokens}
+          onSelectToken={(t) => setSelectedToken(t)}
+        />
+
+        {/* Hero: King of the Hill Spotlight Card */}
+        <KingOfTheHill
+          token={kingOfTheHillToken}
+          onSelectToken={(t) => setSelectedToken(t)}
+          onQuickBuy={(t) => setSelectedToken(t)}
+        />
+
+        {/* Main Content Viewport: Terminal (Image 3) vs Grid */}
+        <main className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1">
+          {viewMode === 'terminal' ? (
+            <PumpTerminal
+              tokens={filteredTokens}
+              callouts={callouts}
+              leaderboard={leaderboard}
+              onSelectToken={(t) => setSelectedToken(t)}
+              onOpenLaunchModal={() => setIsLaunchOpen(true)}
             />
-          </div>
+          ) : (
+            <div>
+              {/* Controls: Filter Tabs in Grid View */}
+              <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 mb-6">
+                
+                {/* Filter Tabs */}
+                <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[#193153]/40 border border-white/10 overflow-x-auto">
+                  <button
+                    onClick={() => setActiveFilter('trending')}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                      activeFilter === 'trending' ? 'bg-[#EB96FF] text-[#070c16] shadow-lg shadow-[#EB96FF]/20' : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    <Flame className="w-3.5 h-3.5" /> Trending
+                  </button>
+                  <button
+                    onClick={() => setActiveFilter('new')}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                      activeFilter === 'new' ? 'bg-[#EB96FF] text-[#070c16] shadow-lg shadow-[#EB96FF]/20' : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    <Sparkles className="w-3.5 h-3.5" /> Newly Launched
+                  </button>
+                  <button
+                    onClick={() => setActiveFilter('graduating')}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                      activeFilter === 'graduating' ? 'bg-[#EB96FF] text-[#070c16] shadow-lg shadow-[#EB96FF]/20' : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    <Trophy className="w-3.5 h-3.5" /> Near Graduation (60%+)
+                  </button>
+                  <button
+                    onClick={() => setActiveFilter('graduated')}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                      activeFilter === 'graduated' ? 'bg-[#EB96FF] text-[#070c16] shadow-lg shadow-[#EB96FF]/20' : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    <CheckCircle className="w-3.5 h-3.5" /> Graduated
+                  </button>
+                </div>
 
-        </div>
+                {/* Search in Grid */}
+                <div className="relative w-full md:w-80">
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <input
+                    type="text"
+                    placeholder="Filter coin or symbol..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 rounded-2xl bg-[#193153]/30 border border-white/10 text-white placeholder-slate-400 text-xs focus:outline-none focus:border-[#EB96FF] transition-colors"
+                  />
+                </div>
 
-        {/* Tokens Grid */}
-        {filteredTokens.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredTokens.map((token) => (
-              <TokenCard
-                key={token.id}
-                token={token}
-                onSelect={(tok) => setSelectedToken(tok)}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-16 rounded-3xl glass-panel border border-white/5 space-y-4">
-            <div className="w-14 h-14 mx-auto rounded-2xl bg-[#193153] flex items-center justify-center text-[#EB96FF]">
-              <Search className="w-6 h-6" />
+              </div>
+
+              {/* Tokens Grid */}
+              {filteredTokens.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                  {filteredTokens.map((token) => (
+                    <TokenCard
+                      key={token.id}
+                      token={token}
+                      onSelect={(tok) => setSelectedToken(tok)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-16 rounded-3xl glass-panel border border-white/5 space-y-4 mb-12">
+                  <div className="w-14 h-14 mx-auto rounded-2xl bg-[#193153] flex items-center justify-center text-[#EB96FF]">
+                    <Search className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-lg font-bold text-white">No tokens matched</h3>
+                  <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                    Be the first to launch a token for this keyword on the Monad bonding curve!
+                  </p>
+                  <AuroraButton onClick={() => setIsLaunchOpen(true)} size="md">
+                    Launch Token 🚀
+                  </AuroraButton>
+                </div>
+              )}
             </div>
-            <h3 className="text-lg font-bold text-white">No coins found</h3>
-            <p className="text-xs text-slate-400 max-w-sm mx-auto">
-              Be the first to launch a token for this search keyword on the Monad bonding curve!
-            </p>
-            <AuroraButton onClick={() => setIsLaunchOpen(true)} size="md">
-              Launch This Coin
-            </AuroraButton>
-          </div>
-        )}
+          )}
+        </main>
 
-      </main>
+        {/* Footer */}
+        <footer className="border-t border-[#EB96FF]/15 bg-[#070c16]/95 py-6 mt-12 text-center text-xs text-slate-400">
+          <div className="max-w-[1440px] mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-white">monad.pump 💜</span>
+              <span>— The Fair-Launchpad & AMM for Monad Parallel L1</span>
+            </div>
+            <div className="flex items-center gap-4 text-slate-400 font-mono text-[11px]">
+              <span>RPC: testnet-rpc.monad.xyz</span>
+              <span>•</span>
+              <span className="text-[#EB96FF]">10,000 TPS Parallel EVM</span>
+            </div>
+          </div>
+        </footer>
 
-      {/* Footer */}
-      <footer className="border-t border-[#EB96FF]/15 bg-[#09101c]/90 py-8 mt-12 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-slate-300">MonadPump 💜</span>
-            <span>— Built for Monad Blitz Pune V3</span>
-          </div>
-          <div className="flex items-center gap-4 text-slate-400">
-            <span>Theme: Aurora Blossom</span>
-            <span>•</span>
-            <span className="font-mono text-[#EB96FF]">10,000 TPS Parallel EVM</span>
-          </div>
-        </div>
-      </footer>
+      </div>
 
       {/* Modals */}
       <LaunchModal
@@ -394,52 +435,74 @@ export const App: React.FC = () => {
         onClose={() => setIsHowItWorksOpen(false)}
       />
 
-      {/* Solidity Contracts View Modal (For Demo to Judges) */}
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+        onAuthSuccess={(user) => setCurrentUser(user)}
+      />
+
+      {/* Solidity Contracts View Modal */}
       {showContractsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md overflow-y-auto">
-          <div className="relative w-full max-w-3xl rounded-3xl glass-panel p-6 sm:p-8 bg-[#0c1524] border border-[#EB96FF]/30 shadow-2xl my-8">
+          <div className="relative w-full max-w-3xl rounded-3xl glass-panel p-6 sm:p-8 bg-[#0a1220] border border-[#EB96FF]/30 shadow-2xl my-8">
             <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
               <div className="flex items-center gap-2">
                 <Code2 className="w-5 h-5 text-[#EB96FF]" />
-                <h2 className="text-lg font-bold text-white">Smart Contracts Architecture</h2>
+                <h2 className="text-lg font-bold text-white">Smart Contracts Architecture (Solidity)</h2>
               </div>
               <button onClick={() => setShowContractsModal(false)} className="text-slate-400 hover:text-white">✕</button>
             </div>
             
             <p className="text-xs text-slate-300 mb-4">
-              Written in Solidity for Foundry / Hardhat. Ready to compile with <code className="text-[#EB96FF]">forge build</code> and deploy directly to the Monad Testnet tomorrow!
+              Written for OpenZeppelin v5 and Foundry. Deployable directly to Monad Testnet via <code className="text-[#EB96FF]">forge script</code>.
             </p>
 
-            <div className="p-4 rounded-xl bg-[#070b13] border border-white/10 overflow-x-auto font-mono text-[11px] text-slate-300 max-h-96">
+            <div className="p-4 rounded-xl bg-[#060a12] border border-white/10 overflow-x-auto font-mono text-[11px] text-slate-300 max-h-96">
               <pre>{`// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-/**
- * @title MonadPumpFactory
- * @notice High-throughput Bonding Curve Token Factory for Monad Parallel L1
- */
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+contract MonadPumpToken is ERC20 {
+    address public factory;
+    
+    constructor(string memory name, string memory symbol, address _factory) ERC20(name, symbol) {
+        factory = _factory;
+    }
+
+    function mint(address to, uint256 amount) external {
+        require(msg.sender == factory, "Only factory");
+        _mint(to, amount);
+    }
+
+    function burn(address from, uint256 amount) external {
+        require(msg.sender == factory, "Only factory");
+        _burn(from, amount);
+    }
+}
+
 contract MonadPumpFactory {
     uint256 public constant GRADUATION_TARGET = 50 ether; // 50 MON to graduate
-    uint256 public constant TOTAL_SUPPLY = 1_000_000_000 ether; // 1 Billion tokens
+    uint256 public constant TOTAL_SUPPLY = 1_000_000_000 ether;
 
-    struct TokenInfo {
-        address tokenAddress;
+    struct TokenState {
+        address token;
         string name;
         string symbol;
         uint256 monRaised;
         bool graduated;
     }
 
-    mapping(address => TokenInfo) public tokens;
+    mapping(address => TokenState) public tokens;
 
-    event TokenLaunched(address indexed token, string name, string symbol);
-    event TokensPurchased(address indexed token, address buyer, uint256 monIn, uint256 tokensOut);
-    event TokenGraduated(address indexed token, uint256 totalMonLocked);
+    event TokenLaunched(address indexed token, string name, string symbol, address creator);
+    event TradeExecuted(address indexed token, address trader, bool isBuy, uint256 monAmount, uint256 tokenAmount);
+    event TokenGraduated(address indexed token, uint256 monLocked);
 
     function createToken(string memory name, string memory symbol) external payable returns (address) {
-        BondingCurveToken token = new BondingCurveToken(name, symbol, address(this));
-        tokens[address(token)] = TokenInfo(address(token), name, symbol, msg.value, false);
-        emit TokenLaunched(address(token), name, symbol);
+        MonadPumpToken token = new MonadPumpToken(name, symbol, address(this));
+        tokens[address(token)] = TokenState(address(token), name, symbol, msg.value, false);
+        emit TokenLaunched(address(token), name, symbol, msg.sender);
 
         if (msg.value > 0) {
             _buy(address(token), msg.sender, msg.value);
@@ -452,18 +515,18 @@ contract MonadPumpFactory {
     }
 
     function _buy(address token, address buyer, uint256 monIn) internal {
-        TokenInfo storage info = tokens[token];
-        require(!info.graduated, "Already graduated to DEX");
-        
-        info.monRaised += monIn;
+        TokenState storage state = tokens[token];
+        require(!state.graduated, "Token graduated to DEX AMM");
+
+        state.monRaised += monIn;
         uint256 tokensOut = (monIn * TOTAL_SUPPLY) / GRADUATION_TARGET;
-        BondingCurveToken(token).transfer(buyer, tokensOut);
+        MonadPumpToken(token).mint(buyer, tokensOut);
 
-        emit TokensPurchased(token, buyer, monIn, tokensOut);
+        emit TradeExecuted(token, buyer, true, monIn, tokensOut);
 
-        if (info.monRaised >= GRADUATION_TARGET) {
-            info.graduated = true;
-            emit TokenGraduated(token, info.monRaised);
+        if (state.monRaised >= GRADUATION_TARGET) {
+            state.graduated = true;
+            emit TokenGraduated(token, state.monRaised);
         }
     }
 }`}</pre>

@@ -1,11 +1,11 @@
-import { Token } from '../types';
+import { Token, HotCallout, LeaderboardEntry } from '../types';
 
 export const INITIAL_TOKENS: Token[] = [
   {
-    id: 'pune-purple',
-    name: 'Pune Purple',
-    symbol: 'PUNE',
-    description: 'The official mascot of Monad Blitz Pune V3! Fuelled by Irani chai, parallel execution, and zero sleep.',
+    id: 'chog-monad',
+    name: 'Chog the Mascot',
+    symbol: 'CHOG',
+    description: 'The iconic purple mascot of the Monad community. 10,000 TPS, sub-second finality, and relentless parallel power.',
     imageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&auto=format&fit=crop&q=80',
     creator: '0x71C...a89B',
     createdAt: '12m ago',
@@ -24,7 +24,7 @@ export const INITIAL_TOKENS: Token[] = [
     id: 'giga-parallel',
     name: 'Giga Parallel',
     symbol: 'PARALLEL',
-    description: 'Sequential execution is obsolete. 10,000 TPS multi-threaded EVM maxis only.',
+    description: 'Sequential execution is obsolete. Monad superscalar pipelining and optimistic execution engine.',
     imageUrl: 'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=400&auto=format&fit=crop&q=80',
     creator: '0x32A...49Fd',
     createdAt: '34m ago',
@@ -43,7 +43,7 @@ export const INITIAL_TOKENS: Token[] = [
     id: 'aurora-blossom',
     name: 'Aurora Blossom',
     symbol: 'AURORA',
-    description: 'The sublime aesthetic of Monad. Iridescent lilac and deep ocean vibes flowing on-chain.',
+    description: 'The sublime aesthetic of Monad. Iridescent lilac and deep ocean gradients flowing on-chain.',
     imageUrl: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=400&auto=format&fit=crop&q=80',
     creator: '0x88F...b12C',
     createdAt: '1h ago',
@@ -62,7 +62,7 @@ export const INITIAL_TOKENS: Token[] = [
     id: 'monad-speedy',
     name: 'Speedy Pepe',
     symbol: 'SPEED',
-    description: 'Transactions confirm in 800ms. Blink and your order book is already settled.',
+    description: 'Transactions confirm in 800ms. Blink and your order book is already settled on-chain.',
     imageUrl: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=400&auto=format&fit=crop&q=80',
     creator: '0x19B...90AA',
     createdAt: '2h ago',
@@ -78,10 +78,10 @@ export const INITIAL_TOKENS: Token[] = [
     repliesCount: 27
   },
   {
-    id: 'chai-wala',
-    name: 'ChaiWala Coin',
-    symbol: 'CHAI',
-    description: '1 cutting chai = 10,000 transactions. Sponsoring hackathon developers since genesis block.',
+    id: 'molandak-duck',
+    name: 'Molandak',
+    symbol: 'MOLAN',
+    description: 'The chillest duck on the fastest EVM. Swimming through 10,000 transactions per second without splashing.',
     imageUrl: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=400&auto=format&fit=crop&q=80',
     creator: '0x99C...1234',
     createdAt: '3h ago',
@@ -100,7 +100,7 @@ export const INITIAL_TOKENS: Token[] = [
     id: 'monad-bft',
     name: 'Super BFT',
     symbol: 'BFT',
-    description: 'Sub-second finality consensus algorithm. Zero forks, zero front-running, pure speed.',
+    description: 'Pipelined Byzantine Fault Tolerant consensus algorithm. Asynchronous execution with zero latency.',
     imageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&auto=format&fit=crop&q=80',
     creator: '0x44D...EF10',
     createdAt: '5h ago',
@@ -114,5 +114,96 @@ export const INITIAL_TOKENS: Token[] = [
     priceChange24h: 18.9,
     isGraduated: false,
     repliesCount: 19
+  }
+];
+
+export const MOCK_HOT_CALLOUTS: HotCallout[] = [
+  {
+    id: 'call-1',
+    author: 'jeetcannon',
+    avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80',
+    timeAgo: '2m ago',
+    content: 'CHOG bonding curve is breaking 88%!! Graduation to Monad AMM in minutes. Do not sleep on this.',
+    tokenSymbol: 'CHOG',
+    tokenName: 'Chog the Mascot',
+    tokenImageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&auto=format&fit=crop&q=80',
+    positionMon: 1.45,
+    profitMon: 4.82,
+    isPositive: true,
+    replies: 14,
+    likes: 89
+  },
+  {
+    id: 'call-2',
+    author: 'monad_whale',
+    avatarUrl: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100&auto=format&fit=crop&q=80',
+    timeAgo: '8m ago',
+    content: 'Parallel execution allows instant arb on bonding curve without mempool sandwich bots. Sub-second fill.',
+    tokenSymbol: 'PARALLEL',
+    tokenName: 'Giga Parallel',
+    tokenImageUrl: 'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=400&auto=format&fit=crop&q=80',
+    positionMon: 3.20,
+    profitMon: 1.15,
+    isPositive: true,
+    replies: 6,
+    likes: 47
+  },
+  {
+    id: 'call-3',
+    author: 'solana_convert',
+    avatarUrl: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100&auto=format&fit=crop&q=80',
+    timeAgo: '15m ago',
+    content: 'Moved my meme trading from pump.fun to MonadPump. Same speed, but EVM Solidity composability is undefeated.',
+    tokenSymbol: 'AURORA',
+    tokenName: 'Aurora Blossom',
+    tokenImageUrl: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=400&auto=format&fit=crop&q=80',
+    positionMon: 5.00,
+    profitMon: 8.90,
+    isPositive: true,
+    replies: 28,
+    likes: 134
+  }
+];
+
+export const MOCK_LEADERBOARD: LeaderboardEntry[] = [
+  {
+    rank: 1,
+    handle: 'hdegroot',
+    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
+    profitMon: 482.5,
+    winRate: 84.2,
+    tradesCount: 148
+  },
+  {
+    rank: 2,
+    handle: 'sadcrissy',
+    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
+    profitMon: 319.2,
+    winRate: 78.5,
+    tradesCount: 92
+  },
+  {
+    rank: 3,
+    handle: 'ogantd',
+    avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&auto=format&fit=crop&q=80',
+    profitMon: 264.8,
+    winRate: 72.0,
+    tradesCount: 110
+  },
+  {
+    rank: 4,
+    handle: 'alphaprophet',
+    avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80',
+    profitMon: 198.4,
+    winRate: 69.4,
+    tradesCount: 76
+  },
+  {
+    rank: 5,
+    handle: 'throatcrab',
+    avatarUrl: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=100&auto=format&fit=crop&q=80',
+    profitMon: 142.1,
+    winRate: 65.1,
+    tradesCount: 54
   }
 ];

@@ -1,99 +1,196 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AuroraButton } from './AuroraButton';
-import { Sparkles, Wallet, Rocket, Activity, Zap, CheckCircle2 } from 'lucide-react';
-import { WalletState } from '../types';
+import { Sparkles, Wallet, Search, ChevronDown, ExternalLink, Code2, PlusCircle, X } from 'lucide-react';
+import { WalletState, ViewMode } from '../types';
 
 interface NavbarProps {
   wallet: WalletState;
   onConnectWallet: () => void;
   onOpenLaunchModal: () => void;
   onOpenHowItWorks: () => void;
+  onClaimFaucet: () => void;
+  onOpenContractsModal?: () => void;
+  searchQuery: string;
+  onSearchChange: (q: string) => void;
+  viewMode: ViewMode;
+  onToggleViewMode: (mode: ViewMode) => void;
+  onSelectNavTab?: (tab: 'home' | 'terminal' | 'callouts' | 'leaderboard') => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   wallet,
   onConnectWallet,
   onOpenLaunchModal,
-  onOpenHowItWorks
+  onOpenHowItWorks,
+  onClaimFaucet,
+  onOpenContractsModal,
+  searchQuery,
+  onSearchChange,
+  viewMode,
+  onToggleViewMode,
+  onSelectNavTab
 }) => {
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-[#EB96FF]/15 bg-[#09101c]/80 backdrop-blur-xl">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#070c16]/90 backdrop-blur-2xl">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         
-        {/* Left: Brand & Network Badge */}
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-3 cursor-pointer group">
-            <div className="relative flex items-center justify-center w-11 h-11 rounded-2xl bg-gradient-to-br from-[#EB96FF] via-[#0B5777] to-[#193153] p-[2px] shadow-lg shadow-[#EB96FF]/20 group-hover:scale-105 transition-transform">
-              <div className="w-full h-full bg-[#09101c] rounded-2xl flex items-center justify-center">
-                <Rocket className="w-5 h-5 text-[#EB96FF] group-hover:rotate-12 transition-transform" />
-              </div>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-white via-[#F9D4E0] to-[#EB96FF] bg-clip-text text-transparent">
-                  Monad<span className="text-[#EB96FF]">Pump</span>
-                </span>
-                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#EB96FF]/15 text-[#EB96FF] border border-[#EB96FF]/30">
-                  Blitz V3
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-slate-400">
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>Monad Parallel L1</span>
-                <span className="text-slate-600">•</span>
-                <span className="font-mono text-[11px] text-[#EB96FF]">10k TPS</span>
-              </div>
-            </div>
+        {/* LEFT: Official Monad Logo + MONADPUMP Text (Matching Monad's App Format) */}
+        <div 
+          onClick={() => onSelectNavTab?.('home')}
+          className="flex items-center gap-3 cursor-pointer group flex-shrink-0"
+        >
+          {/* Authentic Monad Isometric Tilted Loop Logo Mark */}
+          <div className="relative flex items-center justify-center w-8 h-8 group-hover:scale-105 transition-transform">
+            <svg className="w-8 h-8" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect
+                x="8"
+                y="8"
+                width="20"
+                height="20"
+                rx="6"
+                transform="rotate(45 18 18)"
+                stroke="url(#monadBrandGradient)"
+                strokeWidth="4.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <defs>
+                <linearGradient id="monadBrandGradient" x1="4" y1="4" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#EB96FF" />
+                  <stop offset="0.5" stopColor="#A855F7" />
+                  <stop offset="1" stopColor="#0B5777" />
+                </linearGradient>
+              </defs>
+            </svg>
           </div>
 
-          {/* Color Palette Indicators from User's Theme Image */}
-          <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#193153]/40 border border-[#EB96FF]/10 text-xs text-slate-300">
-            <span className="text-[11px] font-mono text-slate-400 mr-1">AURORA:</span>
-            <span className="w-2.5 h-2.5 rounded-full bg-[#F9D4E0] shadow-sm" title="#F9D4E0 (Blush)"></span>
-            <span className="w-2.5 h-2.5 rounded-full bg-[#EB96FF] shadow-sm" title="#EB96FF (Lilac)"></span>
-            <span className="w-2.5 h-2.5 rounded-full bg-[#0B5777] shadow-sm" title="#0B5777 (Teal)"></span>
-            <span className="w-2.5 h-2.5 rounded-full bg-[#193153] shadow-sm" title="#193153 (Navy)"></span>
+          <div className="flex items-center tracking-wider">
+            <span className="font-extrabold text-base tracking-[0.14em] text-white">
+              MONAD<span className="text-[#EB96FF]">PUMP</span>
+            </span>
           </div>
         </div>
 
-        {/* Center: Live Monad Speed Ticker */}
-        <div className="hidden md:flex items-center gap-4 px-4 py-2 rounded-full bg-[#193153]/30 border border-[#0B5777]/40 text-xs font-mono">
-          <div className="flex items-center gap-1.5 text-slate-300">
-            <Activity className="w-3.5 h-3.5 text-[#EB96FF]" />
-            <span>Block Time:</span>
-            <span className="text-emerald-400 font-semibold">824 ms</span>
-          </div>
-          <span className="text-slate-600">|</span>
-          <div className="flex items-center gap-1.5 text-slate-300">
-            <Zap className="w-3.5 h-3.5 text-amber-300" />
-            <span>Gas:</span>
-            <span className="text-[#F9D4E0] font-semibold">&lt; 0.0001 MON</span>
-          </div>
-        </div>
-
-        {/* Right: Actions & Liquid Button */}
-        <div className="flex items-center gap-3">
+        {/* CENTER: Navigation Links (Matching Monad Official App Layout) */}
+        <nav className="hidden lg:flex items-center gap-6 xl:gap-8 text-[11px] font-bold tracking-[0.12em] uppercase">
+          
           <button
-            onClick={onOpenHowItWorks}
-            className="hidden sm:inline-flex text-xs font-medium text-slate-300 hover:text-white px-3 py-2 rounded-lg hover:bg-white/5 transition-colors"
+            onClick={() => {
+              onToggleViewMode('grid');
+              onSelectNavTab?.('home');
+            }}
+            className={`transition-colors py-1 hover:text-white ${
+              viewMode === 'grid' ? 'text-white border-b-2 border-[#EB96FF]' : 'text-slate-400'
+            }`}
           >
-            How it works
+            HOME
           </button>
 
-          {/* Launch Coin Liquid Button (Image 2 Style) */}
+          <button
+            onClick={() => {
+              onToggleViewMode('terminal');
+              onSelectNavTab?.('terminal');
+            }}
+            className={`transition-colors py-1 hover:text-white flex items-center gap-1 ${
+              viewMode === 'terminal' ? 'text-white border-b-2 border-[#EB96FF]' : 'text-slate-400'
+            }`}
+          >
+            <span>TERMINAL</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          </button>
+
+          <button
+            onClick={() => onSelectNavTab?.('callouts')}
+            className="text-slate-400 hover:text-white transition-colors py-1 flex items-center gap-1"
+          >
+            <span>HOT CALLOUTS</span>
+          </button>
+
+          <button
+            onClick={() => onSelectNavTab?.('leaderboard')}
+            className="text-slate-400 hover:text-white transition-colors py-1"
+          >
+            LEADERBOARD
+          </button>
+
+          <button
+            onClick={onOpenContractsModal}
+            className="text-slate-400 hover:text-white transition-colors py-1 flex items-center gap-1"
+          >
+            <span>CONTRACTS</span>
+            <ChevronDown className="w-3 h-3 text-slate-500" />
+          </button>
+
+          <button
+            onClick={onOpenHowItWorks}
+            className="text-slate-400 hover:text-white transition-colors py-1 flex items-center gap-1"
+          >
+            <span>DOCS</span>
+            <ExternalLink className="w-3 h-3 text-slate-500" />
+          </button>
+
+        </nav>
+
+        {/* RIGHT: Search Trigger, GET MON Button, Launch Coin Button & Wallet */}
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          
+          {/* Minimalist Search / ⌘K Trigger (Matching Monad App) */}
+          <div className="relative">
+            {isSearchOpen ? (
+              <div className="flex items-center bg-[#193153]/60 border border-[#EB96FF]/40 rounded-full px-3 py-1 animate-in fade-in duration-200">
+                <Search className="w-3.5 h-3.5 text-slate-400 mr-2" />
+                <input
+                  type="text"
+                  autoFocus
+                  placeholder="Search token or symbol..."
+                  value={searchQuery}
+                  onChange={(e) => onSearchChange(e.target.value)}
+                  className="bg-transparent text-xs text-white placeholder-slate-400 focus:outline-none w-36 sm:w-48 font-mono"
+                />
+                <button onClick={() => setIsSearchOpen(false)} className="text-slate-400 hover:text-white ml-1">
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-slate-400 hover:text-white hover:bg-white/5 transition-colors text-xs font-mono"
+                title="Search (⌘K)"
+              >
+                <Search className="w-4 h-4" />
+                <span className="hidden sm:inline text-[11px] text-slate-500 bg-white/5 px-1.5 py-0.5 rounded border border-white/10">
+                  ⌘K
+                </span>
+              </button>
+            )}
+          </div>
+
+          {/* "GET MON" Faucet Button (Exact Format as Attached Monad App Image) */}
+          <button
+            onClick={onClaimFaucet}
+            title="Claim +10 MON Faucet Testnet Tokens"
+            className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#6e54ff] to-[#836EF9] hover:from-[#7c63ff] hover:to-[#917eff] text-white font-extrabold text-xs tracking-wider uppercase shadow-md shadow-[#6e54ff]/25 transition-all active:scale-95 flex items-center gap-1.5 font-mono"
+          >
+            <span>GET MON</span>
+            <span className="hidden xl:inline text-[10px] opacity-80">(+10)</span>
+          </button>
+
+          {/* Signature Liquid Aurora Capsule Button: LAUNCH COIN (Image 4 Style, Kept at Top Bar) */}
           <AuroraButton
             onClick={onOpenLaunchModal}
-            size="md"
-            icon={<Sparkles className="w-4 h-4" />}
+            size="sm"
+            icon={<Sparkles className="w-3.5 h-3.5" />}
           >
-            Launch Token
+            Launch Coin
           </AuroraButton>
 
-          {/* Wallet Button */}
+          {/* Connect / Connected Wallet Capsule */}
           <button
             onClick={onConnectWallet}
             className={`
-              inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold
+              inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold
               transition-all duration-200 border
               ${wallet.isConnected 
                 ? 'bg-[#193153]/70 hover:bg-[#193153] border-[#EB96FF]/40 text-white' 
@@ -102,14 +199,15 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <Wallet className="w-3.5 h-3.5 text-[#EB96FF]" />
             {wallet.isConnected ? (
-              <span className="flex items-center gap-2">
-                <span className="font-mono text-[#F9D4E0]">{wallet.monBalance.toFixed(2)} MON</span>
-                <span className="text-slate-400">({wallet.address.slice(0, 6)}...{wallet.address.slice(-4)})</span>
+              <span className="flex items-center gap-1.5 font-mono">
+                <span className="text-[#F9D4E0] font-bold">{wallet.monBalance.toFixed(1)} MON</span>
+                <span className="text-slate-400 hidden md:inline">({wallet.address.slice(0, 4)}...{wallet.address.slice(-3)})</span>
               </span>
             ) : (
-              <span>Connect Wallet</span>
+              <span>Connect</span>
             )}
           </button>
+
         </div>
 
       </div>

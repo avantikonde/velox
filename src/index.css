@@ -11,82 +11,92 @@
 
 body {
   margin: 0;
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  background-color: #09101c;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #070c16;
   color: #ffffff;
   overflow-x: hidden;
 }
 
-/* Tech Blueprint Grid Background (Image 1 Style) */
-.tech-grid-bg {
-  background-color: #09101c;
-  background-image: 
-    linear-gradient(to right, rgba(11, 87, 119, 0.15) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(11, 87, 119, 0.15) 1px, transparent 1px);
-  background-size: 40px 40px;
+/* --- Image 3 Inspired: 3D Frosted Beveled Glass Tile Matrix Background --- */
+.beveled-tile-matrix {
+  background-color: #070c16;
+  position: relative;
 }
 
-/* Subtle Aurora Ambient Glows */
+.beveled-tile-matrix::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: 
+    /* Horizontal tile bevel highlights */
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px, transparent 47px, rgba(0, 0, 0, 0.4) 48px),
+    /* Vertical tile bevel highlights */
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px, transparent 47px, rgba(0, 0, 0, 0.4) 48px),
+    /* Subtle pillow tile gradient */
+    radial-gradient(circle at 50% 50%, rgba(25, 49, 83, 0.12) 0%, rgba(11, 87, 119, 0.04) 70%, transparent 100%);
+  background-size: 48px 48px, 48px 48px, 48px 48px;
+  opacity: 0.85;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Aurora Ambient Multi-Glows (Aurora Blossom Theme: #193153, #0B5777, #EB96FF, #F9D4E0) */
 .aurora-ambient-glow {
   position: absolute;
-  filter: blur(120px);
+  filter: blur(140px);
   pointer-events: none;
   z-index: 0;
   border-radius: 9999px;
+  opacity: 0.6;
 }
 
-/* Fluid Aurora Pill Button (Image 2 Apple/Siri Intelligence Style) */
+/* --- Image 4 Inspired: Siri/Apple Intelligence Liquid Aurora Capsule Button --- */
 .aurora-pill-btn {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: #090e18;
   padding: 2px;
   overflow: hidden;
   box-shadow: 
-    0 4px 20px -2px rgba(235, 150, 255, 0.25),
-    0 0 0 1px rgba(255, 255, 255, 0.12),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.3),
-    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.6);
+    0 4px 24px -2px rgba(235, 150, 255, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.14),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.25);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .aurora-pill-btn:hover {
   transform: translateY(-1px) scale(1.02);
   box-shadow: 
-    0 8px 30px -4px rgba(235, 150, 255, 0.45),
-    0 0 20px 2px rgba(11, 87, 119, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.25),
-    inset 0 1px 2px 0 rgba(255, 255, 255, 0.5),
-    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.7);
+    0 8px 32px -4px rgba(235, 150, 255, 0.55),
+    0 0 24px 4px rgba(11, 87, 119, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.3),
+    inset 0 1px 2px 0 rgba(255, 255, 255, 0.4);
 }
 
 .aurora-pill-btn:active {
   transform: translateY(0px) scale(0.98);
 }
 
-/* Internal Liquid Aurora Wave */
+/* Fluid Organic Liquid Aurora Halo inside Button Border */
 .aurora-liquid-ribbon {
   position: absolute;
-  inset: -50%;
+  inset: -60%;
   background: conic-gradient(
     from 180deg at 50% 50%,
-    #eab308 0deg,
-    #10b981 72deg,
-    #0B5777 144deg,
-    #3b82f6 216deg,
-    #EB96FF 288deg,
-    #F9D4E0 324deg,
-    #eab308 360deg
+    #ffaa40 0deg,
+    #00ffc2 65deg,
+    #0B5777 125deg,
+    #6366f1 190deg,
+    #EB96FF 260deg,
+    #F9D4E0 310deg,
+    #ffaa40 360deg
   );
-  filter: blur(14px);
-  opacity: 0.85;
-  animation: spinLiquid 6s linear infinite;
-  mix-blend-mode: screen;
+  filter: blur(12px);
+  opacity: 0.95;
+  animation: spinLiquid 5s linear infinite;
 }
 
 @keyframes spinLiquid {
@@ -94,7 +104,7 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-/* Inner Glass Capsule Cap */
+/* Frosted Inner Dark Capsule Mask */
 .aurora-inner-pill {
   position: relative;
   z-index: 10;
@@ -104,36 +114,56 @@ body {
   width: 100%;
   height: 100%;
   border-radius: 9999px;
-  background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(12px);
-  padding: 0.625rem 1.5rem;
+  background: rgba(10, 16, 28, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   font-weight: 600;
   color: #ffffff;
   letter-spacing: -0.01em;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
-/* Glass Card */
+/* --- Image 2 Inspired: Floating Vertical Glass Capsule Dock --- */
+.floating-dock-pill {
+  background: rgba(15, 24, 42, 0.65);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(235, 150, 255, 0.18);
+  box-shadow: 
+    0 12px 40px -8px rgba(0, 0, 0, 0.6),
+    0 0 20px 2px rgba(11, 87, 119, 0.25),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Glass Panels with Aurora Tint */
 .glass-panel {
-  background: rgba(25, 49, 83, 0.35);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(235, 150, 255, 0.12);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  background: rgba(18, 30, 52, 0.42);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(235, 150, 255, 0.14);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
 }
 
 .glass-panel:hover {
-  border-color: rgba(235, 150, 255, 0.28);
+  border-color: rgba(235, 150, 255, 0.26);
 }
 
-/* Custom Scrollbar */
+/* Terminal Column Card */
+.terminal-col-panel {
+  background: rgba(11, 18, 32, 0.6);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Custom Scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #09101c;
+  background: #070c16;
 }
 ::-webkit-scrollbar-thumb {
   background: #193153;

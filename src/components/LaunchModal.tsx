@@ -88,9 +88,9 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
   };
 
   const autofillMeme = () => {
-    setName('Blitz Chad');
-    setSymbol('BCHAD');
-    setDescription('Never waiting on 15s block times again. Pure 10,000 TPS speed on Monad.');
+    setName('Monad Chad');
+    setSymbol('MCHAD');
+    setDescription('Never waiting on 15s block times again. Pure 10,000 TPS parallel speed on Monad.');
     setImageUrl(PRESET_AVATARS[1].url);
     setInitialBuy('0.5');
   };

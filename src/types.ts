@@ -22,6 +22,7 @@ export interface Trade {
   id: string;
   tokenId: string;
   tokenSymbol: string;
+  tokenImageUrl?: string;
   type: 'BUY' | 'SELL';
   user: string;
   monAmount: number;
@@ -31,9 +32,47 @@ export interface Trade {
   latencyMs: number;
 }
 
+export interface HotCallout {
+  id: string;
+  author: string;
+  avatarUrl: string;
+  timeAgo: string;
+  content: string;
+  tokenSymbol: string;
+  tokenName: string;
+  tokenImageUrl: string;
+  positionMon: number;
+  profitMon: number;
+  isPositive: boolean;
+  replies: number;
+  likes: number;
+}
+
+export interface LeaderboardEntry {
+  rank: number;
+  handle: string;
+  avatarUrl: string;
+  profitMon: number;
+  winRate: number;
+  tradesCount: number;
+}
+
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  avatarUrl: string;
+  authProvider: 'google' | 'email';
+  createdAt: string;
+  monadWalletAddress: string;
+}
+
 export interface WalletState {
   isConnected: boolean;
   address: string;
   monBalance: number;
   tokens: Record<string, number>; // tokenId -> user balance
 }
+
+export type ViewMode = 'terminal' | 'grid';
+export type FilterTimeframe = '1h' | '4h' | '12h' | '24h';
