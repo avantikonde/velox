@@ -9,11 +9,11 @@ import { TradeModal } from './components/TradeModal';
 import { HowItWorksModal } from './components/HowItWorksModal';
 import { LiveActivityTicker } from './components/LiveActivityTicker';
 import { AuthModal } from './components/AuthModal';
-import { FallingCoinsBackground } from './components/FallingCoinsBackground';
+import { SimpleInteractiveBackground } from './components/SimpleInteractiveBackground';
 import { INITIAL_TOKENS, MOCK_HOT_CALLOUTS, MOCK_LEADERBOARD } from './data/mockTokens';
 import { Token, Trade, WalletState, ViewMode, HotCallout, LeaderboardEntry, User } from './types';
 import { authService } from './services/authService';
-import { Search, Flame, Sparkles, Trophy, CheckCircle, Code2, ExternalLink } from 'lucide-react';
+import { Search, Flame, Sparkles, Trophy, CheckCircle, Code2 } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [tokens, setTokens] = useState<Token[]>(INITIAL_TOKENS);
@@ -241,17 +241,12 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#F4E7C7] bitmela-paper-bg text-[#17151E] relative overflow-x-hidden font-serif selection:bg-[#F2C23A] selection:text-[#17151E]">
+    <div className="min-h-screen flex bg-[#080B11] clean-grid-bg text-slate-100 relative overflow-x-hidden font-sans">
       
-      {/* Background Saffron & Scarlet Ambient Light Flares */}
-      <div className="aurora-ambient-glow -top-32 -left-32 w-[650px] h-[650px] bg-[#F2C23A]/15 pointer-events-none"></div>
-      <div className="aurora-ambient-glow top-[35%] -right-32 w-[650px] h-[650px] bg-[#E23A2E]/10 pointer-events-none"></div>
-      <div className="aurora-ambient-glow -bottom-32 left-1/3 w-[750px] h-[550px] bg-[#2677C9]/10 pointer-events-none"></div>
+      {/* Advanced Simple Interactive Background (Subtle cursor-following ambient glow & particles) */}
+      <SimpleInteractiveBackground />
 
-      {/* 3D Falling Coins & Transmutation Portal Wonder (Bitmela Saffron Gold & Scarlet Palette) */}
-      <FallingCoinsBackground />
-
-      {/* LEFT SIDEBAR: Collapsible with Theme Glowing Arrow */}
+      {/* LEFT SIDEBAR: Collapsible */}
       <PumpSidebar
         isExpanded={isSidebarExpanded}
         onToggleExpand={() => setIsSidebarExpanded(!isSidebarExpanded)}
@@ -268,11 +263,11 @@ export const App: React.FC = () => {
       <div 
         className={`
           flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out
-          ${isSidebarExpanded ? 'pl-[240px]' : 'pl-[68px]'}
+          ${isSidebarExpanded ? 'pl-[220px]' : 'pl-[64px]'}
         `}
       >
         
-        {/* TOP BAR: Bitmela High-Contrast Paper & Charcoal Top Strip */}
+        {/* TOP BAR: Clean Minimalist Top Strip */}
         <PumpTopHeader
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -288,22 +283,22 @@ export const App: React.FC = () => {
           onConnectWallet={toggleWallet}
         />
 
-        {/* Real-time Ticker: Compact Live Swaps Bar with Bitmela Tricolor Folk Band */}
+        {/* Real-time Ticker: Compact Live Swaps Bar */}
         <LiveActivityTicker
           recentTrades={recentTrades}
           tokens={tokens}
           onSelectToken={(t) => setSelectedToken(t)}
         />
 
-        {/* Hero: King of the Hill Spotlight Jaipur Ticket Stub */}
+        {/* Hero: King of the Hill Spotlight Card */}
         <KingOfTheHill
           token={kingOfTheHillToken}
           onSelectToken={(t) => setSelectedToken(t)}
           onQuickBuy={(t) => setSelectedToken(t)}
         />
 
-        {/* Main Content Viewport: Terminal vs Grid View */}
-        <main className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1">
+        {/* Main Content Viewport: Terminal vs Grid */}
+        <main className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-5 w-full flex-1">
           {viewMode === 'terminal' ? (
             <PumpTerminal
               tokens={filteredTokens}
@@ -317,36 +312,36 @@ export const App: React.FC = () => {
               {/* Controls: Filter Tabs in Grid View */}
               <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 mb-6">
                 
-                {/* Filter Tabs in Bitmela Monospace Chips */}
-                <div className="flex items-center gap-1.5 p-1 rounded-lg bg-[#17151E] border border-[#17151E] overflow-x-auto font-mono text-xs">
+                {/* Filter Tabs */}
+                <div className="flex items-center gap-1 p-1 rounded-xl bg-[#0D111A] border border-white/[0.08] overflow-x-auto text-xs font-medium">
                   <button
                     onClick={() => setActiveFilter('trending')}
-                    className={`flex items-center gap-2 px-3.5 py-1.5 rounded transition-all whitespace-nowrap font-bold ${
-                      activeFilter === 'trending' ? 'bg-[#F2C23A] text-[#17151E] shadow-sm' : 'text-[#F4E7C7]/70 hover:text-[#F4E7C7]'
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition-all whitespace-nowrap ${
+                      activeFilter === 'trending' ? 'bg-[#836EF9] text-white shadow-sm font-bold' : 'text-slate-400 hover:text-white'
                     }`}
                   >
-                    <Flame className="w-3.5 h-3.5 text-[#E23A2E]" /> Trending
+                    <Flame className="w-3.5 h-3.5 text-amber-400" /> Trending
                   </button>
                   <button
                     onClick={() => setActiveFilter('new')}
-                    className={`flex items-center gap-2 px-3.5 py-1.5 rounded transition-all whitespace-nowrap font-bold ${
-                      activeFilter === 'new' ? 'bg-[#F2C23A] text-[#17151E] shadow-sm' : 'text-[#F4E7C7]/70 hover:text-[#F4E7C7]'
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition-all whitespace-nowrap ${
+                      activeFilter === 'new' ? 'bg-[#836EF9] text-white shadow-sm font-bold' : 'text-slate-400 hover:text-white'
                     }`}
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-[#2677C9]" /> Newly Launched
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-400" /> Newly Launched
                   </button>
                   <button
                     onClick={() => setActiveFilter('graduating')}
-                    className={`flex items-center gap-2 px-3.5 py-1.5 rounded transition-all whitespace-nowrap font-bold ${
-                      activeFilter === 'graduating' ? 'bg-[#F2C23A] text-[#17151E] shadow-sm' : 'text-[#F4E7C7]/70 hover:text-[#F4E7C7]'
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition-all whitespace-nowrap ${
+                      activeFilter === 'graduating' ? 'bg-[#836EF9] text-white shadow-sm font-bold' : 'text-slate-400 hover:text-white'
                     }`}
                   >
-                    <Trophy className="w-3.5 h-3.5 text-[#E23A2E]" /> Near Graduation (60%+)
+                    <Trophy className="w-3.5 h-3.5 text-amber-300" /> Near Graduation (60%+)
                   </button>
                   <button
                     onClick={() => setActiveFilter('graduated')}
-                    className={`flex items-center gap-2 px-3.5 py-1.5 rounded transition-all whitespace-nowrap font-bold ${
-                      activeFilter === 'graduated' ? 'bg-[#F2C23A] text-[#17151E] shadow-sm' : 'text-[#F4E7C7]/70 hover:text-[#F4E7C7]'
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition-all whitespace-nowrap ${
+                      activeFilter === 'graduated' ? 'bg-[#836EF9] text-white shadow-sm font-bold' : 'text-slate-400 hover:text-white'
                     }`}
                   >
                     <CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> Graduated
@@ -355,13 +350,13 @@ export const App: React.FC = () => {
 
                 {/* Search in Grid */}
                 <div className="relative w-full md:w-80">
-                  <Search className="w-4 h-4 text-[#17151E]/50 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <input
                     type="text"
                     placeholder="Filter coin or symbol..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 rounded-lg bg-[#FAF3E0] border-2 border-[#17151E] text-[#17151E] placeholder-[#17151E]/50 text-xs focus:outline-none focus:border-[#E23A2E] font-mono transition-colors shadow-sm"
+                    className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#0D111A] border border-white/[0.08] text-white placeholder-slate-500 text-xs focus:outline-none focus:border-[#836EF9] transition-colors"
                   />
                 </div>
 
@@ -369,7 +364,7 @@ export const App: React.FC = () => {
 
               {/* Tokens Grid */}
               {filteredTokens.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
                   {filteredTokens.map((token) => (
                     <TokenCard
                       key={token.id}
@@ -379,19 +374,19 @@ export const App: React.FC = () => {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-16 rounded-2xl jaipur-ticket border-2 border-[#17151E] space-y-4 mb-12 p-8 shadow-xl">
-                  <div className="w-14 h-14 mx-auto rounded-xl bg-[#24212D] flex items-center justify-center text-[#F2C23A] border border-[#F2C23A]">
-                    <Search className="w-6 h-6" />
+                <div className="text-center py-16 rounded-2xl bg-[#0D111A] border border-white/[0.08] space-y-4 mb-10">
+                  <div className="w-12 h-12 mx-auto rounded-xl bg-[#131926] flex items-center justify-center text-[#836EF9]">
+                    <Search className="w-5 h-5" />
                   </div>
-                  <h3 className="text-xl font-extrabold text-[#F4E7C7] font-sans">No tokens matched</h3>
-                  <p className="text-sm text-[#F4E7C7]/70 max-w-sm mx-auto font-serif italic">
+                  <h3 className="text-base font-bold text-white">No tokens matched</h3>
+                  <p className="text-xs text-slate-400 max-w-sm mx-auto">
                     Be the first to launch a token for this keyword on the Monad bonding curve!
                   </p>
                   <button 
                     onClick={() => setIsLaunchOpen(true)} 
-                    className="px-6 py-2.5 rounded-md mela-btn-red text-xs transition-all active:scale-95 inline-block"
+                    className="px-4 py-2 rounded-xl bg-[#836EF9] hover:bg-[#7259f7] text-white text-xs font-bold transition-all active:scale-95 shadow-md shadow-[#836EF9]/20 inline-block"
                   >
-                    + LAUNCH TOKEN 🚀
+                    Launch Coin 🚀
                   </button>
                 </div>
               )}
@@ -399,59 +394,21 @@ export const App: React.FC = () => {
           )}
         </main>
 
-        {/* Footer: Bitmela Authentic Charcoal & Saffron Footer */}
-        <footer className="border-t-2 border-[#17151E] bg-[#17151E] text-[#F4E7C7] py-10 mt-12">
-          {/* Decorative Folk Tricolor Marquee Frieze */}
-          <div className="mela-folk-band w-full mb-8" aria-hidden="true"></div>
-
-          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-8 border-b border-[#F4E7C7]/15">
-              
-              {/* Brand Col */}
-              <div className="space-y-3">
-                <div className="font-extrabold text-lg tracking-wider font-sans text-[#F4E7C7]">
-                  MONAD<span className="text-[#E23A2E]">.PUMP</span>
-                </div>
-                <p className="text-xs text-[#F4E7C7]/70 font-serif leading-relaxed max-w-xs">
-                  See Money Like You've Never Seen It Before. Instant fair launchpad and sub-second parallel DEX powered by Monad L1.
-                </p>
-              </div>
-
-              {/* Protocol Specs */}
-              <div className="space-y-2 font-mono text-xs">
-                <div className="text-[11px] font-bold text-[#F2C23A] uppercase tracking-wider">
-                  Protocol Engine
-                </div>
-                <div className="text-[#F4E7C7]/80 space-y-1">
-                  <div>10,000 TPS Parallel EVM</div>
-                  <div>MonadBFT Sub-Second Finality</div>
-                  <div>Automated Rug-Proof Bonding Curves</div>
-                </div>
-              </div>
-
-              {/* Network RPC */}
-              <div className="space-y-2 font-mono text-xs">
-                <div className="text-[11px] font-bold text-[#F2C23A] uppercase tracking-wider">
-                  Testnet Endpoint
-                </div>
-                <div className="text-[#F4E7C7]/80">RPC: testnet-rpc.monad.xyz</div>
-                <div className="text-[#F4E7C7]/80">Chain ID: 10143</div>
-                <div className="text-emerald-400 font-bold">● Network Operational</div>
-              </div>
-
+        {/* Footer */}
+        <footer className="border-t border-white/[0.08] bg-[#080B11]/90 py-6 mt-10 text-xs text-slate-400">
+          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-white">monad.pump 💜</span>
+              <span>— Instant Fair-Launchpad & DEX for Monad Parallel L1</span>
             </div>
-
-            <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-[#F4E7C7]/60">
-              <div>© 2026 MonadPump · Built for the Next Era of Money</div>
-              <div className="flex items-center gap-4">
-                <button onClick={() => setIsHowItWorksOpen(true)} className="hover:text-[#F2C23A] transition-colors">
-                  Protocol Architecture
-                </button>
-                <span>•</span>
-                <button onClick={() => setShowContractsModal(true)} className="hover:text-[#F2C23A] transition-colors">
-                  Smart Contracts
-                </button>
-              </div>
+            <div className="flex items-center gap-4 text-slate-400 font-mono text-[11px]">
+              <span>RPC: testnet-rpc.monad.xyz</span>
+              <span>•</span>
+              <span className="text-emerald-400 font-medium">10,000 TPS Parallel EVM</span>
+              <span>•</span>
+              <button onClick={() => setIsHowItWorksOpen(true)} className="hover:text-white transition-colors">
+                Docs
+              </button>
             </div>
           </div>
         </footer>
@@ -485,23 +442,23 @@ export const App: React.FC = () => {
         onAuthSuccess={(user) => setCurrentUser(user)}
       />
 
-      {/* Solidity Contracts View Modal (Bitmela Jaipur Ticket Format) */}
+      {/* Smart Contracts View Modal */}
       {showContractsModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md overflow-y-auto">
-          <div className="relative w-full max-w-3xl rounded-2xl jaipur-ticket p-6 sm:p-8 border-2 border-[#17151E] shadow-2xl my-8">
-            <div className="flex items-center justify-between pb-4 border-b border-[#F4E7C7]/20 mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+          <div className="relative w-full max-w-2xl rounded-2xl bg-[#0D111A] border border-white/10 p-6 sm:p-7 shadow-2xl my-8">
+            <div className="flex items-center justify-between pb-4 border-b border-white/[0.08] mb-4">
               <div className="flex items-center gap-2">
-                <Code2 className="w-5 h-5 text-[#F2C23A]" />
-                <h2 className="text-lg font-bold text-[#F4E7C7] font-sans">Smart Contracts Architecture (Solidity)</h2>
+                <Code2 className="w-5 h-5 text-[#836EF9]" />
+                <h2 className="text-base font-bold text-white">Smart Contracts Architecture (Solidity)</h2>
               </div>
-              <button onClick={() => setShowContractsModal(false)} className="text-[#F4E7C7]/60 hover:text-[#F4E7C7] font-mono text-lg">✕</button>
+              <button onClick={() => setShowContractsModal(false)} className="text-slate-400 hover:text-white">✕</button>
             </div>
             
-            <p className="text-xs text-[#F4E7C7]/80 mb-4 font-serif italic">
-              Written for OpenZeppelin v5 and Foundry. Deployable directly to Monad Testnet via <code className="text-[#F2C23A] font-mono">forge script</code>.
+            <p className="text-xs text-slate-400 mb-3">
+              Deployable directly to Monad Testnet via <code className="text-purple-300">forge script</code>.
             </p>
 
-            <div className="p-4 rounded-lg bg-[#0E0C13] border border-[#F4E7C7]/15 overflow-x-auto font-mono text-[11px] text-[#FAF3E0] max-h-96">
+            <div className="p-3.5 rounded-xl bg-[#080B11] border border-white/[0.06] overflow-x-auto font-mono text-[11px] text-slate-300 max-h-80">
               <pre>{`// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
@@ -579,9 +536,9 @@ contract MonadPumpFactory {
             <div className="mt-4 flex justify-end">
               <button 
                 onClick={() => setShowContractsModal(false)} 
-                className="px-4 py-2 rounded mela-btn-red text-xs"
+                className="px-4 py-2 rounded-xl bg-white/[0.08] hover:bg-white/15 text-white text-xs font-semibold"
               >
-                CLOSE
+                Close
               </button>
             </div>
           </div>

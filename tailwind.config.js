@@ -7,36 +7,21 @@ export default {
   theme: {
     extend: {
       colors: {
-        bitmela: {
-          paper: '#F4E7C7',
-          'paper-light': '#FAF3E0',
-          'paper-dark': '#E8D9B4',
-          charcoal: '#17151E',
-          'charcoal-light': '#24212D',
-          'charcoal-surface': '#1D1A25',
-          saffron: '#F2C23A',
-          'saffron-light': '#FDE68A',
-          scarlet: '#E23A2E',
-          'scarlet-dark': '#B7261C',
-          cobalt: '#2677C9',
-          'cobalt-light': '#4A9BE8',
+        monad: {
+          dark: '#080B11',
+          card: '#0D111A',
+          hover: '#131926',
+          border: 'rgba(255, 255, 255, 0.08)',
+          purple: '#836EF9',
+          purpleLight: '#A78BFA',
+          green: '#00F59B',
+          emerald: '#10B981',
+          gold: '#FBBF24',
         },
-        aurora: {
-          pink: '#F9D4E0',
-          lilac: '#EB96FF',
-          teal: '#0B5777',
-          navy: '#193153',
-          dark: '#0e1a2e',
-          darker: '#09101c',
-          deep: '#060a12',
-          card: 'rgba(25, 49, 83, 0.45)',
-          border: 'rgba(235, 150, 255, 0.18)',
-        }
       },
       fontFamily: {
-        sans: ['Bricolage Grotesque', 'system-ui', 'sans-serif'],
-        serif: ['Newsreader', 'Georgia', 'serif'],
-        mono: ['IBM Plex Mono', 'ui-monospace', 'monospace'],
+        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
       },
       animation: {
         'aurora-flow': 'aurora 8s ease infinite alternate',

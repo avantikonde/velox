@@ -1,60 +1,62 @@
 import React from 'react';
 import { Token } from '../types';
-import { TrendingUp, TrendingDown, Users, ArrowUpRight } from 'lucide-react';
+import { TrendingUp, TrendingDown, Users, ArrowUpRight, Zap } from 'lucide-react';
 
 interface TokenCardProps {
   token: Token;
   onSelect: (token: Token) => void;
+  onQuickBuyAmount?: (token: Token, monAmount: number) => void;
 }
 
-export const TokenCard: React.FC<TokenCardProps> = ({ token, onSelect }) => {
+export const TokenCard: React.FC<TokenCardProps> = ({ 
+  token, 
+  onSelect,
+  onQuickBuyAmount
+}) => {
   const isPositive = token.priceChange24h >= 0;
 
   return (
     <div
       onClick={() => onSelect(token)}
-      className="group relative flex flex-col justify-between rounded-xl jaipur-ticket p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl cursor-pointer overflow-hidden border-2 border-[#17151E]"
+      className="group relative flex flex-col justify-between rounded-2xl bg-[#0D111A] border border-white/[0.08] hover:border-[#836EF9]/40 p-4 sm:p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/50 cursor-pointer overflow-hidden"
     >
-      {/* Top Banner Folk Band Accent */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#F2C23A] via-[#E23A2E] to-[#2677C9]"></div>
-
       <div>
         {/* Token Header: Image, Name, Badge */}
-        <div className="flex items-start gap-3.5 mb-4">
-          <div className="relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 border-[#F2C23A] group-hover:border-[#E23A2E] transition-colors shadow-md">
+        <div className="flex items-start gap-3.5 mb-3.5">
+          <div className="relative flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border border-white/10 group-hover:border-[#836EF9]/40 transition-colors shadow-md">
             <img
               src={token.imageUrl}
               alt={token.name}
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
             />
             {token.isGraduated && (
-              <div className="absolute bottom-0 inset-x-0 bg-[#E23A2E] text-center py-0.5 text-[8px] font-mono font-bold uppercase tracking-wider text-[#F4E7C7]">
-                GRADUATED
+              <div className="absolute bottom-0 inset-x-0 bg-emerald-500/90 text-center py-0.5 text-[8px] font-mono font-bold uppercase tracking-wider text-slate-950">
+                Graduated
               </div>
             )}
           </div>
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-1 mb-0.5">
-              <h3 className="font-extrabold text-base text-[#F4E7C7] group-hover:text-[#F2C23A] transition-colors truncate font-sans">
+              <h3 className="font-bold text-sm sm:text-base text-white group-hover:text-[#A78BFA] transition-colors truncate">
                 {token.name}
               </h3>
-              <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-[#FAF3E0] text-[#17151E] border border-[#17151E] flex-shrink-0">
+              <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-[#836EF9]/10 text-[#A78BFA] border border-[#836EF9]/20 flex-shrink-0">
                 ${token.symbol}
               </span>
             </div>
 
-            <div className="flex items-center gap-2 text-xs text-[#F4E7C7]/60 font-mono mb-2">
+            <div className="flex items-center gap-2 text-xs text-slate-400 font-mono mb-2">
               <span className="truncate">by @{token.creator}</span>
               <span>•</span>
-              <span>{token.createdAt}</span>
+              <span className="text-slate-500">{token.createdAt}</span>
             </div>
 
             <div className="flex items-center gap-2 font-mono">
-              <div className="text-xs font-bold text-[#F2C23A]">
-                MCap: <span>{token.marketCapMon} MON</span>
+              <div className="text-xs font-bold text-slate-200">
+                MCap: <span className="text-white">{token.marketCapMon} MON</span>
               </div>
-              <div className={`flex items-center text-xs font-bold ${isPositive ? 'text-emerald-400' : 'text-[#E23A2E]'}`}>
+              <div className={`flex items-center text-xs font-semibold ${isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
                 {isPositive ? <TrendingUp className="w-3 h-3 mr-0.5" /> : <TrendingDown className="w-3 h-3 mr-0.5" />}
                 {isPositive ? '+' : ''}{token.priceChange24h}%
               </div>
@@ -62,33 +64,33 @@ export const TokenCard: React.FC<TokenCardProps> = ({ token, onSelect }) => {
           </div>
         </div>
 
-        {/* Description snippet in Newsreader Serif */}
-        <p className="text-xs text-[#F4E7C7]/80 font-serif italic line-clamp-2 mb-4 leading-relaxed">
-          "{token.description}"
+        {/* Description */}
+        <p className="text-xs text-slate-400 line-clamp-2 mb-3.5 leading-relaxed">
+          {token.description}
         </p>
       </div>
 
       {/* Bonding Curve Section & Bottom Actions */}
-      <div className="space-y-3 pt-3 border-t border-dashed border-[#F4E7C7]/20 font-mono">
+      <div className="space-y-3 pt-3 border-t border-white/[0.06] font-mono">
         
         {/* Progress Bar */}
         <div>
           <div className="flex justify-between items-center text-[11px] mb-1">
-            <span className="text-[#F4E7C7]/60 font-medium">Bonding Curve</span>
-            <span className="font-bold text-[#F2C23A]">{token.bondingProgress}%</span>
+            <span className="text-slate-400">Bonding Curve</span>
+            <span className="font-bold text-emerald-400">{token.bondingProgress}%</span>
           </div>
-          <div className="w-full h-2 bg-[#24212D] rounded overflow-hidden p-0.5 border border-[#F4E7C7]/15">
+          <div className="w-full h-1.5 bg-[#080B11] rounded-full overflow-hidden p-0.5 border border-white/5">
             <div
-              className="h-full rounded bg-gradient-to-r from-[#F2C23A] to-[#E23A2E] transition-all duration-300"
+              className="h-full rounded-full bg-gradient-to-r from-[#836EF9] to-[#00F59B] transition-all duration-300"
               style={{ width: `${token.bondingProgress}%` }}
             ></div>
           </div>
         </div>
 
-        {/* Footer with Holders & Quick Trade */}
+        {/* Footer with Holders & Interactive Trade Button */}
         <div className="flex items-center justify-between gap-2 pt-1">
-          <div className="flex items-center gap-1.5 text-xs text-[#F4E7C7]/60">
-            <Users className="w-3.5 h-3.5 text-[#F2C23A]" />
+          <div className="flex items-center gap-1.5 text-xs text-slate-400">
+            <Users className="w-3.5 h-3.5 text-slate-500" />
             <span>{token.holdersCount} holders</span>
           </div>
 
@@ -97,9 +99,9 @@ export const TokenCard: React.FC<TokenCardProps> = ({ token, onSelect }) => {
               e.stopPropagation();
               onSelect(token);
             }}
-            className="px-3 py-1.5 rounded mela-btn-red text-[11px] inline-flex items-center gap-1 active:scale-95 transition-all"
+            className="px-3 py-1.5 rounded-xl bg-[#836EF9] hover:bg-[#7259f7] text-white text-xs font-bold inline-flex items-center gap-1 active:scale-95 transition-all shadow-sm"
           >
-            <span>TRADE</span>
+            <span>Trade</span>
             <ArrowUpRight className="w-3 h-3 stroke-[2.5]" />
           </button>
         </div>

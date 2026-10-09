@@ -11,10 +11,10 @@ interface LaunchModalProps {
 }
 
 const PRESET_AVATARS = [
-  { label: 'Gold Monad', url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&auto=format&fit=crop&q=80' },
+  { label: 'Purple Nebula', url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&auto=format&fit=crop&q=80' },
   { label: 'Cyber Cat', url: 'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=400&auto=format&fit=crop&q=80' },
-  { label: 'Jaipur Elephant', url: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=400&auto=format&fit=crop&q=80' },
-  { label: 'Irani Chai', url: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=400&auto=format&fit=crop&q=80' },
+  { label: 'Prism Core', url: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=400&auto=format&fit=crop&q=80' },
+  { label: 'Monad Chad', url: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=400&auto=format&fit=crop&q=80' },
 ];
 
 export const LaunchModal: React.FC<LaunchModalProps> = ({
@@ -49,7 +49,7 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
     setError('');
     setIsDeploying(true);
 
-    // Simulate Monad parallel smart contract deployment (sub-second execution)
+    // Simulate Monad parallel smart contract deployment
     setTimeout(() => {
       const newToken: Token = {
         id: `token-${Date.now()}`,
@@ -74,16 +74,15 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
       setIsDeploying(false);
       onLaunch(newToken, buyAmount);
 
-      // Trigger celebrate confetti in Bitmela tones
       confetti({
-        particleCount: 80,
+        particleCount: 70,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ['#F2C23A', '#E23A2E', '#2677C9']
+        colors: ['#836EF9', '#00F59B', '#A78BFA']
       });
 
       onClose();
-    }, 1200);
+    }, 1000);
   };
 
   const autofillMeme = () => {
@@ -96,36 +95,33 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-xl rounded-2xl jaipur-ticket p-6 sm:p-8 border-2 border-[#17151E] shadow-2xl my-8">
+      <div className="relative w-full max-w-xl rounded-2xl bg-[#0D111A] border border-white/10 p-6 sm:p-7 shadow-2xl my-8">
         
-        {/* Decorative Top Band */}
-        <div className="mela-folk-band -mx-6 sm:-mx-8 -mt-6 sm:-mt-8 mb-6 h-2" aria-hidden="true"></div>
-
         {/* Modal Header */}
-        <div className="relative z-10 flex items-center justify-between pb-4 border-b border-[#F4E7C7]/15 mb-6">
+        <div className="flex items-center justify-between pb-4 border-b border-white/[0.08] mb-5">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded bg-[#F2C23A] text-[#17151E] font-bold">
+            <div className="p-2 rounded-xl bg-[#836EF9]/15 text-[#A78BFA]">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-xl font-extrabold text-[#F4E7C7] font-sans">Launch a Coin on Monad</h2>
-              <p className="text-xs text-[#F4E7C7]/70 font-mono">Fair launch on-chain bonding curve • 0 seed capital needed</p>
+              <h2 className="text-lg font-bold text-white">Launch a Coin on Monad</h2>
+              <p className="text-xs text-slate-400">Fair launch bonding curve • Zero seed capital needed</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded text-[#F4E7C7]/60 hover:text-[#F4E7C7] transition-colors font-mono text-lg"
+            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Quick autofill for demo */}
-        <div className="relative z-10 mb-4 flex justify-end">
+        {/* Quick autofill */}
+        <div className="mb-4 flex justify-end">
           <button
             type="button"
             onClick={autofillMeme}
-            className="inline-flex items-center gap-1.5 text-xs text-[#17151E] bg-[#F2C23A] px-3 py-1 rounded font-mono font-bold hover:bg-[#FAF3E0] transition-colors shadow-sm"
+            className="inline-flex items-center gap-1.5 text-xs text-[#A78BFA] hover:text-white bg-[#836EF9]/10 px-3 py-1 rounded-lg border border-[#836EF9]/30 transition-colors"
           >
             <Wand2 className="w-3.5 h-3.5" />
             Autofill Demo Coin
@@ -133,45 +129,45 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
         </div>
 
         {error && (
-          <div className="relative z-10 mb-4 p-3 rounded bg-rose-500/20 border border-rose-500/40 text-rose-200 text-xs flex items-center gap-2 font-mono">
+          <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2 font-mono">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
         {/* Launch Form */}
-        <form onSubmit={handleSubmit} className="relative z-10 space-y-4 font-mono">
+        <form onSubmit={handleSubmit} className="space-y-4 font-mono">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-[#F4E7C7] mb-1.5 font-sans uppercase tracking-wider">
-                Coin Name <span className="text-[#E23A2E]">*</span>
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                Coin Name <span className="text-[#836EF9]">*</span>
               </label>
               <input
                 type="text"
-                placeholder="e.g. Pune Purple"
+                placeholder="e.g. Giga Monad"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2.5 rounded bg-[#FAF3E0] border border-[#17151E]/30 text-[#17151E] placeholder-[#17151E]/40 text-sm focus:outline-none focus:border-[#E23A2E] transition-colors"
+                className="w-full px-3.5 py-2 rounded-xl bg-[#131926] border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-[#836EF9] transition-colors"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#F4E7C7] mb-1.5 font-sans uppercase tracking-wider">
-                Ticker Symbol <span className="text-[#E23A2E]">*</span>
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                Ticker Symbol <span className="text-[#836EF9]">*</span>
               </label>
               <input
                 type="text"
-                placeholder="e.g. PUNE"
+                placeholder="e.g. GIGA"
                 value={symbol}
                 onChange={(e) => setSymbol(e.target.value)}
                 maxLength={8}
-                className="w-full px-4 py-2.5 rounded bg-[#FAF3E0] border border-[#17151E]/30 text-[#17151E] placeholder-[#17151E]/40 text-sm focus:outline-none focus:border-[#E23A2E] transition-colors uppercase font-mono font-bold"
+                className="w-full px-3.5 py-2 rounded-xl bg-[#131926] border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-[#836EF9] transition-colors uppercase font-mono font-bold"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-[#F4E7C7] mb-1.5 font-sans uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
               Description
             </label>
             <textarea
@@ -179,13 +175,13 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
               placeholder="What makes this coin unstoppable on Monad?"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-4 py-2 rounded bg-[#FAF3E0] border border-[#17151E]/30 text-[#17151E] placeholder-[#17151E]/40 text-sm focus:outline-none focus:border-[#E23A2E] transition-colors resize-none font-serif italic"
+              className="w-full px-3.5 py-2 rounded-xl bg-[#131926] border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-[#836EF9] transition-colors resize-none font-sans"
             />
           </div>
 
           {/* Avatar Presets */}
           <div>
-            <label className="block text-xs font-bold text-[#F4E7C7] mb-1.5 font-sans uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
               Choose Meme Avatar
             </label>
             <div className="grid grid-cols-4 gap-2 mb-2">
@@ -194,8 +190,8 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
                   type="button"
                   key={idx}
                   onClick={() => setImageUrl(avatar.url)}
-                  className={`relative rounded overflow-hidden aspect-square border-2 transition-all ${
-                    imageUrl === avatar.url ? 'border-[#F2C23A] scale-95 shadow-md' : 'border-[#F4E7C7]/20 opacity-70 hover:opacity-100'
+                  className={`relative rounded-xl overflow-hidden aspect-square border-2 transition-all ${
+                    imageUrl === avatar.url ? 'border-[#836EF9] scale-95 shadow-md' : 'border-white/10 opacity-70 hover:opacity-100'
                   }`}
                 >
                   <img src={avatar.url} alt={avatar.label} className="w-full h-full object-cover" />
@@ -204,23 +200,23 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
             </div>
             <input
               type="text"
-              placeholder="Or paste custom Image URL"
+              placeholder="Or paste custom image URL"
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
-              className="w-full px-3 py-1.5 rounded bg-[#FAF3E0] border border-[#17151E]/30 text-[#17151E] placeholder-[#17151E]/40 text-xs font-mono focus:outline-none focus:border-[#E23A2E]"
+              className="w-full px-3 py-1.5 rounded-lg bg-[#131926] border border-white/10 text-white placeholder-slate-500 text-xs font-mono focus:outline-none focus:border-[#836EF9]"
             />
           </div>
 
           {/* Initial Buy Option */}
-          <div className="p-4 rounded-xl bg-[#24212D] border border-[#F4E7C7]/15 space-y-2">
+          <div className="p-3.5 rounded-xl bg-[#131926] border border-white/[0.06] space-y-1.5">
             <div className="flex justify-between items-center">
-              <label className="text-xs font-bold text-[#F4E7C7] flex items-center gap-1.5">
+              <label className="text-xs font-semibold text-white flex items-center gap-1.5">
                 <span>Genesis Buy Amount (Optional)</span>
-                <span className="text-[10px] text-[#17151E] bg-[#F2C23A] px-1.5 py-0.5 rounded font-mono font-bold">
-                  Genesis snipe
+                <span className="text-[10px] text-amber-300 bg-amber-500/10 px-1.5 py-0.5 rounded font-mono">
+                  Snipe genesis
                 </span>
               </label>
-              <span className="text-xs text-[#F4E7C7]/70 font-mono">
+              <span className="text-xs text-slate-400 font-mono">
                 Balance: {userBalance.toFixed(2)} MON
               </span>
             </div>
@@ -233,30 +229,27 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
                 max={userBalance}
                 value={initialBuy}
                 onChange={(e) => setInitialBuy(e.target.value)}
-                className="flex-1 px-4 py-2 rounded bg-[#FAF3E0] border border-[#17151E]/30 text-[#17151E] font-mono text-sm focus:outline-none focus:border-[#E23A2E] font-bold"
+                className="flex-1 px-3 py-1.5 rounded-lg bg-[#080B11] border border-white/10 text-white font-mono text-sm focus:outline-none focus:border-[#836EF9]"
                 placeholder="0.0"
               />
-              <span className="text-sm font-bold text-[#F2C23A] font-mono px-2">MON</span>
+              <span className="text-sm font-bold text-slate-300 font-mono px-2">MON</span>
             </div>
-            <p className="text-[11px] text-[#F4E7C7]/60 font-serif italic">
-              Buying the first tokens kickstarts the bonding curve and secures your creator allocation.
-            </p>
           </div>
 
           {/* Rug-proof Notice */}
-          <div className="flex items-center gap-2 text-xs text-emerald-300 bg-emerald-500/15 p-3 rounded border border-emerald-500/30">
+          <div className="flex items-center gap-2 text-xs text-emerald-300 bg-emerald-500/10 p-2.5 rounded-xl border border-emerald-500/20">
             <Shield className="w-4 h-4 flex-shrink-0" />
-            <span>Target 50 MON reached ➔ 100% liquidity automatically burned & locked on Monad DEX.</span>
+            <span>Target 50 MON reached ➔ 100% liquidity automatically burned & locked on DEX.</span>
           </div>
 
-          {/* Action Button: Bitmela Solid Monospace Red CTA */}
-          <div className="pt-2">
+          {/* Action Button */}
+          <div className="pt-1">
             <button
               type="submit"
               disabled={isDeploying}
-              className="w-full py-3 px-6 rounded mela-btn-red text-xs transition-all active:scale-98 disabled:opacity-50"
+              className="w-full py-2.5 px-4 rounded-xl bg-[#836EF9] hover:bg-[#7259f7] text-white text-xs font-bold font-mono transition-all active:scale-98 disabled:opacity-50 shadow-md shadow-[#836EF9]/20"
             >
-              {isDeploying ? 'DEPLOYING TO MONAD (PARALLEL ENGINE)...' : '+ LAUNCH TOKEN IN 1 CLICK 🚀'}
+              {isDeploying ? 'Deploying to Monad (Parallel Engine)...' : 'Launch Token in 1 Click 🚀'}
             </button>
           </div>
         </form>

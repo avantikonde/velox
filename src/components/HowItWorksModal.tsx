@@ -11,87 +11,84 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ isOpen, onClos
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-2xl rounded-2xl jaipur-ticket p-6 sm:p-8 border-2 border-[#17151E] shadow-2xl my-8">
+      <div className="relative w-full max-w-xl rounded-2xl bg-[#0D111A] border border-white/10 p-6 sm:p-7 shadow-2xl my-8">
         
-        {/* Top Decorative Folk Band */}
-        <div className="mela-folk-band -mx-6 sm:-mx-8 -mt-6 sm:-mt-8 mb-6 h-2" aria-hidden="true"></div>
-
         {/* Modal Header */}
-        <div className="relative z-10 flex items-center justify-between pb-4 border-b border-[#F4E7C7]/15 mb-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded bg-[#F2C23A] text-[#17151E]">
+        <div className="flex items-center justify-between pb-4 border-b border-white/[0.08] mb-5">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-[#836EF9]/15 text-[#A78BFA]">
               <Cpu className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-xl font-extrabold text-[#F4E7C7] font-sans">MonadPump Protocol Architecture</h2>
-              <p className="text-xs text-[#F4E7C7]/70 font-mono">High-Throughput Fair Launchpad & Parallel AMM on Monad L1</p>
+              <h2 className="text-lg font-bold text-white">MonadPump Protocol Architecture</h2>
+              <p className="text-xs text-slate-400 font-mono">High-Throughput Fair Launchpad & Parallel AMM on Monad</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1 rounded text-[#F4E7C7]/60 hover:text-[#F4E7C7] font-mono text-lg">
+          <button onClick={onClose} className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="relative z-10 space-y-5 text-sm">
+        <div className="space-y-4 text-xs">
           
-          {/* Section 1 */}
-          <div className="flex items-start gap-4 p-4 rounded-xl bg-[#24212D] border border-[#F4E7C7]/15">
-            <div className="w-8 h-8 rounded bg-[#F2C23A] text-[#17151E] flex items-center justify-center font-bold font-mono flex-shrink-0">
+          {/* Step 1 */}
+          <div className="flex items-start gap-3.5 p-3.5 rounded-xl bg-[#131926] border border-white/[0.04]">
+            <div className="w-7 h-7 rounded-lg bg-[#836EF9]/20 text-[#A78BFA] flex items-center justify-center font-bold font-mono flex-shrink-0">
               1
             </div>
             <div>
-              <h3 className="font-bold text-[#F4E7C7] text-sm mb-1 font-sans">Zero-Capital Fair Launch</h3>
-              <p className="text-xs text-[#F4E7C7]/80 font-serif leading-relaxed">
-                Creators deploy an ERC-20 token in a single on-chain transaction without providing seed liquidity or paying exorbitant Uniswap LP initialization fees. A deterministic mathematical bonding curve acts as the automated market maker from genesis.
+              <h3 className="font-bold text-white text-sm mb-1">Zero-Capital Fair Launch</h3>
+              <p className="text-slate-400 leading-relaxed">
+                Tokens deploy in a single transaction without seed liquidity or DEX initialization fees. A mathematical bonding curve manages instant liquidity from genesis.
               </p>
             </div>
           </div>
 
-          {/* Section 2 */}
-          <div className="flex items-start gap-4 p-4 rounded-xl bg-[#24212D] border border-[#F4E7C7]/15">
-            <div className="w-8 h-8 rounded bg-[#E23A2E] text-[#F4E7C7] flex items-center justify-center font-bold font-mono flex-shrink-0">
+          {/* Step 2 */}
+          <div className="flex items-start gap-3.5 p-3.5 rounded-xl bg-[#131926] border border-white/[0.04]">
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold font-mono flex-shrink-0">
               2
             </div>
             <div>
-              <h3 className="font-bold text-[#F4E7C7] text-sm mb-1 font-sans">Sub-Second Parallel Trading (MonadBFT)</h3>
-              <p className="text-xs text-[#F4E7C7]/80 font-serif leading-relaxed">
-                Leveraging Monad’s superscalar pipelining and MonadDb, thousands of buy and sell trades execute concurrently. Trades finalize in ~800ms with gas fees costing under $0.0001 per transaction, eliminating front-running and MEV sandwich attacks.
+              <h3 className="font-bold text-white text-sm mb-1">Sub-Second Parallel Trading (MonadBFT)</h3>
+              <p className="text-slate-400 leading-relaxed">
+                Superscalar pipelining executes thousands of buy and sell trades concurrently in ~800ms with gas fees under $0.0001, eliminating front-running and MEV sandwiches.
               </p>
             </div>
           </div>
 
-          {/* Section 3 */}
-          <div className="flex items-start gap-4 p-4 rounded-xl bg-[#24212D] border border-emerald-500/20">
-            <div className="w-8 h-8 rounded bg-emerald-500 text-[#17151E] flex items-center justify-center font-bold font-mono flex-shrink-0">
+          {/* Step 3 */}
+          <div className="flex items-start gap-3.5 p-3.5 rounded-xl bg-[#131926] border border-white/[0.04]">
+            <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center font-bold font-mono flex-shrink-0">
               3
             </div>
             <div>
-              <h3 className="font-bold text-[#F4E7C7] text-sm mb-1 font-sans">Rug-Proof AMM Graduation</h3>
-              <p className="text-xs text-[#F4E7C7]/80 font-serif leading-relaxed">
-                When a token collects 50 MON through trading volume (100% curve progress), it graduates. The accumulated 50 MON along with remaining token supply is permanently deposited and locked into the primary Monad DEX pool. Liquidity can never be pulled.
+              <h3 className="font-bold text-white text-sm mb-1">Rug-Proof AMM Graduation</h3>
+              <p className="text-slate-400 leading-relaxed">
+                When a token collects 50 MON (100% curve progress), liquidity is automatically burned and permanently locked into the primary Monad DEX pool.
               </p>
             </div>
           </div>
 
           {/* Network Parameters */}
-          <div className="p-4 rounded-xl bg-[#0E0C13] border border-[#F4E7C7]/15 font-mono text-xs space-y-2">
-            <div className="text-[11px] uppercase tracking-wider text-[#F2C23A] font-bold">
-              Monad Network Specifications
+          <div className="p-3.5 rounded-xl bg-[#080B11] border border-white/[0.06] font-mono text-xs space-y-1.5">
+            <div className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">
+              Network Telemetry
             </div>
-            <div className="grid grid-cols-2 gap-2 text-[#F4E7C7]/80">
-              <div>Network: <span className="text-[#F4E7C7] font-bold">Monad Testnet</span></div>
-              <div>Consensus: <span className="text-[#F4E7C7] font-bold">MonadBFT</span></div>
-              <div>Finality: <span className="text-emerald-400 font-bold">1 Slot (Sub-Second)</span></div>
-              <div>Target TPS: <span className="text-[#F2C23A] font-bold">10,000 TPS</span></div>
+            <div className="grid grid-cols-2 gap-2 text-slate-300">
+              <div>Network: <span className="text-white font-semibold">Monad Testnet</span></div>
+              <div>Consensus: <span className="text-white font-semibold">MonadBFT</span></div>
+              <div>Finality: <span className="text-emerald-400 font-bold">~800ms</span></div>
+              <div>Throughput: <span className="text-[#836EF9] font-bold">10,000 TPS</span></div>
             </div>
           </div>
 
           <div className="pt-2 flex justify-end">
             <button
               onClick={onClose}
-              className="px-6 py-2.5 rounded mela-btn-gold text-xs"
+              className="px-4 py-2 rounded-xl bg-[#836EF9] hover:bg-[#7259f7] text-white font-bold text-xs font-mono transition-all"
             >
-              GOT IT
+              Close
             </button>
           </div>
 

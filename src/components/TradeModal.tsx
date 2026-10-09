@@ -66,9 +66,9 @@ export const TradeModal: React.FC<TradeModalProps> = ({
         particleCount: 50,
         spread: 60,
         origin: { y: 0.7 },
-        colors: ['#F2C23A', '#E23A2E', '#2677C9']
+        colors: ['#836EF9', '#00F59B', '#FBBF24']
       });
-    }, 850);
+    }, 800);
   };
 
   const presetAmounts = isBuy ? ['0.1', '0.5', '1.0', '2.5'] : ['25%', '50%', '75%', '100%'];
@@ -84,126 +84,123 @@ export const TradeModal: React.FC<TradeModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-2xl rounded-2xl jaipur-ticket p-6 sm:p-8 border-2 border-[#17151E] shadow-2xl my-8">
+      <div className="relative w-full max-w-xl rounded-2xl bg-[#0D111A] border border-white/10 p-6 sm:p-7 shadow-2xl my-8">
         
-        {/* Top Decorative Folk Band */}
-        <div className="mela-folk-band -mx-6 sm:-mx-8 -mt-6 sm:-mt-8 mb-6 h-2" aria-hidden="true"></div>
-
         {/* Modal Header */}
-        <div className="relative z-10 flex items-start justify-between pb-4 border-b border-[#F4E7C7]/15 mb-6">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-xl overflow-hidden border-2 border-[#F2C23A] shadow-lg flex-shrink-0">
-              <img src={token.imageUrl} alt={token.name} className="w-full h-full object-cover" />
+        <div className="flex items-start justify-between pb-4 border-b border-white/[0.08] mb-5">
+          <div className="flex items-center gap-3.5">
+            <div className="w-13 h-13 rounded-xl overflow-hidden border border-white/10 shadow-md flex-shrink-0">
+              <img src={token.imageUrl} alt={token.name} className="w-12 h-12 object-cover rounded-xl" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-extrabold text-[#F4E7C7] font-sans">{token.name}</h2>
-                <span className="font-mono text-sm px-2 py-0.5 rounded bg-[#FAF3E0] text-[#17151E] font-bold">
+                <h2 className="text-lg font-bold text-white">{token.name}</h2>
+                <span className="font-mono text-xs px-2 py-0.5 rounded-md bg-[#836EF9]/15 text-[#A78BFA] font-bold">
                   ${token.symbol}
                 </span>
                 {token.isGraduated && (
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#E23A2E] text-[#F4E7C7]">
-                    GRADUATED
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400">
+                    Graduated
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-3 text-xs text-[#F4E7C7]/70 font-mono mt-1">
-                <span>Price: <span className="text-[#F2C23A] font-bold">{token.priceMon} MON</span></span>
+              <div className="flex items-center gap-3 text-xs text-slate-400 font-mono mt-0.5">
+                <span>Price: <span className="text-white font-semibold">{token.priceMon} MON</span></span>
                 <span>•</span>
-                <span>MCap: <span className="text-[#F4E7C7] font-bold">{token.marketCapMon} MON</span></span>
+                <span>MCap: <span className="text-slate-300">{token.marketCapMon} MON</span></span>
               </div>
             </div>
           </div>
 
-          <button onClick={onClose} className="p-1 rounded text-[#F4E7C7]/60 hover:text-[#F4E7C7] transition-colors font-mono text-lg">
+          <button onClick={onClose} className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Bonding Curve Progress Bar */}
-        <div className="relative z-10 mb-6 p-4 rounded-xl bg-[#24212D] border border-[#F4E7C7]/15 space-y-2 font-mono">
+        <div className="mb-5 p-3.5 rounded-xl bg-[#131926] border border-white/[0.06] space-y-1.5 font-mono">
           <div className="flex justify-between text-xs">
-            <span className="text-[#F4E7C7]/80 font-medium flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-[#F2C23A]" />
-              Bonding Curve Progress to DEX Graduation
+            <span className="text-slate-300 flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#836EF9]" />
+              Bonding Curve Progress
             </span>
-            <span className="font-bold text-[#F2C23A]">{token.bondingProgress}%</span>
+            <span className="font-bold text-emerald-400">{token.bondingProgress}%</span>
           </div>
-          <div className="w-full h-2.5 bg-[#17151E] rounded overflow-hidden p-0.5 border border-[#F4E7C7]/15">
+          <div className="w-full h-2 bg-[#080B11] rounded-full overflow-hidden p-0.5 border border-white/5">
             <div
-              className="h-full rounded bg-gradient-to-r from-[#F2C23A] to-[#E23A2E] transition-all duration-300"
+              className="h-full rounded-full bg-gradient-to-r from-[#836EF9] to-[#00F59B] transition-all duration-300"
               style={{ width: `${token.bondingProgress}%` }}
             ></div>
           </div>
-          <div className="flex justify-between text-[11px] text-[#F4E7C7]/60">
+          <div className="flex justify-between text-[11px] text-slate-500">
             <span>{token.monRaised.toFixed(1)} MON in Curve</span>
-            <span>Target: {token.monTarget} MON (Locks LP permanently)</span>
+            <span>Target: {token.monTarget} MON</span>
           </div>
         </div>
 
-        {/* Dynamic Price Chart Preview */}
-        <div className="relative z-10 mb-6 p-4 rounded-xl bg-[#0E0C13] border border-[#F4E7C7]/15 overflow-hidden">
-          <div className="flex justify-between items-center mb-2 font-mono">
-            <span className="text-xs text-[#F4E7C7]/60">Bonding Curve Trajectory</span>
-            <span className="text-xs text-[#F2C23A] font-bold flex items-center gap-1">
-              <TrendingUp className="w-3.5 h-3.5" /> +{token.priceChange24h}%
+        {/* Price Trajectory Chart Preview */}
+        <div className="mb-5 p-3.5 rounded-xl bg-[#080B11] border border-white/[0.06] overflow-hidden">
+          <div className="flex justify-between items-center mb-1 font-mono text-xs">
+            <span className="text-slate-500">Bonding Curve Trajectory</span>
+            <span className="text-emerald-400 font-bold flex items-center gap-1">
+              <TrendingUp className="w-3 h-3" /> +{token.priceChange24h}%
             </span>
           </div>
 
-          <div className="h-24 w-full relative">
+          <div className="h-20 w-full relative">
             <svg viewBox="0 0 500 100" className="w-full h-full overflow-visible">
               <defs>
-                <linearGradient id="chartGradientBitmela" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#F2C23A" stopOpacity="0.4" />
-                  <stop offset="100%" stopColor="#E23A2E" stopOpacity="0.0" />
+                <linearGradient id="chartGradientSimple" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#836EF9" stopOpacity="0.3" />
+                  <stop offset="100%" stopColor="#836EF9" stopOpacity="0.0" />
                 </linearGradient>
               </defs>
               <path
                 d="M 0,85 Q 120,75 220,50 T 380,30 T 500,15 L 500,100 L 0,100 Z"
-                fill="url(#chartGradientBitmela)"
+                fill="url(#chartGradientSimple)"
               />
               <path
                 d="M 0,85 Q 120,75 220,50 T 380,30 T 500,15"
                 fill="none"
-                stroke="#F2C23A"
-                strokeWidth="2.5"
+                stroke="#836EF9"
+                strokeWidth="2"
               />
-              <circle cx="500" cy="15" r="4" fill="#E23A2E" className="animate-ping" />
-              <circle cx="500" cy="15" r="3.5" fill="#F2C23A" />
+              <circle cx="500" cy="15" r="3" fill="#00F59B" className="animate-ping" />
+              <circle cx="500" cy="15" r="2.5" fill="#836EF9" />
             </svg>
           </div>
         </div>
 
         {/* Buy / Sell Tabs */}
-        <div className="relative z-10 mb-5 flex rounded p-1 bg-[#24212D] border border-[#F4E7C7]/15 font-mono">
+        <div className="mb-4 flex rounded-xl p-1 bg-[#131926] border border-white/[0.06] font-mono text-xs">
           <button
             type="button"
             onClick={() => setTab('BUY')}
-            className={`flex-1 py-2 text-xs font-bold rounded transition-all ${
-              isBuy ? 'bg-[#F2C23A] text-[#17151E] shadow-md' : 'text-[#F4E7C7]/60 hover:text-[#F4E7C7]'
+            className={`flex-1 py-2 font-bold rounded-lg transition-all ${
+              isBuy ? 'bg-[#00F59B] text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'
             }`}
           >
-            BUY ${token.symbol}
+            Buy ${token.symbol}
           </button>
           <button
             type="button"
             onClick={() => setTab('SELL')}
-            className={`flex-1 py-2 text-xs font-bold rounded transition-all ${
-              !isBuy ? 'bg-[#E23A2E] text-[#F4E7C7] shadow-md' : 'text-[#F4E7C7]/60 hover:text-[#F4E7C7]'
+            className={`flex-1 py-2 font-bold rounded-lg transition-all ${
+              !isBuy ? 'bg-rose-500 text-white shadow-sm' : 'text-slate-400 hover:text-white'
             }`}
           >
-            SELL ${token.symbol}
+            Sell ${token.symbol}
           </button>
         </div>
 
         {/* Trade Form */}
-        <form onSubmit={handleTrade} className="relative z-10 space-y-4 font-mono">
-          <div className="p-4 rounded-xl bg-[#24212D] border border-[#F4E7C7]/15 space-y-2">
+        <form onSubmit={handleTrade} className="space-y-4 font-mono">
+          <div className="p-3.5 rounded-xl bg-[#131926] border border-white/[0.06] space-y-2">
             <div className="flex justify-between items-center text-xs">
-              <span className="text-[#F4E7C7]/70 font-medium">
+              <span className="text-slate-400 font-medium">
                 {isBuy ? 'You Pay' : `You Sell ($${token.symbol})`}
               </span>
-              <span className="text-[#F4E7C7]/60">
+              <span className="text-slate-400">
                 Balance: {isBuy ? `${wallet.monBalance.toFixed(2)} MON` : `${userTokenBalance.toLocaleString()} ${token.symbol}`}
               </span>
             </div>
@@ -215,10 +212,10 @@ export const TradeModal: React.FC<TradeModalProps> = ({
                 min="0"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="flex-1 px-4 py-2.5 rounded bg-[#FAF3E0] border border-[#17151E]/30 text-[#17151E] font-mono text-base font-bold focus:outline-none focus:border-[#E23A2E]"
+                className="flex-1 px-3 py-2 rounded-lg bg-[#080B11] border border-white/10 text-white font-mono text-base font-bold focus:outline-none focus:border-[#836EF9]"
                 placeholder="0.0"
               />
-              <span className="font-mono font-bold text-sm text-[#F2C23A] px-2">
+              <span className="font-bold text-sm text-slate-300 px-2">
                 {isBuy ? 'MON' : token.symbol}
               </span>
             </div>
@@ -230,7 +227,7 @@ export const TradeModal: React.FC<TradeModalProps> = ({
                   type="button"
                   key={preset}
                   onClick={() => handlePreset(preset)}
-                  className="flex-1 py-1 rounded bg-[#17151E] hover:bg-[#F2C23A] hover:text-[#17151E] text-[11px] font-mono font-semibold text-[#F4E7C7]/80 border border-[#F4E7C7]/20 transition-colors"
+                  className="flex-1 py-1 rounded-lg bg-white/[0.05] hover:bg-white/10 text-[11px] font-semibold text-slate-300 hover:text-white transition-colors"
                 >
                   {preset} {isBuy ? 'MON' : ''}
                 </button>
@@ -239,33 +236,35 @@ export const TradeModal: React.FC<TradeModalProps> = ({
           </div>
 
           {/* Estimated Output */}
-          <div className="flex justify-between items-center px-2 text-xs font-mono text-[#F4E7C7]/70">
+          <div className="flex justify-between items-center px-2 text-xs font-mono text-slate-400">
             <span>You Receive (Est.):</span>
-            <span className="text-[#F2C23A] font-bold">
+            <span className="text-white font-bold">
               {isBuy ? `~${estimatedTokens.toLocaleString()} ${token.symbol}` : `~${estimatedTokens} MON`}
             </span>
           </div>
 
           {/* Success Notification Bar */}
           {lastTxSuccess && (
-            <div className="p-3 rounded bg-emerald-500/20 border border-emerald-500/40 text-emerald-200 text-xs font-mono flex items-center gap-2">
+            <div className="p-2.5 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-2">
               <Zap className="w-4 h-4 text-emerald-400" />
               <span>{lastTxSuccess}</span>
             </div>
           )}
 
-          {/* Action Button: Bitmela Solid Monospace CTA */}
-          <div className="pt-2">
+          {/* Action Button */}
+          <div className="pt-1">
             <button
               type="submit"
               disabled={isExecuting}
-              className={`w-full py-3 px-6 rounded text-xs transition-all active:scale-98 font-bold font-mono tracking-wider disabled:opacity-50 ${
-                isBuy ? 'mela-btn-gold' : 'mela-btn-red'
+              className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold font-mono transition-all active:scale-98 disabled:opacity-50 shadow-md ${
+                isBuy 
+                  ? 'bg-[#00F59B] hover:bg-[#20f7a6] text-slate-950' 
+                  : 'bg-rose-500 hover:bg-rose-600 text-white'
               }`}
             >
               {isExecuting 
-                ? 'EXECUTING AT 10,000 TPS...' 
-                : isBuy ? `QUICK BUY $${token.symbol} ➔` : `SELL $${token.symbol} ➔`}
+                ? 'Executing at 10,000 TPS...' 
+                : isBuy ? `Quick Buy ${token.symbol}` : `Sell ${token.symbol}`}
             </button>
           </div>
         </form>
