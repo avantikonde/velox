@@ -7,6 +7,20 @@ export default {
   theme: {
     extend: {
       colors: {
+        bitmela: {
+          paper: '#F4E7C7',
+          'paper-light': '#FAF3E0',
+          'paper-dark': '#E8D9B4',
+          charcoal: '#17151E',
+          'charcoal-light': '#24212D',
+          'charcoal-surface': '#1D1A25',
+          saffron: '#F2C23A',
+          'saffron-light': '#FDE68A',
+          scarlet: '#E23A2E',
+          'scarlet-dark': '#B7261C',
+          cobalt: '#2677C9',
+          'cobalt-light': '#4A9BE8',
+        },
         aurora: {
           pink: '#F9D4E0',
           lilac: '#EB96FF',
@@ -20,7 +34,9 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['Bricolage Grotesque', 'system-ui', 'sans-serif'],
+        serif: ['Newsreader', 'Georgia', 'serif'],
+        mono: ['IBM Plex Mono', 'ui-monospace', 'monospace'],
       },
       animation: {
         'aurora-flow': 'aurora 8s ease infinite alternate',

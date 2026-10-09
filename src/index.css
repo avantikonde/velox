@@ -3,6 +3,12 @@
 @tailwind utilities;
 
 :root {
+  --color-paper: #F4E7C7;
+  --color-paper-light: #FAF3E0;
+  --color-charcoal: #17151E;
+  --color-saffron: #F2C23A;
+  --color-scarlet: #E23A2E;
+  --color-cobalt: #2677C9;
   --color-pink: #F9D4E0;
   --color-lilac: #EB96FF;
   --color-teal: #0B5777;
@@ -11,33 +17,157 @@
 
 body {
   margin: 0;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: #070c16;
-  color: #ffffff;
+  font-family: 'Newsreader', Georgia, serif;
+  background-color: #F4E7C7;
+  color: #17151E;
   overflow-x: hidden;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* --- Image 3 Inspired: 3D Frosted Beveled Glass Tile Matrix Background --- */
-.beveled-tile-matrix {
-  background-color: #070c16;
+/* Bitmela Paper Background with subtle fiber & grid */
+.bitmela-paper-bg {
+  background-color: #F4E7C7;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(242, 194, 58, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(226, 58, 46, 0.06) 0%, transparent 40%),
+    linear-gradient(rgba(23, 21, 30, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 21, 30, 0.03) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+}
+
+/* Jaipur Ticket Stub styling with authentic perforation */
+.jaipur-ticket {
+  background-color: #17151E;
+  color: #F4E7C7;
+  border: 1px solid rgba(244, 231, 199, 0.2);
+  position: relative;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, filter 0.35s ease;
+  will-change: transform, filter;
+}
+
+.jaipur-ticket:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 20px 32px -8px rgba(23, 21, 30, 0.35);
+}
+
+.jaipur-ticket-light {
+  background-color: #FAF3E0;
+  color: #17151E;
+  border: 1.5px solid #17151E;
+  box-shadow: 4px 4px 0px #17151E;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.jaipur-ticket-light:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #17151E;
+}
+
+/* Perforation dashed line */
+.ticket-perforation-v {
   position: relative;
 }
 
-.beveled-tile-matrix::before {
+.ticket-perforation-v::after {
   content: '';
   position: absolute;
-  inset: 0;
-  background-image: 
-    /* Horizontal tile bevel highlights */
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px, transparent 47px, rgba(0, 0, 0, 0.4) 48px),
-    /* Vertical tile bevel highlights */
-    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px, transparent 47px, rgba(0, 0, 0, 0.4) 48px),
-    /* Subtle pillow tile gradient */
-    radial-gradient(circle at 50% 50%, rgba(25, 49, 83, 0.12) 0%, rgba(11, 87, 119, 0.04) 70%, transparent 100%);
-  background-size: 48px 48px, 48px 48px, 48px 48px;
-  opacity: 0.85;
+  top: 0;
+  bottom: 0;
+  right: -1px;
+  width: 2px;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 4px,
+    rgba(244, 231, 199, 0.4) 4px,
+    rgba(244, 231, 199, 0.4) 8px
+  );
+}
+
+/* Authentic Bitmela Verified / Sold-out Stamp */
+.mela-stamp {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #E23A2E;
+  border: 2px solid #E23A2E;
+  padding: 5px 10px;
+  background: rgba(23, 21, 30, 0.85);
+  white-space: nowrap;
   pointer-events: none;
-  z-index: 0;
+  box-shadow: inset 0 0 0 1px rgba(23, 21, 30, 0.9), inset 0 0 0 2px #E23A2E;
+}
+
+.mela-stamp-gold {
+  color: #F2C23A;
+  border-color: #F2C23A;
+  box-shadow: inset 0 0 0 1px rgba(23, 21, 30, 0.9), inset 0 0 0 2px #F2C23A;
+}
+
+/* Bitmela Solid Monospace CTA Buttons */
+.mela-btn-red {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: #E23A2E;
+  color: #F4E7C7;
+  border: 1.5px solid #17151E;
+  box-shadow: 2px 2px 0px #17151E;
+  transition: all 0.18s ease;
+}
+
+.mela-btn-red:hover {
+  background: #F2C23A;
+  color: #17151E;
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px #17151E;
+}
+
+.mela-btn-gold {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: #F2C23A;
+  color: #17151E;
+  border: 1.5px solid #17151E;
+  box-shadow: 2px 2px 0px #17151E;
+  transition: all 0.18s ease;
+}
+
+.mela-btn-gold:hover {
+  background: #17151E;
+  color: #F4E7C7;
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px #17151E;
+}
+
+/* Folk Geometric Marquee Frieze Band */
+@keyframes folkBandScroll {
+  from { background-position-x: 0px; }
+  to { background-position-x: -384px; }
+}
+
+.mela-folk-band {
+  height: 12px;
+  background-image: repeating-linear-gradient(
+    45deg,
+    #E23A2E 0,
+    #E23A2E 12px,
+    #F2C23A 12px,
+    #F2C23A 24px,
+    #2677C9 24px,
+    #2677C9 36px,
+    #17151E 36px,
+    #17151E 48px
+  );
+  animation: folkBandScroll 16s linear infinite;
 }
 
 /* Aurora Ambient Multi-Glows (Aurora Blossom Theme: #193153, #0B5777, #EB96FF, #F9D4E0) */
@@ -136,39 +266,39 @@ body {
     inset 0 1px 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-/* Glass Panels with Aurora Tint */
+/* Glass Panels with Bitmela Paper / Charcoal Tint */
 .glass-panel {
-  background: rgba(18, 30, 52, 0.42);
+  background: rgba(23, 21, 30, 0.88);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(235, 150, 255, 0.14);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(244, 231, 199, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(23, 21, 30, 0.4);
 }
 
 .glass-panel:hover {
-  border-color: rgba(235, 150, 255, 0.26);
+  border-color: rgba(242, 194, 58, 0.4);
 }
 
 /* Terminal Column Card */
 .terminal-col-panel {
-  background: rgba(11, 18, 32, 0.6);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #17151E;
+  color: #F4E7C7;
+  border: 1px solid rgba(244, 231, 199, 0.18);
+  box-shadow: 0 4px 20px rgba(23, 21, 30, 0.25);
 }
 
 /* Custom Scrollbars */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #070c16;
+  background: #17151E;
 }
 ::-webkit-scrollbar-thumb {
-  background: #193153;
-  border-radius: 4px;
+  background: #F2C23A;
+  border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #EB96FF;
+  background: #E23A2E;
 }

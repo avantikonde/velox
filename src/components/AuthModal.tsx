@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { X, Mail, Lock, User as UserIcon, CheckCircle2, AlertCircle, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
+import { X, Mail, Lock, User as UserIcon, ShieldCheck, Sparkles, AlertCircle } from 'lucide-react';
 import { User } from '../types';
 import { authService } from '../services/authService';
-import { AuroraButton } from './AuroraButton';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -85,60 +84,61 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-md rounded-3xl glass-panel p-6 sm:p-8 bg-[#0a1220]/95 border border-[#EB96FF]/30 shadow-2xl shadow-[#EB96FF]/20 my-8">
+      <div className="relative w-full max-w-md rounded-2xl jaipur-ticket p-6 sm:p-8 border-2 border-[#17151E] shadow-2xl my-8">
         
+        {/* Decorative Top Band */}
+        <div className="mela-folk-band -mx-6 sm:-mx-8 -mt-6 sm:-mt-8 mb-6 h-2" aria-hidden="true"></div>
+
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute right-5 top-5 p-2 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+          className="absolute right-5 top-5 p-1 rounded text-[#F4E7C7]/60 hover:text-[#F4E7C7] transition-colors font-mono text-lg"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Modal Header */}
         <div className="text-center mb-6">
-          <div className="w-12 h-12 mx-auto mb-3 rounded-2xl bg-gradient-to-tr from-[#0B5777] via-[#EB96FF] to-[#F9D4E0] p-[2px] shadow-lg shadow-[#EB96FF]/30">
-            <div className="w-full h-full bg-[#070c16] rounded-2xl flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-[#EB96FF]" />
-            </div>
+          <div className="w-12 h-12 mx-auto mb-3 rounded bg-[#F2C23A] text-[#17151E] flex items-center justify-center shadow-lg font-bold border border-[#17151E]">
+            <Sparkles className="w-6 h-6" />
           </div>
-          <h2 className="text-xl font-extrabold text-white">
+          <h2 className="text-xl font-extrabold text-[#F4E7C7] font-sans">
             {tab === 'signin' ? 'Sign in to MonadPump' : 'Create your Account'}
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-[#F4E7C7]/70 mt-1 font-serif italic">
             Access high-speed trading, portfolio tracking, and instant token launches
           </p>
         </div>
 
         {/* Tab Switcher: Sign in | Sign up */}
-        <div className="flex rounded-xl bg-[#193153]/50 p-1 border border-white/5 mb-6 text-xs font-semibold">
+        <div className="flex rounded bg-[#24212D] p-1 border border-[#F4E7C7]/15 mb-6 text-xs font-mono font-bold">
           <button
             onClick={() => {
               setTab('signin');
               setError(null);
             }}
-            className={`flex-1 py-2 rounded-lg transition-all ${
-              tab === 'signin' ? 'bg-[#EB96FF] text-[#070c16] font-bold shadow-md' : 'text-slate-400 hover:text-white'
+            className={`flex-1 py-2 rounded transition-all ${
+              tab === 'signin' ? 'bg-[#F2C23A] text-[#17151E] shadow-sm' : 'text-[#F4E7C7]/60 hover:text-[#F4E7C7]'
             }`}
           >
-            Sign in
+            SIGN IN
           </button>
           <button
             onClick={() => {
               setTab('signup');
               setError(null);
             }}
-            className={`flex-1 py-2 rounded-lg transition-all ${
-              tab === 'signup' ? 'bg-[#EB96FF] text-[#070c16] font-bold shadow-md' : 'text-slate-400 hover:text-white'
+            className={`flex-1 py-2 rounded transition-all ${
+              tab === 'signup' ? 'bg-[#F2C23A] text-[#17151E] shadow-sm' : 'text-[#F4E7C7]/60 hover:text-[#F4E7C7]'
             }`}
           >
-            Create account
+            CREATE ACCOUNT
           </button>
         </div>
 
         {/* Error Alert */}
         {error && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2 font-medium">
+          <div className="mb-4 p-3 rounded bg-rose-500/20 border border-rose-500/40 text-rose-200 text-xs flex items-center gap-2 font-mono">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             <span>{error}</span>
           </div>
@@ -149,9 +149,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
           <button
             onClick={() => handleGoogleAuth()}
             disabled={isLoading}
-            className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-800 font-semibold text-xs transition-all shadow-md active:scale-98 disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded bg-[#FAF3E0] hover:bg-[#F2C23A] text-[#17151E] border border-[#17151E] font-mono font-bold text-xs transition-all shadow-md active:scale-98 disabled:opacity-50"
           >
-            {/* Multi-color Google SVG Icon */}
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path
                 fill="#4285F4"
@@ -170,14 +169,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                 d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.24 6.58l4.04 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
               />
             </svg>
-            <span>Continue with Google</span>
+            <span>CONTINUE WITH GOOGLE</span>
           </button>
 
           {/* Toggle for custom Google email */}
-          <div className="text-center">
+          <div className="text-center font-mono">
             <button
               onClick={() => setShowGoogleInput(!showGoogleInput)}
-              className="text-[11px] text-slate-400 hover:text-[#EB96FF] transition-colors"
+              className="text-[11px] text-[#F4E7C7]/60 hover:text-[#F2C23A] transition-colors"
             >
               {showGoogleInput ? 'Hide custom Google account' : 'Sign in with a specific Google email'}
             </button>
@@ -190,11 +189,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                 placeholder="your.email@gmail.com"
                 value={customGoogleEmail}
                 onChange={(e) => setCustomGoogleEmail(e.target.value)}
-                className="flex-1 px-3 py-1.5 rounded-lg bg-[#193153]/40 border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#EB96FF]"
+                className="flex-1 px-3 py-1.5 rounded bg-[#FAF3E0] border border-[#17151E]/30 text-xs text-[#17151E] placeholder-[#17151E]/40 font-mono focus:outline-none focus:border-[#E23A2E]"
               />
               <button
                 onClick={() => handleGoogleAuth(customGoogleEmail)}
-                className="px-3 py-1.5 rounded-lg bg-[#0B5777] text-white text-xs font-semibold hover:bg-[#0B5777]/80"
+                className="px-3 py-1.5 rounded bg-[#17151E] text-[#F4E7C7] text-xs font-mono font-bold hover:bg-[#F2C23A] hover:text-[#17151E] border border-[#F4E7C7]/20"
               >
                 Link
               </button>
@@ -204,132 +203,128 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
 
         {/* Divider */}
         <div className="relative flex items-center justify-center my-6">
-          <div className="border-t border-white/10 w-full"></div>
-          <span className="bg-[#0a1220] px-3 text-[10px] uppercase tracking-wider text-slate-500 font-bold">
+          <div className="border-t border-[#F4E7C7]/15 w-full"></div>
+          <span className="bg-[#17151E] px-3 text-[10px] uppercase tracking-wider text-[#F4E7C7]/60 font-mono font-bold whitespace-nowrap">
             Or with email & password
           </span>
-          <div className="border-t border-white/10 w-full"></div>
+          <div className="border-t border-[#F4E7C7]/15 w-full"></div>
         </div>
 
         {/* Email Sign In Form */}
         {tab === 'signin' ? (
-          <form onSubmit={handleEmailLogin} className="space-y-4">
+          <form onSubmit={handleEmailLogin} className="space-y-4 font-mono">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label className="block text-xs font-bold text-[#F4E7C7] mb-1 font-sans uppercase tracking-wider">
                 Email or Username
               </label>
               <div className="relative">
-                <UserIcon className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <UserIcon className="w-4 h-4 text-[#17151E]/50 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
                   placeholder="trader@monad.xyz or monad_degen"
                   value={emailOrUser}
                   onChange={(e) => setEmailOrUser(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#193153]/40 border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-[#EB96FF] font-mono"
+                  className="w-full pl-10 pr-4 py-2 rounded bg-[#FAF3E0] border border-[#17151E]/30 text-[#17151E] placeholder-[#17151E]/40 text-xs focus:outline-none focus:border-[#E23A2E] font-mono"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label className="block text-xs font-bold text-[#F4E7C7] mb-1 font-sans uppercase tracking-wider">
                 Password
               </label>
               <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <Lock className="w-4 h-4 text-[#17151E]/50 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="password"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#193153]/40 border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-[#EB96FF]"
+                  className="w-full pl-10 pr-4 py-2 rounded bg-[#FAF3E0] border border-[#17151E]/30 text-[#17151E] placeholder-[#17151E]/40 text-xs focus:outline-none focus:border-[#E23A2E]"
                 />
               </div>
             </div>
 
             <div className="pt-2">
-              <AuroraButton
+              <button
                 type="submit"
-                loading={isLoading}
-                loadingText="Verifying session..."
-                size="md"
-                className="w-full"
+                disabled={isLoading}
+                className="w-full py-2.5 px-4 rounded mela-btn-red text-xs transition-all active:scale-98 disabled:opacity-50"
               >
-                Sign in ⚡
-              </AuroraButton>
+                {isLoading ? 'VERIFYING SESSION...' : 'SIGN IN ⚡'}
+              </button>
             </div>
           </form>
         ) : (
           /* Email Sign Up Form */
-          <form onSubmit={handleEmailSignup} className="space-y-4">
+          <form onSubmit={handleEmailSignup} className="space-y-4 font-mono">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label className="block text-xs font-bold text-[#F4E7C7] mb-1 font-sans uppercase tracking-wider">
                 Username
               </label>
               <div className="relative">
-                <UserIcon className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <UserIcon className="w-4 h-4 text-[#17151E]/50 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
                   placeholder="e.g. monad_chog"
                   value={signupUsername}
                   onChange={(e) => setSignupUsername(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#193153]/40 border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-[#EB96FF] font-mono"
+                  className="w-full pl-10 pr-4 py-2 rounded bg-[#FAF3E0] border border-[#17151E]/30 text-[#17151E] placeholder-[#17151E]/40 text-xs focus:outline-none focus:border-[#E23A2E] font-mono"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label className="block text-xs font-bold text-[#F4E7C7] mb-1 font-sans uppercase tracking-wider">
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <Mail className="w-4 h-4 text-[#17151E]/50 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="email"
                   placeholder="your.email@example.com"
                   value={signupEmail}
                   onChange={(e) => setSignupEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#193153]/40 border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-[#EB96FF] font-mono"
+                  className="w-full pl-10 pr-4 py-2 rounded bg-[#FAF3E0] border border-[#17151E]/30 text-[#17151E] placeholder-[#17151E]/40 text-xs focus:outline-none focus:border-[#E23A2E] font-mono"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label className="block text-xs font-bold text-[#F4E7C7] mb-1 font-sans uppercase tracking-wider">
                 Password
               </label>
               <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <Lock className="w-4 h-4 text-[#17151E]/50 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="password"
                   placeholder="Create a strong password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#193153]/40 border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-[#EB96FF]"
+                  className="w-full pl-10 pr-4 py-2 rounded bg-[#FAF3E0] border border-[#17151E]/30 text-[#17151E] placeholder-[#17151E]/40 text-xs focus:outline-none focus:border-[#E23A2E]"
                 />
               </div>
             </div>
 
             <div className="pt-2">
-              <AuroraButton
+              <button
                 type="submit"
-                loading={isLoading}
-                loadingText="Creating account..."
-                size="md"
-                className="w-full"
+                disabled={isLoading}
+                className="w-full py-2.5 px-4 rounded mela-btn-gold text-xs transition-all active:scale-98 disabled:opacity-50"
               >
-                Create Account 🚀
-              </AuroraButton>
+                {isLoading ? 'CREATING ACCOUNT...' : 'CREATE ACCOUNT 🚀'}
+              </button>
             </div>
           </form>
         )}
 
         {/* Security Footer Notice */}
-        <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400">
+        <div className="mt-6 pt-4 border-t border-[#F4E7C7]/15 flex items-center justify-between text-[11px] text-[#F4E7C7]/70 font-mono">
           <span className="flex items-center gap-1.5">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
             Non-custodial Monad Wallet linked
           </span>
-          <span className="font-mono text-[#EB96FF]">10k TPS Ready</span>
+          <span className="text-[#F2C23A] font-bold">10k TPS Ready</span>
         </div>
 
       </div>

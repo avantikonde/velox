@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { X, ArrowDownUp, TrendingUp, TrendingDown, Clock, ShieldCheck, Zap, CheckCircle2 } from 'lucide-react';
+import { X, TrendingUp, ShieldCheck, Zap } from 'lucide-react';
 import { Token, WalletState } from '../types';
-import { AuroraButton } from './AuroraButton';
 import confetti from 'canvas-confetti';
 
 interface TradeModalProps {
@@ -67,7 +66,7 @@ export const TradeModal: React.FC<TradeModalProps> = ({
         particleCount: 50,
         spread: 60,
         origin: { y: 0.7 },
-        colors: ['#EB96FF', '#F9D4E0', '#0B5777']
+        colors: ['#F2C23A', '#E23A2E', '#2677C9']
       });
     }, 850);
   };
@@ -85,126 +84,126 @@ export const TradeModal: React.FC<TradeModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-2xl rounded-3xl glass-panel p-6 sm:p-8 bg-[#0c1524]/95 border border-[#EB96FF]/30 shadow-2xl shadow-[#EB96FF]/20 my-8">
+      <div className="relative w-full max-w-2xl rounded-2xl jaipur-ticket p-6 sm:p-8 border-2 border-[#17151E] shadow-2xl my-8">
         
-        {/* Tech Grid Pattern */}
-        <div className="absolute inset-0 tech-grid-bg opacity-20 pointer-events-none rounded-3xl"></div>
+        {/* Top Decorative Folk Band */}
+        <div className="mela-folk-band -mx-6 sm:-mx-8 -mt-6 sm:-mt-8 mb-6 h-2" aria-hidden="true"></div>
 
         {/* Modal Header */}
-        <div className="relative z-10 flex items-start justify-between pb-4 border-b border-white/10 mb-6">
+        <div className="relative z-10 flex items-start justify-between pb-4 border-b border-[#F4E7C7]/15 mb-6">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl overflow-hidden border-2 border-[#EB96FF]/40 shadow-lg flex-shrink-0">
+            <div className="w-14 h-14 rounded-xl overflow-hidden border-2 border-[#F2C23A] shadow-lg flex-shrink-0">
               <img src={token.imageUrl} alt={token.name} className="w-full h-full object-cover" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold text-white">{token.name}</h2>
-                <span className="font-mono text-sm px-2 py-0.5 rounded-lg bg-[#EB96FF]/15 text-[#EB96FF] font-bold">
+                <h2 className="text-xl font-extrabold text-[#F4E7C7] font-sans">{token.name}</h2>
+                <span className="font-mono text-sm px-2 py-0.5 rounded bg-[#FAF3E0] text-[#17151E] font-bold">
                   ${token.symbol}
                 </span>
                 {token.isGraduated && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                    Graduated
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#E23A2E] text-[#F4E7C7]">
+                    GRADUATED
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-3 text-xs text-slate-400 mt-1">
-                <span>Price: <span className="font-mono text-[#F9D4E0]">{token.priceMon} MON</span></span>
+              <div className="flex items-center gap-3 text-xs text-[#F4E7C7]/70 font-mono mt-1">
+                <span>Price: <span className="text-[#F2C23A] font-bold">{token.priceMon} MON</span></span>
                 <span>•</span>
-                <span>MCap: <span className="font-mono text-white">{token.marketCapMon} MON</span></span>
+                <span>MCap: <span className="text-[#F4E7C7] font-bold">{token.marketCapMon} MON</span></span>
               </div>
             </div>
           </div>
 
-          <button onClick={onClose} className="p-2 rounded-full text-slate-400 hover:text-white hover:bg-white/10">
+          <button onClick={onClose} className="p-1 rounded text-[#F4E7C7]/60 hover:text-[#F4E7C7] transition-colors font-mono text-lg">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Bonding Curve Progress Bar */}
-        <div className="relative z-10 mb-6 p-4 rounded-2xl bg-[#193153]/40 border border-[#EB96FF]/15 space-y-2">
+        <div className="relative z-10 mb-6 p-4 rounded-xl bg-[#24212D] border border-[#F4E7C7]/15 space-y-2 font-mono">
           <div className="flex justify-between text-xs">
-            <span className="text-slate-300 font-medium flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-[#EB96FF]" />
+            <span className="text-[#F4E7C7]/80 font-medium flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-[#F2C23A]" />
               Bonding Curve Progress to DEX Graduation
             </span>
-            <span className="font-mono font-bold text-[#F9D4E0]">{token.bondingProgress}%</span>
+            <span className="font-bold text-[#F2C23A]">{token.bondingProgress}%</span>
           </div>
-          <div className="w-full h-2.5 bg-[#09101c] rounded-full overflow-hidden p-0.5 border border-white/10">
+          <div className="w-full h-2.5 bg-[#17151E] rounded overflow-hidden p-0.5 border border-[#F4E7C7]/15">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-[#0B5777] via-[#EB96FF] to-[#F9D4E0] transition-all duration-300"
+              className="h-full rounded bg-gradient-to-r from-[#F2C23A] to-[#E23A2E] transition-all duration-300"
               style={{ width: `${token.bondingProgress}%` }}
             ></div>
           </div>
-          <div className="flex justify-between text-[11px] text-slate-400 font-mono">
+          <div className="flex justify-between text-[11px] text-[#F4E7C7]/60">
             <span>{token.monRaised.toFixed(1)} MON in Curve</span>
             <span>Target: {token.monTarget} MON (Locks LP permanently)</span>
           </div>
         </div>
 
-        {/* Dynamic Price Chart Preview (Area SVG) */}
-        <div className="relative z-10 mb-6 p-4 rounded-2xl bg-[#09101c]/80 border border-white/10 overflow-hidden">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-xs text-slate-400 font-mono">Real-time Bonding Curve Trajectory</span>
-            <span className="text-xs font-mono text-emerald-400 flex items-center gap-1">
+        {/* Dynamic Price Chart Preview */}
+        <div className="relative z-10 mb-6 p-4 rounded-xl bg-[#0E0C13] border border-[#F4E7C7]/15 overflow-hidden">
+          <div className="flex justify-between items-center mb-2 font-mono">
+            <span className="text-xs text-[#F4E7C7]/60">Bonding Curve Trajectory</span>
+            <span className="text-xs text-[#F2C23A] font-bold flex items-center gap-1">
               <TrendingUp className="w-3.5 h-3.5" /> +{token.priceChange24h}%
             </span>
           </div>
 
-          <div className="h-28 w-full relative">
+          <div className="h-24 w-full relative">
             <svg viewBox="0 0 500 100" className="w-full h-full overflow-visible">
               <defs>
-                <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#EB96FF" stopOpacity="0.4" />
-                  <stop offset="100%" stopColor="#0B5777" stopOpacity="0.0" />
+                <linearGradient id="chartGradientBitmela" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#F2C23A" stopOpacity="0.4" />
+                  <stop offset="100%" stopColor="#E23A2E" stopOpacity="0.0" />
                 </linearGradient>
               </defs>
               <path
                 d="M 0,85 Q 120,75 220,50 T 380,30 T 500,15 L 500,100 L 0,100 Z"
-                fill="url(#chartGradient)"
+                fill="url(#chartGradientBitmela)"
               />
               <path
                 d="M 0,85 Q 120,75 220,50 T 380,30 T 500,15"
                 fill="none"
-                stroke="#EB96FF"
+                stroke="#F2C23A"
                 strokeWidth="2.5"
               />
-              <circle cx="500" cy="15" r="4" fill="#F9D4E0" className="animate-ping" />
-              <circle cx="500" cy="15" r="3.5" fill="#EB96FF" />
+              <circle cx="500" cy="15" r="4" fill="#E23A2E" className="animate-ping" />
+              <circle cx="500" cy="15" r="3.5" fill="#F2C23A" />
             </svg>
           </div>
         </div>
 
         {/* Buy / Sell Tabs */}
-        <div className="relative z-10 mb-5 flex rounded-xl p-1 bg-[#193153]/60 border border-white/5">
+        <div className="relative z-10 mb-5 flex rounded p-1 bg-[#24212D] border border-[#F4E7C7]/15 font-mono">
           <button
             type="button"
             onClick={() => setTab('BUY')}
-            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
-              isBuy ? 'bg-[#EB96FF] text-[#09101c] shadow-md' : 'text-slate-400 hover:text-white'
+            className={`flex-1 py-2 text-xs font-bold rounded transition-all ${
+              isBuy ? 'bg-[#F2C23A] text-[#17151E] shadow-md' : 'text-[#F4E7C7]/60 hover:text-[#F4E7C7]'
             }`}
           >
-            Buy ${token.symbol}
+            BUY ${token.symbol}
           </button>
           <button
             type="button"
             onClick={() => setTab('SELL')}
-            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
-              !isBuy ? 'bg-rose-500 text-white shadow-md' : 'text-slate-400 hover:text-white'
+            className={`flex-1 py-2 text-xs font-bold rounded transition-all ${
+              !isBuy ? 'bg-[#E23A2E] text-[#F4E7C7] shadow-md' : 'text-[#F4E7C7]/60 hover:text-[#F4E7C7]'
             }`}
           >
-            Sell ${token.symbol}
+            SELL ${token.symbol}
           </button>
         </div>
 
         {/* Trade Form */}
-        <form onSubmit={handleTrade} className="relative z-10 space-y-4">
-          <div className="p-4 rounded-2xl bg-[#193153]/30 border border-[#EB96FF]/20 space-y-2">
+        <form onSubmit={handleTrade} className="relative z-10 space-y-4 font-mono">
+          <div className="p-4 rounded-xl bg-[#24212D] border border-[#F4E7C7]/15 space-y-2">
             <div className="flex justify-between items-center text-xs">
-              <span className="text-slate-400 font-medium">
+              <span className="text-[#F4E7C7]/70 font-medium">
                 {isBuy ? 'You Pay' : `You Sell ($${token.symbol})`}
               </span>
-              <span className="text-slate-400 font-mono">
+              <span className="text-[#F4E7C7]/60">
                 Balance: {isBuy ? `${wallet.monBalance.toFixed(2)} MON` : `${userTokenBalance.toLocaleString()} ${token.symbol}`}
               </span>
             </div>
@@ -216,10 +215,10 @@ export const TradeModal: React.FC<TradeModalProps> = ({
                 min="0"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-[#09101c] border border-[#EB96FF]/30 text-white font-mono text-base font-semibold focus:outline-none focus:border-[#EB96FF]"
+                className="flex-1 px-4 py-2.5 rounded bg-[#FAF3E0] border border-[#17151E]/30 text-[#17151E] font-mono text-base font-bold focus:outline-none focus:border-[#E23A2E]"
                 placeholder="0.0"
               />
-              <span className="font-mono font-bold text-sm text-[#F9D4E0] px-2">
+              <span className="font-mono font-bold text-sm text-[#F2C23A] px-2">
                 {isBuy ? 'MON' : token.symbol}
               </span>
             </div>
@@ -231,7 +230,7 @@ export const TradeModal: React.FC<TradeModalProps> = ({
                   type="button"
                   key={preset}
                   onClick={() => handlePreset(preset)}
-                  className="flex-1 py-1 rounded-lg bg-white/5 hover:bg-[#EB96FF]/20 text-[11px] font-mono font-semibold text-slate-300 hover:text-[#EB96FF] border border-white/5 transition-colors"
+                  className="flex-1 py-1 rounded bg-[#17151E] hover:bg-[#F2C23A] hover:text-[#17151E] text-[11px] font-mono font-semibold text-[#F4E7C7]/80 border border-[#F4E7C7]/20 transition-colors"
                 >
                   {preset} {isBuy ? 'MON' : ''}
                 </button>
@@ -240,32 +239,34 @@ export const TradeModal: React.FC<TradeModalProps> = ({
           </div>
 
           {/* Estimated Output */}
-          <div className="flex justify-between items-center px-2 text-xs font-mono text-slate-400">
+          <div className="flex justify-between items-center px-2 text-xs font-mono text-[#F4E7C7]/70">
             <span>You Receive (Est.):</span>
-            <span className="text-white font-bold">
+            <span className="text-[#F2C23A] font-bold">
               {isBuy ? `~${estimatedTokens.toLocaleString()} ${token.symbol}` : `~${estimatedTokens} MON`}
             </span>
           </div>
 
           {/* Success Notification Bar */}
           {lastTxSuccess && (
-            <div className="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-mono flex items-center gap-2 animate-fade-in">
+            <div className="p-3 rounded bg-emerald-500/20 border border-emerald-500/40 text-emerald-200 text-xs font-mono flex items-center gap-2">
               <Zap className="w-4 h-4 text-emerald-400" />
               <span>{lastTxSuccess}</span>
             </div>
           )}
 
-          {/* Fluid Aurora Capsule Button */}
+          {/* Action Button: Bitmela Solid Monospace CTA */}
           <div className="pt-2">
-            <AuroraButton
+            <button
               type="submit"
-              loading={isExecuting}
-              loadingText="Executing at 10,000 TPS..."
-              size="lg"
-              className="w-full"
+              disabled={isExecuting}
+              className={`w-full py-3 px-6 rounded text-xs transition-all active:scale-98 font-bold font-mono tracking-wider disabled:opacity-50 ${
+                isBuy ? 'mela-btn-gold' : 'mela-btn-red'
+              }`}
             >
-              {isBuy ? `Quick Buy ${token.symbol}` : `Sell ${token.symbol}`}
-            </AuroraButton>
+              {isExecuting 
+                ? 'EXECUTING AT 10,000 TPS...' 
+                : isBuy ? `QUICK BUY $${token.symbol} ➔` : `SELL $${token.symbol} ➔`}
+            </button>
           </div>
         </form>
 
