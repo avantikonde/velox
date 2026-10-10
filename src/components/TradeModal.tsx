@@ -635,7 +635,7 @@ export const TradeModal: React.FC<TradeModalProps> = ({
               {!wallet?.isConnected
                 ? `Connect Device Wallet to Trade 🦊👻`
                 : isExecuting 
-                  ? 'Executing at 10,000 TPS...' 
+                  ? 'Waiting for Wallet Confirmation in Extension...' 
                   : isBuy 
                     ? buyMode === 'stream'
                       ? isStreaming

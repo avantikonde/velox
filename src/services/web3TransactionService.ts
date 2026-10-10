@@ -108,18 +108,12 @@ export const dispatchWeb3Transaction = async (
       // wallets classify it as "Self Transfer" with ZERO risk alerts, while keeping funds safe!
       const destination = req.fromAddress;
 
-      // Encode clean trade action memo (e.g. "Velox:BUY_TOKEN:MEMO")
-      const memoText = `Velox:${req.txType}:${req.tokenSymbol || 'MON'}`;
-      const hexData = '0x' + Array.from(new TextEncoder().encode(memoText))
-        .map(b => b.toString(16).padStart(2, '0'))
-        .join('');
-
       // Construct transaction request payload
+      // Omit calldata to ensure wallets recognize this as a pure, clean self-transfer with zero warnings
       const txParams: any = {
         from: req.fromAddress,
         to: destination,
-        value: hexValue,
-        data: hexData
+        value: hexValue
       };
 
       // Direct on-device wallet prompt: awaits user approval or cancellation
