@@ -54,12 +54,12 @@ export const PumpSidebar: React.FC<PumpSidebarProps> = ({
     >
       {/* Top: Logo + Toggle Arrow */}
       <div>
-        <div className="h-16 px-3 flex items-center justify-between border-b border-white/[0.08] relative">
+        <div className="h-16 px-3 flex items-center border-b border-white/[0.08] relative">
           
           {/* Logo Mark + Text */}
           <div 
             onClick={() => onSelectTab('home')}
-            className="flex items-center gap-2.5 cursor-pointer group min-w-0"
+            className={`flex items-center gap-3 cursor-pointer group min-w-0 ${!isExpanded ? 'w-full justify-center' : ''}`}
           >
             {/* Velox 3D Ribbon Logo */}
             <div className="relative flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden flex-shrink-0 group-hover:scale-105 transition-transform shadow-md shadow-[#68CFEB]/20 border border-[#68CFEB]/30">
@@ -80,18 +80,18 @@ export const PumpSidebar: React.FC<PumpSidebarProps> = ({
             )}
           </div>
 
-          {/* Color-Stick Toggle Arrow Button */}
+          {/* Color-Stick Toggle Arrow Button with Clean Spacing */}
           <button
             onClick={onToggleExpand}
             title={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
-            className={`
+            className="
+              absolute -right-3 top-5 z-20
               flex items-center justify-center w-6 h-6 rounded-full
               bg-[#25241E] hover:bg-[#2C2B24]
-              border border-white/10 hover:border-[#68CFEB]/50
+              border border-white/15 hover:border-[#68CFEB]/60
               text-[#68CFEB] hover:text-[#FAFAFA]
-              transition-all duration-200 active:scale-90
-              ${isExpanded ? 'ml-auto' : 'mx-auto mt-0.5'}
-            `}
+              transition-all duration-200 hover:scale-110 active:scale-95 shadow-md shadow-black/60
+            "
           >
             {isExpanded ? (
               <ChevronsLeft className="w-3.5 h-3.5 stroke-[2.5]" />
