@@ -49,6 +49,7 @@ export interface Trade {
   txHash: string;
   latencyMs: number;
   currencySymbol?: string;
+  explorerUrl?: string;
 }
 
 export interface HotCallout {

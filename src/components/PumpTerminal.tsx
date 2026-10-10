@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Token, HotCallout, LeaderboardEntry, FilterTimeframe } from '../types';
-import { TrendingUp, TrendingDown, MessageSquare, Heart, Flame, Trophy, CheckCircle2, ArrowUpRight, ShieldCheck } from 'lucide-react';
+import { Token, HotCallout, LeaderboardEntry, FilterTimeframe, Trade } from '../types';
+import { TrendingUp, TrendingDown, MessageSquare, Heart, Flame, Trophy, CheckCircle2, ArrowUpRight, ArrowDownRight, ShieldCheck, Zap, ExternalLink, Activity } from 'lucide-react';
+import { formatTimeAgo, formatExactTime } from '../utils/timeAgo';
 
 interface PumpTerminalProps {
   tokens: Token[];
@@ -9,6 +10,7 @@ interface PumpTerminalProps {
   onSelectToken: (token: Token) => void;
   onOpenLaunchModal: () => void;
   currencySymbol?: string;
+  recentTrades?: Trade[];
 }
 
 export const PumpTerminal: React.FC<PumpTerminalProps> = ({
@@ -17,11 +19,13 @@ export const PumpTerminal: React.FC<PumpTerminalProps> = ({
   leaderboard,
   onSelectToken,
   onOpenLaunchModal,
-  currencySymbol = 'MON'
+  currencySymbol = 'MON',
+  recentTrades = []
 }) => {
   const [timeframe, setTimeframe] = useState<FilterTimeframe>('24h');
   const [category, setCategory] = useState<'memes' | 'all'>('memes');
   const [leaderboardTab, setLeaderboardTab] = useState<'traders' | 'earners'>('traders');
+  const [centerTab, setCenterTab] = useState<'trades' | 'callouts'>('trades');
   const currSymbol = currencySymbol;
 
   return (
@@ -146,116 +150,206 @@ export const PumpTerminal: React.FC<PumpTerminalProps> = ({
         </div>
       </section>
 
-      {/* COLUMN 2: HOT CALLOUTS & TRADES */}
+      {/* COLUMN 2: HOT CALLOUTS & REAL-TIME TRADES */}
       <section className="lg:col-span-4 rounded-2xl bg-[#1F1E19] border border-white/[0.08] p-4 flex flex-col h-[680px]">
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-white/[0.06] mb-3">
           <div className="flex items-center gap-2">
-            <MessageSquare className="w-4 h-4 text-[#68CFEB]" />
-            <h3 className="font-bold text-sm text-[#FAFAFA]">Hot Callouts</h3>
+            <Activity className="w-4 h-4 text-[#68CFEB]" />
+            <h3 className="font-bold text-sm text-[#FAFAFA]">Testnet Terminal Feed</h3>
           </div>
-          <span className="text-xs font-mono text-slate-500">Live Feed</span>
+          <span className="text-xs font-mono text-emerald-400 font-bold flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            Monad L1
+          </span>
         </div>
 
-        {/* Callout Cards */}
-        <div className="flex-1 overflow-y-auto space-y-3 pr-1 no-scrollbar">
-          {callouts.map((c) => (
-            <div
-              key={c.id}
-              className="p-3.5 rounded-xl bg-[#25241E]/50 border border-white/[0.04] hover:border-white/10 transition-all space-y-2.5"
-            >
-              {/* Author row with real X handle */}
-              <div className="flex items-center justify-between">
-                <a
-                  href={c.xProfileUrl || `https://x.com/${c.xHandle || c.author}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 group/author hover:opacity-90 transition-opacity"
-                  title={`View @${c.xHandle || c.author} on X (Twitter)`}
+        {/* Tab switcher: Live Trades (Monad Explorer) | Callouts */}
+        <div className="flex rounded-lg bg-[#25241E] p-0.5 border border-white/5 mb-3 text-xs font-mono">
+          <button
+            onClick={() => setCenterTab('trades')}
+            className={`flex-1 py-1 rounded-md font-medium transition-all flex items-center justify-center gap-1.5 ${
+              centerTab === 'trades' ? 'bg-[#68CFEB] text-[#1F1E19] font-bold shadow-sm' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Zap className="w-3.5 h-3.5" />
+            Live Trades
+          </button>
+          <button
+            onClick={() => setCenterTab('callouts')}
+            className={`flex-1 py-1 rounded-md font-medium transition-all flex items-center justify-center gap-1.5 ${
+              centerTab === 'callouts' ? 'bg-[#68CFEB] text-[#1F1E19] font-bold shadow-sm' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <MessageSquare className="w-3.5 h-3.5" />
+            Callouts
+          </button>
+        </div>
+
+        {/* Center Tab Body: Live Trades */}
+        {centerTab === 'trades' && (
+          <div className="flex-1 overflow-y-auto space-y-2 pr-1 no-scrollbar">
+            {recentTrades.map((t) => {
+              const isBuy = t.type === 'BUY';
+              const tok = tokens.find(tk => tk.id === t.tokenId || tk.symbol === t.tokenSymbol);
+              const explorerLink = t.explorerUrl || `https://testnet.monadexplorer.com/tx/${t.txHash.replace(/\.+$/, '')}`;
+
+              return (
+                <div
+                  key={t.id}
+                  onClick={() => tok && onSelectToken(tok)}
+                  className="p-2.5 rounded-xl bg-[#25241E]/60 hover:bg-[#25241E] border border-white/[0.04] hover:border-[#68CFEB]/30 transition-all cursor-pointer space-y-2 group"
                 >
-                  <div className="relative">
-                    <img
-                      src={c.avatarUrl}
-                      alt={c.author}
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80';
-                      }}
-                      className="w-6 h-6 rounded-full object-cover border border-white/10 group-hover/author:border-[#68CFEB]/60 transition-colors"
-                    />
-                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-black rounded-full flex items-center justify-center border border-white/20">
-                      <svg className="w-1.5 h-1.5 fill-white" viewBox="0 0 24 24">
-                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 24.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                      </svg>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 min-w-0">
+                      {t.tokenImageUrl && (
+                        <img src={t.tokenImageUrl} alt={t.tokenSymbol} className="w-6 h-6 rounded-md object-cover border border-white/10" />
+                      )}
+                      <span className="font-bold text-xs text-[#FAFAFA] group-hover:text-[#68CFEB] font-mono">
+                        ${t.tokenSymbol}
+                      </span>
+                      <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[10px] font-bold font-mono ${
+                        isBuy ? 'bg-emerald-500/15 text-emerald-400' : 'bg-rose-500/15 text-rose-400'
+                      }`}>
+                        {isBuy ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                        {t.type}
+                      </span>
+                    </div>
+
+                    <div className="text-right font-mono">
+                      <span className="text-xs font-bold text-white">
+                        {t.monAmount.toFixed(2)} {t.currencySymbol || currSymbol}
+                      </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs font-bold text-slate-200 group-hover/author:text-[#68CFEB] transition-colors font-mono">
-                      @{c.xHandle || c.author}
-                    </span>
-                    <ArrowUpRight className="w-3 h-3 text-slate-500 group-hover/author:text-[#68CFEB] transition-colors" />
-                  </div>
-                </a>
 
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-slate-500 font-mono">{c.timeAgo}</span>
-                  <div className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
-                    +{c.profitMon} {c.currencySymbol || currSymbol}
+                  <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 pt-1 border-t border-white/[0.04]">
+                    <div className="flex items-center gap-2">
+                      <span className="text-slate-300">{t.user}</span>
+                      <span>•</span>
+                      <span className="text-emerald-400 font-bold">{t.latencyMs}ms</span>
+                    </div>
+
+                    {/* Monad Explorer Link Button */}
+                    <a
+                      href={explorerLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#68CFEB]/15 hover:bg-[#68CFEB]/30 text-[#68CFEB] hover:text-white text-[10px] font-bold transition-colors border border-[#68CFEB]/30"
+                      title="View on Monad Explorer"
+                    >
+                      <span>Explorer</span>
+                      <ExternalLink className="w-2.5 h-2.5" />
+                    </a>
                   </div>
                 </div>
-              </div>
+              );
+            })}
 
-              {/* Comment text */}
-              <p className="text-xs text-slate-300 leading-relaxed">
-                {c.content}
+            {/* Quick CTA inside Column 2 */}
+            <div className="p-3.5 rounded-xl bg-[#25241E]/40 border border-white/[0.06] text-center space-y-2 mt-2">
+              <p className="text-xs text-slate-400">
+                Launch your coin in 1-click on Monad Testnet with zero liquidity requirement.
               </p>
-
-              {/* Attached Token Badge */}
-              <div
-                onClick={() => {
-                  const tok = tokens.find(t => t.symbol === c.tokenSymbol);
-                  if (tok) onSelectToken(tok);
-                }}
-                className="flex items-center justify-between p-2 rounded-lg bg-[#141310] border border-white/[0.06] hover:border-[#68CFEB]/40 cursor-pointer transition-colors"
+              <button
+                onClick={onOpenLaunchModal}
+                className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] hover:from-[#90DEF2] hover:to-[#2B6882] text-[#1F1E19] text-xs font-extrabold transition-all shadow-md shadow-[#68CFEB]/20 active:scale-95 inline-block"
               >
-                <div className="flex items-center gap-2">
-                  <img src={c.tokenImageUrl} alt={c.tokenSymbol} className="w-6 h-6 rounded-md object-cover" />
-                  <div>
-                    <span className="text-xs font-bold text-[#FAFAFA] font-mono">${c.tokenSymbol}</span>
-                    <span className="text-[10px] text-slate-400 ml-1.5">{c.tokenName}</span>
+                Launch Coin 🚀
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Center Tab Body: Callout Cards */}
+        {centerTab === 'callouts' && (
+          <div className="flex-1 overflow-y-auto space-y-3 pr-1 no-scrollbar">
+            {callouts.map((c) => (
+              <div
+                key={c.id}
+                className="p-3.5 rounded-xl bg-[#25241E]/50 border border-white/[0.04] hover:border-white/10 transition-all space-y-2.5"
+              >
+                {/* Author row with real X handle */}
+                <div className="flex items-center justify-between">
+                  <a
+                    href={c.xProfileUrl || `https://x.com/${c.xHandle || c.author}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 group/author hover:opacity-90 transition-opacity"
+                    title={`View @${c.xHandle || c.author} on X (Twitter)`}
+                  >
+                    <div className="relative">
+                      <img
+                        src={c.avatarUrl}
+                        alt={c.author}
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80';
+                        }}
+                        className="w-6 h-6 rounded-full object-cover border border-white/10 group-hover/author:border-[#68CFEB]/60 transition-colors"
+                      />
+                      <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-black rounded-full flex items-center justify-center border border-white/20">
+                        <svg className="w-1.5 h-1.5 fill-white" viewBox="0 0 24 24">
+                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 24.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs font-bold text-slate-200 group-hover/author:text-[#68CFEB] transition-colors font-mono">
+                        @{c.xHandle || c.author}
+                      </span>
+                      <ArrowUpRight className="w-3 h-3 text-slate-500 group-hover/author:text-[#68CFEB] transition-colors" />
+                    </div>
+                  </a>
+
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-slate-500 font-mono">{c.timeAgo}</span>
+                    <div className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
+                      +{c.profitMon} {c.currencySymbol || currSymbol}
+                    </div>
                   </div>
                 </div>
 
-                <div className="text-right text-[11px] font-mono">
-                  <span className="text-slate-500">Position: </span>
-                  <span className="text-[#68CFEB] font-bold">{c.positionMon} {c.currencySymbol || currSymbol}</span>
+                {/* Comment text */}
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  {c.content}
+                </p>
+
+                {/* Attached Token Badge */}
+                <div
+                  onClick={() => {
+                    const tok = tokens.find(t => t.symbol === c.tokenSymbol);
+                    if (tok) onSelectToken(tok);
+                  }}
+                  className="flex items-center justify-between p-2 rounded-lg bg-[#141310] border border-white/[0.06] hover:border-[#68CFEB]/40 cursor-pointer transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <img src={c.tokenImageUrl} alt={c.tokenSymbol} className="w-6 h-6 rounded-md object-cover" />
+                    <div>
+                      <span className="text-xs font-bold text-[#FAFAFA] font-mono">${c.tokenSymbol}</span>
+                      <span className="text-[10px] text-slate-400 ml-1.5">{c.tokenName}</span>
+                    </div>
+                  </div>
+
+                  <div className="text-right text-[11px] font-mono">
+                    <span className="text-slate-500">Position: </span>
+                    <span className="text-[#68CFEB] font-bold">{c.positionMon} {c.currencySymbol || currSymbol}</span>
+                  </div>
+                </div>
+
+                {/* Social interactions */}
+                <div className="flex items-center gap-4 text-[11px] text-slate-400 pt-1 font-mono">
+                  <button className="flex items-center gap-1 hover:text-white transition-colors">
+                    <MessageSquare className="w-3.5 h-3.5" /> {c.replies}
+                  </button>
+                  <button className="flex items-center gap-1 hover:text-rose-400 transition-colors">
+                    <Heart className="w-3.5 h-3.5" /> {c.likes}
+                  </button>
                 </div>
               </div>
-
-              {/* Social interactions */}
-              <div className="flex items-center gap-4 text-[11px] text-slate-400 pt-1 font-mono">
-                <button className="flex items-center gap-1 hover:text-white transition-colors">
-                  <MessageSquare className="w-3.5 h-3.5" /> {c.replies}
-                </button>
-                <button className="flex items-center gap-1 hover:text-rose-400 transition-colors">
-                  <Heart className="w-3.5 h-3.5" /> {c.likes}
-                </button>
-              </div>
-            </div>
-          ))}
-
-          {/* Quick CTA inside Callouts */}
-          <div className="p-4 rounded-xl bg-[#25241E]/40 border border-white/[0.06] text-center space-y-2">
-            <p className="text-xs text-slate-400">
-              Have an unstoppable meme thesis? Launch in 1 click with zero seed liquidity.
-            </p>
-            <button
-              onClick={onOpenLaunchModal}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] hover:from-[#90DEF2] hover:to-[#2B6882] text-[#1F1E19] text-xs font-extrabold transition-all shadow-md shadow-[#68CFEB]/20 active:scale-95 inline-block"
-            >
-              Launch Coin 🚀
-            </button>
+            ))}
           </div>
-        </div>
+        )}
       </section>
 
       {/* COLUMN 3: LEADERBOARD */}

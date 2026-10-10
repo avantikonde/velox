@@ -160,12 +160,14 @@ export const LiveFeedView: React.FC<LiveFeedViewProps> = ({
                   <th className="py-3 px-4 text-right">Tokens</th>
                   <th className="py-3 px-4">Trader</th>
                   <th className="py-3 px-4 text-right">Latency</th>
+                  <th className="py-3 px-4 text-center">Monad Explorer</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.04]">
                 {filteredTrades.map((t) => {
                   const isBuy = t.type === 'BUY';
                   const tok = tokens.find(tk => tk.id === t.tokenId || tk.symbol === t.tokenSymbol);
+                  const explorerLink = t.explorerUrl || `https://testnet.monadexplorer.com/tx/${t.txHash.replace(/\.+$/, '')}`;
                   return (
                     <tr
                       key={t.id}
@@ -234,6 +236,21 @@ export const LiveFeedView: React.FC<LiveFeedViewProps> = ({
                         <span className="px-1.5 py-0.5 rounded bg-white/[0.05] text-[#68CFEB] text-[10px]">
                           {t.latencyMs}ms
                         </span>
+                      </td>
+
+                      {/* Monad Explorer Link */}
+                      <td className="py-3 px-4 text-center">
+                        <a
+                          href={explorerLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#68CFEB]/15 hover:bg-[#68CFEB]/30 text-[#68CFEB] hover:text-white font-mono text-[10px] font-bold border border-[#68CFEB]/30 transition-all shadow-sm"
+                          title="Open on Monad Testnet Explorer"
+                        >
+                          <span>Explorer</span>
+                          <ExternalLink className="w-2.5 h-2.5" />
+                        </a>
                       </td>
                     </tr>
                   );

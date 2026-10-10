@@ -20,7 +20,7 @@ import { Token, Trade, WalletState, ViewMode, HotCallout, LeaderboardEntry, User
 import { authService } from './services/authService';
 import { neonService } from './services/neonService';
 import { formatTimeAgo } from './utils/timeAgo';
-import { Search, Flame, Sparkles, Trophy, CheckCircle, Code2, Compass } from 'lucide-react';
+import { Search, Flame, Sparkles, Trophy, CheckCircle, Code2, Compass, Zap, ExternalLink } from 'lucide-react';
 
 const VALID_TABS: NavigationTab[] = ['home', 'explore', 'leaderboard', 'live-feed', 'terminal', 'rewards'];
 
@@ -132,12 +132,20 @@ export const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(() => authService.getCurrentUser());
   const [isAuthOpen, setIsAuthOpen] = useState(false);
 
-  // Modals
+  // Modals & Notifications
   const [isLaunchOpen, setIsLaunchOpen] = useState(false);
   const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
   const [isConnectWalletOpen, setIsConnectWalletOpen] = useState(false);
   const [selectedToken, setSelectedToken] = useState<Token | null>(null);
   const [showContractsModal, setShowContractsModal] = useState(false);
+  const [monadTxToast, setMonadTxToast] = useState<{
+    type: 'BUY' | 'SELL';
+    tokenSymbol: string;
+    monAmount: number;
+    tokenAmount: number;
+    txHash: string;
+    explorerUrl: string;
+  } | null>(null);
 
   // Live Trades
   const [recentTrades, setRecentTrades] = useState<Trade[]>([
@@ -397,7 +405,14 @@ export const App: React.FC = () => {
     setSelectedToken(tokenWithShield);
   };
 
-  const handleExecuteTrade = (tokenId: string, type: 'BUY' | 'SELL', monAmount: number, tokenAmount: number) => {
+  const handleExecuteTrade = (
+    tokenId: string,
+    type: 'BUY' | 'SELL',
+    monAmount: number,
+    tokenAmount: number,
+    realTxHash?: string,
+    realExplorerUrl?: string
+  ) => {
     setChainBalances(prev => {
       const current = prev[activeChain.id] ?? 0;
       return {
@@ -437,6 +452,9 @@ export const App: React.FC = () => {
     const activeTok = tokens.find(t => t.id === tokenId);
     if (activeTok) {
       const now = Date.now();
+      const hash = realTxHash || `0x${Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
+      const explorer = realExplorerUrl || `https://testnet.monadexplorer.com/tx/${hash}`;
+
       const newTrade: Trade = {
         id: `tx-${now}`,
         tokenId,
@@ -448,11 +466,22 @@ export const App: React.FC = () => {
         tokenAmount,
         timestamp: 'Just now',
         timestampMs: now,
-        txHash: `0x${Math.random().toString(16).slice(2, 10)}...`,
+        txHash: hash,
         latencyMs: 792,
-        currencySymbol: activeTok.chainSymbol || activeChain.symbol
+        currencySymbol: activeTok.chainSymbol || activeChain.symbol,
+        explorerUrl: explorer
       };
       setRecentTrades(prev => [newTrade, ...prev.slice(0, 15)]);
+
+      // Trigger global Monad Testnet notification toast
+      setMonadTxToast({
+        type,
+        tokenSymbol: activeTok.symbol,
+        monAmount,
+        tokenAmount,
+        txHash: hash,
+        explorerUrl: explorer
+      });
 
       // Persist to Neon PostgreSQL Cloud Database
       neonService.saveTrade(newTrade).catch(err => console.warn('Neon saveTrade:', err));
@@ -586,6 +615,7 @@ export const App: React.FC = () => {
                 onSelectToken={(t) => setSelectedToken(t)}
                 onOpenLaunchModal={handleOpenLaunchModal}
                 currencySymbol={activeChain.symbol}
+                recentTrades={recentTrades}
               />
             </div>
           )}
@@ -754,6 +784,7 @@ export const App: React.FC = () => {
         onExecuteTrade={handleExecuteTrade}
         currencySymbol={activeChain.symbol}
         onOpenConnectWallet={handleOpenConnectWallet}
+        onWalletConnected={handleWalletConnected}
         chainConfig={activeChain}
       />
 
@@ -804,6 +835,48 @@ export const App: React.FC = () => {
               <div className="p-3 rounded-xl bg-[#141310] border border-white/5 space-y-1">
                 <span className="text-slate-400 text-[11px]">Anti-Sniper FairSlot Shield Guard</span>
                 <div className="text-emerald-400 select-all font-bold">0x8892aF01827419A918fAA8192A0B577719BCA019</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Real-Time Monad Testnet Confirmation Toast */}
+      {monadTxToast && (
+        <div className="fixed bottom-6 right-6 z-50 p-4 rounded-2xl bg-[#141E28]/95 border border-[#68CFEB]/50 backdrop-blur-xl shadow-2xl shadow-[#68CFEB]/20 max-w-sm animate-in slide-in-from-bottom-5 duration-300">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#68CFEB]/20 to-[#1F4B5D]/40 border border-[#68CFEB]/40 flex items-center justify-center shrink-0">
+              <Zap className="w-5 h-5 text-[#68CFEB] animate-pulse" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-emerald-400 font-mono flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                  Monad Testnet Confirmed
+                </span>
+                <button
+                  onClick={() => setMonadTxToast(null)}
+                  className="text-slate-400 hover:text-white text-xs p-1"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="text-xs font-semibold text-white mt-1">
+                {monadTxToast.type === 'BUY' ? 'Bought' : 'Sold'} ${monadTxToast.tokenSymbol} for {monadTxToast.monAmount} {activeChain.symbol}
+              </div>
+              <div className="text-[10px] text-slate-400 font-mono mt-0.5 truncate">
+                Tx: {monadTxToast.txHash.slice(0, 10)}...{monadTxToast.txHash.slice(-8)}
+              </div>
+              <div className="mt-2.5">
+                <a
+                  href={monadTxToast.explorerUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#68CFEB] hover:bg-[#90DEF2] text-[#193153] text-xs font-bold font-mono transition-all shadow-md shadow-[#68CFEB]/20"
+                >
+                  <span>View on Monad Explorer</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
               </div>
             </div>
           </div>

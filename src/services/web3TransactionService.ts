@@ -1,5 +1,5 @@
-// Web3 Transaction Dispatcher: Direct device wallet extension confirmation for Monad Testnet and multi-chain
 import { ChainConfig } from '../data/chains';
+import { getMetaMaskProvider } from './walletService';
 
 export interface TransactionRequest {
   fromAddress: string;
@@ -15,6 +15,7 @@ export interface TransactionResult {
   success: boolean;
   txHash: string;
   blockExplorerUrl?: string;
+  senderAddress?: string;
   error?: string;
 }
 
@@ -25,11 +26,15 @@ export const VELOX_FACTORY_CONTRACT = '0x71C8F780f2d93e50C83604f32e36506A33e3871
  * Prompt wallet to switch to Monad Testnet (or add it if not configured)
  */
 export const ensureMonadNetwork = async (): Promise<boolean> => {
-  if (typeof window === 'undefined' || !(window as any).ethereum) {
+  if (typeof window === 'undefined') {
     return true;
   }
 
-  const eth = (window as any).ethereum;
+  const eth = getMetaMaskProvider() || (window as any).ethereum;
+  if (!eth || typeof eth.request !== 'function') {
+    return true;
+  }
+
   const monadChainIdHex = '0x279f'; // 10143
 
   try {
@@ -76,16 +81,28 @@ export const dispatchWeb3Transaction = async (
   req: TransactionRequest
 ): Promise<TransactionResult> => {
   const isEvm = req.chainConfig.id !== 'solana';
-  const eth = typeof window !== 'undefined' ? (window as any).ethereum : null;
+  const metaMaskProvider = getMetaMaskProvider();
+  const eth = metaMaskProvider || (typeof window !== 'undefined' ? (window as any).ethereum : null);
   const solana = typeof window !== 'undefined' ? ((window as any).phantom?.solana || (window as any).solana) : null;
 
   // 1. INJECTED EVM EXTENSION (MetaMask, Brave, Coinbase, Rabby)
-  if (isEvm && eth && req.fromAddress && req.fromAddress.startsWith('0x') && req.fromAddress !== '0x742d35Cc6634C0532925a3b844Bc454e4438f44e') {
+  if (isEvm && eth) {
     try {
       // Find dedicated provider if multiple wallets exist
       let provider = eth;
       if (Array.isArray(eth.providers)) {
         provider = eth.providers.find((p: any) => p.isMetaMask && !p.isPhantom) || eth.providers[0];
+      }
+
+      // If user is on default demo wallet or address is not set, auto-request real MetaMask account!
+      let senderAddress = req.fromAddress;
+      if (!senderAddress || !senderAddress.startsWith('0x') || senderAddress === '0x742d35Cc6634C0532925a3b844Bc454e4438f44e') {
+        const accounts: string[] = await provider.request({ method: 'eth_requestAccounts' });
+        if (accounts && accounts[0]) {
+          senderAddress = accounts[0];
+        } else {
+          throw new Error('Please authorize MetaMask to execute this transaction.');
+        }
       }
 
       // If Monad Testnet is selected, attempt chain alignment safely
@@ -102,16 +119,14 @@ export const dispatchWeb3Transaction = async (
       const hexValue = `0x${weiAmount.toString(16)}`;
 
       // Safe destination routing:
-      // Sending native funds to an unverified third-party address or random hex slice
-      // triggers severe "High Risk: receiver has 0 history" alerts in Rabby, Phantom, and Blockaid.
-      // Routing self-custody trades to the user's own address (`req.fromAddress`) ensures
-      // wallets classify it as "Self Transfer" with ZERO risk alerts, while keeping funds safe!
-      const destination = req.fromAddress;
+      // Route self-custody trades to the user's connected address (`senderAddress`)
+      // Ensures wallets classify it as "Self Transfer" with ZERO risk alerts!
+      const destination = senderAddress;
 
       // Construct transaction request payload
-      // Omit calldata to ensure wallets recognize this as a pure, clean self-transfer with zero warnings
+      // Omit calldata so wallets recognize this as a pure, clean self-transfer with zero warnings
       const txParams: any = {
-        from: req.fromAddress,
+        from: senderAddress,
         to: destination,
         value: hexValue
       };
@@ -139,7 +154,8 @@ export const dispatchWeb3Transaction = async (
       return {
         success: true,
         txHash,
-        blockExplorerUrl: `${explorerBase}${txHash}`
+        blockExplorerUrl: `${explorerBase}${txHash}`,
+        senderAddress
       };
     } catch (err: any) {
       console.warn('EVM Extension transaction error:', err);
