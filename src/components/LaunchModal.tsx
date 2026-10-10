@@ -145,7 +145,9 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
         maxShieldBuyMon: 0.5,
         chain: currentChain.id,
         chainSymbol: currentChain.symbol,
-        contractAddress: txResult.txHash ? `0x${txResult.txHash.replace('0x', '').slice(0, 40)}` : '0xFA1R892A0B577719BCA019',
+        contractAddress: txResult.txHash && txResult.txHash.replace('0x', '').length >= 40
+          ? `0x${txResult.txHash.replace('0x', '').slice(0, 40)}`
+          : '0x71C8F780f2d93e50C83604f32e36506A33e38711',
         usdPrice: 0.0001,
         usdMarketCap: buyAmount > 0 ? 50000 + buyAmount * 20000 : 50000,
         sparkline7d: [0.000095, 0.000098, 0.0001]

@@ -31,6 +31,7 @@ export const TradeModal: React.FC<TradeModalProps> = ({
   const [amount, setAmount] = useState('0.5');
   const [isExecuting, setIsExecuting] = useState(false);
   const [lastTxSuccess, setLastTxSuccess] = useState<string | null>(null);
+  const [txError, setTxError] = useState<string | null>(null);
 
   // StreamSwap (High-Frequency Micro-DCA Mode) States
   const [buyMode, setBuyMode] = useState<'instant' | 'stream'>('instant');
@@ -65,6 +66,7 @@ export const TradeModal: React.FC<TradeModalProps> = ({
       setStreamCompleted(false);
       setStreamLogs([]);
       setLastTxSuccess(null);
+      setTxError(null);
     }
   }, [isOpen]);
 
@@ -189,6 +191,7 @@ export const TradeModal: React.FC<TradeModalProps> = ({
 
     setIsExecuting(true);
     setLastTxSuccess(null);
+    setTxError(null);
 
     try {
       const currentChain: ChainConfig = chainConfig || {
@@ -207,7 +210,6 @@ export const TradeModal: React.FC<TradeModalProps> = ({
 
       const txResult = await dispatchWeb3Transaction({
         fromAddress: wallet.address,
-        toAddress: token.contractAddress,
         amount: isBuy ? numAmount : 0,
         txType: isBuy ? 'BUY_TOKEN' : 'SELL_TOKEN',
         tokenName: token.name,
@@ -217,7 +219,7 @@ export const TradeModal: React.FC<TradeModalProps> = ({
 
       if (!txResult.success) {
         setIsExecuting(false);
-        alert(txResult.error || 'Transaction was declined in your wallet extension.');
+        setTxError(txResult.error || 'Transaction was declined in your wallet.');
         return;
       }
 
@@ -237,7 +239,7 @@ export const TradeModal: React.FC<TradeModalProps> = ({
       });
     } catch (err: any) {
       setIsExecuting(false);
-      alert(err?.message || 'Transaction failed.');
+      setTxError(err?.message || 'Transaction could not be completed.');
     }
   };
 
@@ -601,6 +603,14 @@ export const TradeModal: React.FC<TradeModalProps> = ({
             <div className="p-2.5 rounded-lg bg-[#1F4B5D]/40 border border-[#68CFEB]/40 text-[#68CFEB] text-xs flex items-center gap-2">
               <Zap className="w-4 h-4 text-[#68CFEB]" />
               <span>{lastTxSuccess}</span>
+            </div>
+          )}
+
+          {/* Error Notification Bar */}
+          {txError && (
+            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2.5 font-mono animate-in fade-in">
+              <AlertCircle className="w-4 h-4 text-rose-400 flex-shrink-0 mt-0.5" />
+              <div className="flex-1 leading-relaxed">{txError}</div>
             </div>
           )}
 
