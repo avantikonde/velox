@@ -332,13 +332,13 @@ Error generating stack: `+d.message+`
         bg-[#1F1E19] border-r border-white/[0.08]
         transition-all duration-300 ease-in-out select-none
         ${o?"w-[220px]":"w-[64px]"}
-      `,children:[r.jsxs("div",{children:[r.jsxs("div",{className:"h-16 px-3 flex items-center justify-between border-b border-white/[0.08] relative",children:[r.jsxs("div",{onClick:()=>f("home"),className:"flex items-center gap-2.5 cursor-pointer group min-w-0",children:[r.jsx("div",{className:"relative flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden flex-shrink-0 group-hover:scale-105 transition-transform shadow-md shadow-[#68CFEB]/20 border border-[#68CFEB]/30",children:r.jsx("img",{src:"/logo.png",alt:"VELOX Logo",className:"w-full h-full object-cover"})}),o&&r.jsx("div",{className:"flex items-center tracking-tight overflow-hidden whitespace-nowrap animate-in fade-in duration-150",children:r.jsxs("span",{className:"font-extrabold text-sm tracking-widest text-[#FAFAFA]",children:["VELOX",r.jsx("span",{className:"text-[#68CFEB]",children:"."})]})})]}),r.jsx("button",{onClick:c,title:o?"Collapse sidebar":"Expand sidebar",className:`
+      `,children:[r.jsxs("div",{children:[r.jsxs("div",{className:"h-16 px-3 flex items-center border-b border-white/[0.08] relative",children:[r.jsxs("div",{onClick:()=>f("home"),className:`flex items-center gap-3 cursor-pointer group min-w-0 ${o?"":"w-full justify-center"}`,children:[r.jsx("div",{className:"relative flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden flex-shrink-0 group-hover:scale-105 transition-transform shadow-md shadow-[#68CFEB]/20 border border-[#68CFEB]/30",children:r.jsx("img",{src:"/logo.png",alt:"VELOX Logo",className:"w-full h-full object-cover"})}),o&&r.jsx("div",{className:"flex items-center tracking-tight overflow-hidden whitespace-nowrap animate-in fade-in duration-150",children:r.jsxs("span",{className:"font-extrabold text-sm tracking-widest text-[#FAFAFA]",children:["VELOX",r.jsx("span",{className:"text-[#68CFEB]",children:"."})]})})]}),r.jsx("button",{onClick:c,title:o?"Collapse sidebar":"Expand sidebar",className:`
+              absolute -right-3 top-5 z-20
               flex items-center justify-center w-6 h-6 rounded-full
               bg-[#25241E] hover:bg-[#2C2B24]
-              border border-white/10 hover:border-[#68CFEB]/50
+              border border-white/15 hover:border-[#68CFEB]/60
               text-[#68CFEB] hover:text-[#FAFAFA]
-              transition-all duration-200 active:scale-90
-              ${o?"ml-auto":"mx-auto mt-0.5"}
+              transition-all duration-200 hover:scale-110 active:scale-95 shadow-md shadow-black/60
             `,children:o?r.jsx(lm,{className:"w-3.5 h-3.5 stroke-[2.5]"}):r.jsx(um,{className:"w-3.5 h-3.5 stroke-[2.5]"})})]}),r.jsxs("div",{className:"p-2 space-y-1 overflow-y-auto max-h-[calc(100vh-210px)] no-scrollbar font-mono text-xs",children:[r.jsxs("button",{onClick:()=>f("home"),title:"Home",className:`
               w-full flex items-center gap-3 px-3 py-2 rounded-xl font-medium transition-all
               ${a==="home"?"bg-[#1F4B5D]/40 text-[#68CFEB] font-bold border border-[#68CFEB]/40 shadow-[0_0_12px_rgba(104,207,235,0.15)]":"text-slate-400 hover:text-[#FAFAFA] hover:bg-white/[0.05]"}
