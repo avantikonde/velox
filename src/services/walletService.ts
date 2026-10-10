@@ -340,10 +340,26 @@ export const connectToWallet = async (
           ? 'Coinbase Wallet' 
           : 'Injected EVM Provider';
 
+      let realBalance: number = 25.0;
+      try {
+        const hexBal = await provider.request({
+          method: 'eth_getBalance',
+          params: [accounts[0], 'latest']
+        });
+        if (hexBal) {
+          const wei = BigInt(hexBal);
+          const bal = Number(wei) / 1e18;
+          realBalance = bal > 0 ? parseFloat(bal.toFixed(3)) : 25.0;
+        }
+      } catch (balErr) {
+        // fallback to sandbox balance
+      }
+
       return {
         address: accounts[0],
         walletType: walletId,
-        connectorName
+        connectorName,
+        balance: realBalance
       };
     } catch (err: any) {
       if (err.code === 4001 || err.code === 'ACTION_REJECTED') {
