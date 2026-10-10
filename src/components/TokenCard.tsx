@@ -55,14 +55,29 @@ export const TokenCard: React.FC<TokenCardProps> = ({
               <span className="text-slate-500">{token.createdAt}</span>
             </div>
 
-            <div className="flex items-center gap-2 font-mono">
-              <div className="text-xs font-bold text-slate-200">
-                MCap: <span className="text-[#FAFAFA]">{token.marketCapMon} {currSymbol}</span>
+            <div className="flex items-center justify-between gap-2 font-mono">
+              <div className="text-xs font-bold text-[#FAFAFA]">
+                {token.usdPrice ? (
+                  <span>
+                    ${token.usdPrice >= 0.01 ? token.usdPrice.toFixed(4) : token.usdPrice.toExponential(2)}
+                  </span>
+                ) : (
+                  <span>{token.priceMon} {currSymbol}</span>
+                )}
               </div>
               <div className={`flex items-center text-xs font-semibold ${isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
                 {isPositive ? <TrendingUp className="w-3 h-3 mr-0.5" /> : <TrendingDown className="w-3 h-3 mr-0.5" />}
                 {isPositive ? '+' : ''}{token.priceChange24h}%
               </div>
+            </div>
+
+            <div className="text-[11px] font-mono text-slate-400 mt-0.5 flex items-center justify-between">
+              <span>MCap: <span className="text-slate-200 font-semibold">{token.usdMarketCap ? `$${(token.usdMarketCap / 1e6).toFixed(1)}M` : `${token.marketCapMon} ${currSymbol}`}</span></span>
+              {token.chain && (
+                <span className="text-[9px] uppercase px-1 rounded bg-white/5 text-slate-400 font-mono">
+                  {token.chain}
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -71,6 +86,32 @@ export const TokenCard: React.FC<TokenCardProps> = ({
         <p className="text-xs text-slate-400 line-clamp-2 mb-2.5 leading-relaxed">
           {token.description}
         </p>
+
+        {/* Mini 7-day sparkline preview */}
+        {token.sparkline7d && token.sparkline7d.length > 5 && (
+          <div className="h-9 w-full mb-3 relative overflow-hidden rounded-lg bg-[#141310]/50 p-1 border border-white/[0.04]">
+            <svg viewBox="0 0 200 40" preserveAspectRatio="none" className="w-full h-full">
+              {(() => {
+                const spk = token.sparkline7d.slice(-20);
+                const min = Math.min(...spk);
+                const max = Math.max(...spk);
+                const rng = max - min || 1;
+                const pts = spk.map((v, i) => `${(i / (spk.length - 1)) * 200},${35 - ((v - min) / rng) * 30}`).join(' ');
+                return (
+                  <>
+                    <polyline
+                      points={pts}
+                      fill="none"
+                      stroke={isPositive ? '#68CFEB' : '#f87171'}
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                    />
+                  </>
+                );
+              })()}
+            </svg>
+          </div>
+        )}
 
         {/* Anti-Sniper Shield (FairSlot Genesis) Badge */}
         {token.shieldActive && (

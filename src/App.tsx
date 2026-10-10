@@ -79,10 +79,10 @@ export const App: React.FC = () => {
     isConnected: true,
     address: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e',
     monBalance: currentChainBal,
-    chainBalances,
     tokens: {
-      'chog-monad': 150000,
-      'giga-parallel': 50000
+      'dogecoin': 15000,
+      'pepe': 5000000,
+      'shiba-inu': 20000000
     }
   });
 
@@ -108,41 +108,41 @@ export const App: React.FC = () => {
   const [recentTrades, setRecentTrades] = useState<Trade[]>([
     {
       id: 'tx-1',
-      tokenId: 'chog-monad',
-      tokenSymbol: 'CHOG',
-      tokenImageUrl: INITIAL_TOKENS[1].imageUrl,
+      tokenId: 'dogecoin',
+      tokenSymbol: 'DOGE',
+      tokenImageUrl: INITIAL_TOKENS[0].imageUrl,
       type: 'BUY',
       user: '0x84f...19e',
-      monAmount: 0.5,
-      tokenAmount: 1028,
+      monAmount: 2.5,
+      tokenAmount: 29070,
       timestamp: 'Just now',
       txHash: '0x918f...28b',
       latencyMs: 780,
-      currencySymbol: 'MON'
+      currencySymbol: 'SOL'
     },
     {
       id: 'tx-2',
-      tokenId: 'giga-parallel',
-      tokenSymbol: 'PARALLEL',
-      tokenImageUrl: INITIAL_TOKENS[2].imageUrl,
+      tokenId: 'pepe',
+      tokenSymbol: 'PEPE',
+      tokenImageUrl: INITIAL_TOKENS[1].imageUrl,
       type: 'BUY',
       user: '0x32a...49f',
       monAmount: 1.2,
-      tokenAmount: 3738,
+      tokenAmount: 298500000,
       timestamp: '1m ago',
       txHash: '0x38fa...99a',
       latencyMs: 812,
-      currencySymbol: 'MON'
+      currencySymbol: 'ETH'
     },
     {
       id: 'tx-3',
-      tokenId: 'aurora-blossom',
-      tokenSymbol: 'AURORA',
-      tokenImageUrl: INITIAL_TOKENS[3].imageUrl,
+      tokenId: 'shiba-inu',
+      tokenSymbol: 'SHIB',
+      tokenImageUrl: INITIAL_TOKENS[2].imageUrl,
       type: 'SELL',
       user: '0x12c...aa8',
-      monAmount: 0.35,
-      tokenAmount: 1428,
+      monAmount: 0.85,
+      tokenAmount: 155900000,
       timestamp: '2m ago',
       txHash: '0x44bf...11c',
       latencyMs: 745,
@@ -334,7 +334,7 @@ export const App: React.FC = () => {
     return true;
   });
 
-  const kingOfTheHillToken = tokens.find(t => t.id === 'chog-monad') || tokens[0] || INITIAL_TOKENS[0];
+  const kingOfTheHillToken = tokens.find(t => t.id === 'dogecoin') || tokens[0] || INITIAL_TOKENS[0];
 
   return (
     <div className="min-h-screen flex bg-[#141310] clean-grid-bg text-[#FAFAFA] relative overflow-x-hidden font-sans">

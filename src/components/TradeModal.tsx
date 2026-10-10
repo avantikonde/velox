@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { X, TrendingUp, ShieldCheck, Zap, Shield, AlertCircle } from 'lucide-react';
+import { X, TrendingUp, ShieldCheck, Zap, Shield, AlertCircle, ExternalLink } from 'lucide-react';
 import { Token, WalletState } from '../types';
+import { CoinLiveChart } from './CoinLiveChart';
 import confetti from 'canvas-confetti';
 
 interface TradeModalProps {
@@ -110,7 +111,7 @@ export const TradeModal: React.FC<TradeModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-xl rounded-2xl bg-[#1F1E19] border border-white/10 p-6 sm:p-7 shadow-2xl my-8">
+      <div className="relative w-full max-w-2xl rounded-2xl bg-[#1F1E19] border border-white/10 p-5 sm:p-6 shadow-2xl my-8">
         
         {/* Modal Header */}
         <div className="flex items-start justify-between pb-4 border-b border-white/[0.08] mb-5">
@@ -129,11 +130,16 @@ export const TradeModal: React.FC<TradeModalProps> = ({
                     Graduated
                   </span>
                 )}
+                {token.chain && (
+                  <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-white/5 text-slate-400">
+                    {token.chain}
+                  </span>
+                )}
               </div>
               <div className="flex items-center gap-3 text-xs text-slate-400 font-mono mt-0.5">
-                <span>Price: <span className="text-[#FAFAFA] font-semibold">{token.priceMon} {currSymbol}</span></span>
+                <span>Price: <span className="text-[#FAFAFA] font-semibold">{token.usdPrice ? `$${token.usdPrice}` : `${token.priceMon} ${currSymbol}`}</span></span>
                 <span>•</span>
-                <span>MCap: <span className="text-slate-300">{token.marketCapMon} {currSymbol}</span></span>
+                <span>MCap: <span className="text-slate-300">{token.usdMarketCap ? `$${(token.usdMarketCap / 1e6).toFixed(1)}M` : `${token.marketCapMon} ${currSymbol}`}</span></span>
               </div>
             </div>
           </div>
@@ -164,6 +170,11 @@ export const TradeModal: React.FC<TradeModalProps> = ({
           </div>
         )}
 
+        {/* Real-time Interactive Market Chart */}
+        <div className="mb-5">
+          <CoinLiveChart token={token} height={160} showLinks={true} />
+        </div>
+
         {/* Bonding Curve Progress Bar */}
         <div className="mb-5 p-3.5 rounded-xl bg-[#25241E] border border-white/[0.06] space-y-1.5 font-mono">
           <div className="flex justify-between text-xs">
@@ -182,39 +193,6 @@ export const TradeModal: React.FC<TradeModalProps> = ({
           <div className="flex justify-between text-[11px] text-slate-500">
             <span>{(token.monRaised ?? 0).toFixed(1)} {currSymbol} in Curve</span>
             <span>Target: {token.monTarget || 50} {currSymbol}</span>
-          </div>
-        </div>
-
-        {/* Price Trajectory Chart Preview */}
-        <div className="mb-5 p-3.5 rounded-xl bg-[#141310] border border-white/[0.06] overflow-hidden">
-          <div className="flex justify-between items-center mb-1 font-mono text-xs">
-            <span className="text-slate-500">Bonding Curve Trajectory</span>
-            <span className="text-[#68CFEB] font-bold flex items-center gap-1">
-              <TrendingUp className="w-3 h-3" /> +{token.priceChange24h ?? 0}%
-            </span>
-          </div>
-
-          <div className="h-20 w-full relative">
-            <svg viewBox="0 0 500 100" className="w-full h-full overflow-visible">
-              <defs>
-                <linearGradient id="chartGradientSimple" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#68CFEB" stopOpacity="0.35" />
-                  <stop offset="100%" stopColor="#1F4B5D" stopOpacity="0.0" />
-                </linearGradient>
-              </defs>
-              <path
-                d="M 0,85 Q 120,75 220,50 T 380,30 T 500,15 L 500,100 L 0,100 Z"
-                fill="url(#chartGradientSimple)"
-              />
-              <path
-                d="M 0,85 Q 120,75 220,50 T 380,30 T 500,15"
-                fill="none"
-                stroke="#68CFEB"
-                strokeWidth="2"
-              />
-              <circle cx="500" cy="15" r="3" fill="#68CFEB" className="animate-ping" />
-              <circle cx="500" cy="15" r="2.5" fill="#68CFEB" />
-            </svg>
           </div>
         </div>
 

@@ -45,7 +45,7 @@ export const PumpTopHeader: React.FC<PumpTopHeaderProps> = ({
         }
       }
     } catch {
-      onSearchChange('CHOG');
+      onSearchChange('PEPE');
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     }

@@ -34,7 +34,7 @@ export const SearchBarRow: React.FC<SearchBarRowProps> = ({
       }
     } catch {
       // Fallback
-      onSearchChange('CHOG');
+      onSearchChange('PEPE');
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     }

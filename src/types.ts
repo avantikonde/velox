@@ -21,6 +21,17 @@ export interface Token {
   maxShieldBuyMon?: number;
   chain?: string;
   chainSymbol?: string;
+  contractAddress?: string;
+  pumpFunUrl?: string;
+  coingeckoUrl?: string;
+  usdPrice?: number;
+  usdMarketCap?: number;
+  usd24hVol?: number;
+  high24h?: number;
+  low24h?: number;
+  ath?: number;
+  circulatingSupply?: string;
+  sparkline7d?: number[];
 }
 
 export interface Trade {
