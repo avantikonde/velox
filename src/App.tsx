@@ -10,7 +10,6 @@ import { HowItWorksModal } from './components/HowItWorksModal';
 import { LiveActivityTicker } from './components/LiveActivityTicker';
 import { AuthModal } from './components/AuthModal';
 import { SimpleInteractiveBackground } from './components/SimpleInteractiveBackground';
-import { TriomixLanding } from './components/TriomixLanding';
 import { INITIAL_TOKENS, MOCK_HOT_CALLOUTS, MOCK_LEADERBOARD } from './data/mockTokens';
 import { Token, Trade, WalletState, ViewMode, HotCallout, LeaderboardEntry, User } from './types';
 import { authService } from './services/authService';
@@ -24,16 +23,6 @@ export const App: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('terminal');
   const [activeTab, setActiveTab] = useState<'home' | 'explore' | 'leaderboard' | 'callouts' | 'terminal'>('home');
   const [activeFilter, setActiveFilter] = useState<'trending' | 'new' | 'graduating' | 'graduated'>('trending');
-
-  // UI View state: defaults to Triomix animated landing page with instant undo capability
-  const [currentView, setCurrentView] = useState<'landing' | 'pump'>(() => {
-    return (localStorage.getItem('monad_active_ui') as 'landing' | 'pump') || 'landing';
-  });
-
-  const handleSwitchUI = (mode: 'landing' | 'pump') => {
-    setCurrentView(mode);
-    localStorage.setItem('monad_active_ui', mode);
-  };
   
   // Left Sidebar Expand/Collapse State
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
@@ -250,15 +239,6 @@ export const App: React.FC = () => {
       setViewMode('terminal');
     }
   };
-
-  if (currentView === 'landing') {
-    return (
-      <TriomixLanding
-        onRevertToOriginalUI={() => handleSwitchUI('pump')}
-        onLaunchApp={() => handleSwitchUI('pump')}
-      />
-    );
-  }
 
   return (
     <div className="min-h-screen flex bg-[#080B11] clean-grid-bg text-slate-100 relative overflow-x-hidden font-sans">
@@ -564,18 +544,6 @@ contract MonadPumpFactory {
           </div>
         </div>
       )}
-
-      {/* Floating Button: Switch back to Triomix Landing Page */}
-      <div className="fixed bottom-5 right-5 z-40">
-        <button
-          onClick={() => handleSwitchUI('landing')}
-          className="group px-4 py-2.5 bg-[#0e101f]/95 hover:bg-[#181c3b] border border-purple-500/40 text-purple-200 text-xs font-semibold rounded-full shadow-2xl backdrop-blur-md flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
-          title="Return to Triomix Animated Landing Page"
-        >
-          <Sparkles className="w-3.5 h-3.5 text-purple-400 group-hover:rotate-12 transition-transform" />
-          <span>Animated Landing Page</span>
-        </button>
-      </div>
 
     </div>
   );
