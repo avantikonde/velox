@@ -1,4 +1,4 @@
-# 💜 MonadPump — Sub-Second Meme Launchpad on Monad
+# 💜 Velox — Sub-Second Meme Launchpad on Monad
 
 Built for **Monad Blitz Pune V3** (October 2026).
 

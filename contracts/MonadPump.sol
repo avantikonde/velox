@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 /**
  * @title BondingCurveToken
- * @dev Standard ERC-20 token with initial supply minted to the MonadPump Factory
+ * @dev Standard ERC-20 token with initial supply minted to the Velox Factory
  */
 contract BondingCurveToken {
     string public name;
@@ -51,11 +51,11 @@ contract BondingCurveToken {
 }
 
 /**
- * @title MonadPumpFactory
+ * @title VeloxFactory
  * @notice High-throughput Fair-Launch Meme Token Factory for Monad Parallel L1
  *         Equipped with Anti-Sniper Shield (FairSlot Genesis)
  */
-contract MonadPumpFactory {
+contract VeloxFactory {
     uint256 public constant GRADUATION_TARGET = 50 ether; // 50 MON to graduate to DEX
     uint256 public constant TOTAL_SUPPLY = 1_000_000_000 * 10**18;
     uint256 public constant MAX_SHIELD_BUY = 0.5 ether; // Anti-Sniper Shield max buy cap
@@ -166,3 +166,5 @@ contract MonadPumpFactory {
         return allTokens.length;
     }
 }
+
+contract MonadPumpFactory is VeloxFactory {}

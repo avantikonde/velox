@@ -175,7 +175,7 @@ export const MOCK_HOT_CALLOUTS: HotCallout[] = [
     author: 'solana_convert',
     avatarUrl: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100&auto=format&fit=crop&q=80',
     timeAgo: '15m ago',
-    content: 'Moved my meme trading from pump.fun to MonadPump. Same speed, but EVM Solidity composability is undefeated.',
+    content: 'Moved my meme trading from pump.fun to Velox. Same speed, but EVM Solidity composability is undefeated.',
     tokenSymbol: 'AURORA',
     tokenName: 'Aurora Blossom',
     tokenImageUrl: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=400&auto=format&fit=crop&q=80',

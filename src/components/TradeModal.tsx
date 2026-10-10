@@ -23,25 +23,27 @@ export const TradeModal: React.FC<TradeModalProps> = ({
   const [isExecuting, setIsExecuting] = useState(false);
   const [lastTxSuccess, setLastTxSuccess] = useState<string | null>(null);
 
-  if (!isOpen || !token) return null;
+  const isShieldActive = Boolean(token?.shieldActive);
+  const shieldCap = token?.maxShieldBuyMon || 0.5;
 
-  const userTokenBalance = wallet.tokens[token.id] || 0;
-  const isBuy = tab === 'BUY';
-  const isShieldActive = Boolean(token.shieldActive);
-  const shieldCap = token.maxShieldBuyMon || 0.5;
-
-  // Enforce/clamp default amount when shield is active
+  // Enforce/clamp default amount when shield is active (must be called unconditionally before early return)
   useEffect(() => {
-    if (isShieldActive && parseFloat(amount) > shieldCap) {
+    if (isOpen && token && isShieldActive && parseFloat(amount) > shieldCap) {
       setAmount(shieldCap.toString());
     }
-  }, [token.id, isShieldActive, shieldCap]);
+  }, [token?.id, isOpen, isShieldActive, shieldCap]);
+
+  if (!isOpen || !token) return null;
+
+  const userTokenBalance = (wallet?.tokens && wallet.tokens[token.id]) || 0;
+  const isBuy = tab === 'BUY';
 
   // Linear bonding curve preview math
   const numAmount = parseFloat(amount) || 0;
+  const price = token.priceMon || 0.0001;
   const estimatedTokens = isBuy 
-    ? Math.round(numAmount / token.priceMon)
-    : Math.round(numAmount * token.priceMon * 0.98 * 1000) / 1000;
+    ? Math.round(numAmount / price)
+    : Math.round(numAmount * price * 0.98 * 1000) / 1000;
 
   const handleTrade = (e: React.FormEvent) => {
     e.preventDefault();
@@ -175,8 +177,8 @@ export const TradeModal: React.FC<TradeModalProps> = ({
             ></div>
           </div>
           <div className="flex justify-between text-[11px] text-slate-500">
-            <span>{token.monRaised.toFixed(1)} MON in Curve</span>
-            <span>Target: {token.monTarget} MON</span>
+            <span>{(token.monRaised ?? 0).toFixed(1)} MON in Curve</span>
+            <span>Target: {token.monTarget || 50} MON</span>
           </div>
         </div>
 
@@ -185,7 +187,7 @@ export const TradeModal: React.FC<TradeModalProps> = ({
           <div className="flex justify-between items-center mb-1 font-mono text-xs">
             <span className="text-slate-500">Bonding Curve Trajectory</span>
             <span className="text-emerald-400 font-bold flex items-center gap-1">
-              <TrendingUp className="w-3 h-3" /> +{token.priceChange24h}%
+              <TrendingUp className="w-3 h-3" /> +{token.priceChange24h ?? 0}%
             </span>
           </div>
 

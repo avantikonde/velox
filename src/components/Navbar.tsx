@@ -68,7 +68,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           <div className="flex items-center tracking-wider">
             <span className="font-extrabold text-base tracking-[0.14em] text-white">
-              MONAD<span className="text-[#EB96FF]">PUMP</span>
+              VELOX<span className="text-[#EB96FF]">.</span>
             </span>
           </div>
         </div>

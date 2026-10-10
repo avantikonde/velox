@@ -100,7 +100,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
             <Sparkles className="w-5 h-5" />
           </div>
           <h2 className="text-lg font-bold text-white">
-            {tab === 'signin' ? 'Sign in to MonadPump' : 'Create your Account'}
+            {tab === 'signin' ? 'Sign in to Velox' : 'Create your Account'}
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
             Trade at 10,000 TPS with instant token launches

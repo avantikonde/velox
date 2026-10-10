@@ -495,7 +495,7 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract MonadPumpToken is ERC20 {
+contract VeloxToken is ERC20 {
     address public factory;
     
     constructor(string memory name, string memory symbol, address _factory) ERC20(name, symbol) {
@@ -513,7 +513,7 @@ contract MonadPumpToken is ERC20 {
     }
 }
 
-contract MonadPumpFactory {
+contract VeloxFactory {
     uint256 public constant GRADUATION_TARGET = 50 ether; // 50 MON to graduate
     uint256 public constant TOTAL_SUPPLY = 1_000_000_000 ether;
     uint256 public constant MAX_SHIELD_BUY = 0.5 ether; // Anti-Sniper Shield cap
@@ -535,7 +535,7 @@ contract MonadPumpFactory {
     event TokenGraduated(address indexed token, uint256 monLocked);
 
     function createToken(string memory name, string memory symbol) external payable returns (address) {
-        MonadPumpToken token = new MonadPumpToken(name, symbol, address(this));
+        VeloxToken token = new VeloxToken(name, symbol, address(this));
         tokens[address(token)] = TokenState(address(token), name, symbol, 0, false, block.timestamp + SHIELD_DURATION);
         emit TokenLaunched(address(token), name, symbol, msg.sender);
 
@@ -560,7 +560,7 @@ contract MonadPumpFactory {
 
         state.monRaised += monIn;
         uint256 tokensOut = (monIn * TOTAL_SUPPLY) / GRADUATION_TARGET;
-        MonadPumpToken(token).mint(buyer, tokensOut);
+        VeloxToken(token).mint(buyer, tokensOut);
 
         emit TradeExecuted(token, buyer, true, monIn, tokensOut);
 

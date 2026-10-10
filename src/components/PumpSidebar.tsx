@@ -89,8 +89,8 @@ export const PumpSidebar: React.FC<PumpSidebarProps> = ({
             {/* Brand Title */}
             {isExpanded && (
               <div className="flex items-center tracking-tight overflow-hidden whitespace-nowrap animate-in fade-in duration-150">
-                <span className="font-bold text-sm tracking-wide text-white">
-                  monad<span className="text-[#836EF9]">.pump</span>
+                <span className="font-extrabold text-sm tracking-widest text-white">
+                  VELOX<span className="text-[#836EF9]">.</span>
                 </span>
               </div>
             )}

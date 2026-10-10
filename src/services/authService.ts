@@ -1,7 +1,7 @@
 import { User } from '../types';
 
-const USERS_STORAGE_KEY = 'monadpump_users_db';
-const ACTIVE_USER_STORAGE_KEY = 'monadpump_active_user';
+const USERS_STORAGE_KEY = 'velox_users_db';
+const ACTIVE_USER_STORAGE_KEY = 'velox_active_user';
 
 interface StoredUserAccount extends User {
   passwordHash?: string;
@@ -34,7 +34,8 @@ export const authService = {
   // Initialize Database
   initDB: (): void => {
     if (!localStorage.getItem(USERS_STORAGE_KEY)) {
-      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(DEFAULT_USERS));
+      const legacy = localStorage.getItem('monadpump_users_db');
+      localStorage.setItem(USERS_STORAGE_KEY, legacy || JSON.stringify(DEFAULT_USERS));
     }
   },
 

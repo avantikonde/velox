@@ -20,7 +20,7 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ isOpen, onClos
               <Cpu className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">MonadPump Protocol Architecture</h2>
+              <h2 className="text-lg font-bold text-white">Velox Protocol Architecture</h2>
               <p className="text-xs text-slate-400 font-mono">High-Throughput Fair Launchpad & Parallel AMM on Monad</p>
             </div>
           </div>
