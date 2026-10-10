@@ -1,7 +1,7 @@
 // Web3 Wallet Service supporting real injected browser extension wallets:
-// - MetaMask & EVM (window.ethereum / eth_requestAccounts)
-// - Phantom & Solana (window.solana / window.phantom.solana)
-// - Coinbase Wallet (window.coinbaseWalletExtension)
+// - MetaMask & EVM (window.ethereum / eth_requestAccounts / EIP-6963)
+// - Phantom & Solana (window.solana / window.phantom.solana / EIP-6963)
+// - Coinbase Wallet (window.coinbaseWalletExtension / EIP-6963)
 // - Generic Injected EIP-1193 providers
 
 export interface AvailableWallet {
@@ -21,30 +21,143 @@ export interface WalletConnectResult {
   balance?: number;
 }
 
+// In-memory cache for EIP-6963 multi-wallet announcements
+interface EIP6963ProviderDetail {
+  info: {
+    uuid: string;
+    name: string;
+    icon: string;
+    rdns: string;
+  };
+  provider: any;
+}
+
+const eip6963Providers: Map<string, EIP6963ProviderDetail> = new Map();
+let isEIP6963Listening = false;
+
+export const initEIP6963 = () => {
+  if (typeof window === 'undefined' || isEIP6963Listening) return;
+  isEIP6963Listening = true;
+
+  window.addEventListener('eip6963:announceProvider', (event: any) => {
+    if (event?.detail?.info?.rdns && event?.detail?.provider) {
+      eip6963Providers.set(event.detail.info.rdns.toLowerCase(), event.detail);
+    }
+  });
+
+  try {
+    window.dispatchEvent(new Event('eip6963:requestProvider'));
+  } catch (e) {
+    // ignore
+  }
+};
+
+// Initialize immediately on module load if in browser
+if (typeof window !== 'undefined') {
+  initEIP6963();
+}
+
+export const isSafariBrowser = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  const ua = navigator.userAgent;
+  return ua.includes('Safari') && !ua.includes('Chrome') && !ua.includes('Chromium') && !ua.includes('Edg');
+};
+
 export const getInjectedEthereum = (): any => {
   if (typeof window === 'undefined') return null;
   return (window as any).ethereum || null;
 };
 
-export const getInjectedSolana = (): any => {
+export const getMetaMaskProvider = (): any => {
   if (typeof window === 'undefined') return null;
-  return (window as any).phantom?.solana || (window as any).solana || null;
+
+  // 1. Check EIP-6963 providers (io.metamask)
+  for (const [rdns, detail] of eip6963Providers.entries()) {
+    if (rdns.includes('metamask') || detail.info.name.toLowerCase().includes('metamask')) {
+      return detail.provider;
+    }
+  }
+
+  const eth = (window as any).ethereum;
+  if (!eth) return null;
+
+  // 2. Check if multiple EVM providers are injected (e.g. MetaMask + Phantom + Coinbase together)
+  if (Array.isArray(eth.providers) && eth.providers.length > 0) {
+    const mm = eth.providers.find((p: any) => p.isMetaMask && !p.isPhantom);
+    if (mm) return mm;
+    const fallbackMm = eth.providers.find((p: any) => p.isMetaMask);
+    if (fallbackMm) return fallbackMm;
+  }
+
+  // 3. Direct window.ethereum flags
+  if (eth.isMetaMask) {
+    return eth;
+  }
+
+  // 4. Return window.ethereum if present
+  return eth;
+};
+
+export const getPhantomProvider = (): any => {
+  if (typeof window === 'undefined') return null;
+
+  // EIP-6963 for Phantom
+  for (const [rdns, detail] of eip6963Providers.entries()) {
+    if (rdns.includes('phantom') || detail.info.name.toLowerCase().includes('phantom')) {
+      return detail.provider;
+    }
+  }
+
+  // Solana injection
+  const solana = (window as any).phantom?.solana || (window as any).solana;
+  if (solana && solana.isPhantom) return solana;
+
+  // EVM injection for Phantom
+  const eth = (window as any).phantom?.ethereum;
+  if (eth) return eth;
+
+  return solana || null;
+};
+
+export const getCoinbaseProvider = (): any => {
+  if (typeof window === 'undefined') return null;
+
+  for (const [rdns, detail] of eip6963Providers.entries()) {
+    if (rdns.includes('coinbase') || detail.info.name.toLowerCase().includes('coinbase')) {
+      return detail.provider;
+    }
+  }
+
+  if ((window as any).coinbaseWalletExtension) {
+    return (window as any).coinbaseWalletExtension;
+  }
+
+  const eth = (window as any).ethereum;
+  if (eth?.isCoinbaseWallet) return eth;
+
+  if (Array.isArray(eth?.providers)) {
+    const cb = eth.providers.find((p: any) => p.isCoinbaseWallet);
+    if (cb) return cb;
+  }
+
+  return null;
+};
+
+export const getInjectedSolana = (): any => {
+  return getPhantomProvider();
 };
 
 export const isMetaMaskInstalled = (): boolean => {
-  const eth = getInjectedEthereum();
-  return Boolean(eth && (eth.isMetaMask || (!eth.isPhantom && !eth.isCoinbaseWallet)));
+  const mm = getMetaMaskProvider();
+  return Boolean(mm && (mm.isMetaMask || typeof mm.request === 'function'));
 };
 
 export const isPhantomInstalled = (): boolean => {
-  if (typeof window === 'undefined') return false;
-  const solana = (window as any).phantom?.solana || (window as any).solana;
-  return Boolean(solana && solana.isPhantom);
+  return Boolean(getPhantomProvider());
 };
 
 export const isCoinbaseInstalled = (): boolean => {
-  if (typeof window === 'undefined') return false;
-  return Boolean((window as any).coinbaseWalletExtension || (window as any).ethereum?.isCoinbaseWallet);
+  return Boolean(getCoinbaseProvider());
 };
 
 export const isGenericInjectedInstalled = (): boolean => {
@@ -52,6 +165,8 @@ export const isGenericInjectedInstalled = (): boolean => {
 };
 
 export const getAvailableWallets = (): AvailableWallet[] => {
+  initEIP6963();
+
   return [
     {
       id: 'metamask',
@@ -102,6 +217,31 @@ export const getAvailableWallets = (): AvailableWallet[] => {
 };
 
 /**
+ * Actively probes for provider with a brief timeout (handles delayed injection)
+ */
+const waitForProvider = async (
+  getProviderFn: () => any,
+  maxWaitMs: number = 500
+): Promise<any> => {
+  const initial = getProviderFn();
+  if (initial) return initial;
+
+  try {
+    window.dispatchEvent(new Event('eip6963:requestProvider'));
+  } catch (e) {
+    // ignore
+  }
+
+  const startTime = Date.now();
+  while (Date.now() - startTime < maxWaitMs) {
+    await new Promise((r) => setTimeout(r, 60));
+    const p = getProviderFn();
+    if (p) return p;
+  }
+  return null;
+};
+
+/**
  * Directly connects to the requested installed wallet extension,
  * popping up the device extension modal for user approval.
  */
@@ -114,23 +254,40 @@ export const connectToWallet = async (
 
   // 1. PHANTOM / SOLANA DIRECT INJECTION
   if (walletId === 'phantom') {
-    const solana = getInjectedSolana();
+    const solana = await waitForProvider(getPhantomProvider, 400);
     if (!solana) {
-      window.open('https://phantom.app/download', '_blank', 'noopener,noreferrer');
-      throw new Error('Phantom extension not detected on this device. Redirecting to official download page...');
+      const isSafari = isSafariBrowser();
+      if (isSafari) {
+        throw new Error(
+          'SAFARI_WALLET_NOT_DETECTED: Phantom extension was not detected in Safari. If your Phantom is installed in Google Chrome or Brave, open this website in that browser.'
+        );
+      }
+      throw new Error(
+        'EXTENSION_NOT_DETECTED: Phantom wallet extension was not detected. Please verify your extension is installed and enabled in your browser.'
+      );
     }
 
     try {
-      const resp = await solana.connect();
-      const pubkey = resp.publicKey?.toString() || solana.publicKey?.toString();
-      if (!pubkey) {
-        throw new Error('No public key returned from Phantom wallet.');
+      if (typeof solana.connect === 'function') {
+        const resp = await solana.connect();
+        const pubkey = resp?.publicKey?.toString() || solana.publicKey?.toString();
+        if (!pubkey) {
+          throw new Error('No public key returned from Phantom wallet.');
+        }
+        return {
+          address: pubkey,
+          walletType: 'phantom',
+          connectorName: 'Phantom Wallet'
+        };
+      } else if (typeof solana.request === 'function') {
+        const accounts: string[] = await solana.request({ method: 'eth_requestAccounts' });
+        return {
+          address: accounts[0],
+          walletType: 'phantom',
+          connectorName: 'Phantom EVM Wallet'
+        };
       }
-      return {
-        address: pubkey,
-        walletType: 'phantom',
-        connectorName: 'Phantom Wallet'
-      };
+      throw new Error('Unsupported Phantom interface.');
     } catch (err: any) {
       if (err.code === 4001 || err.message?.includes('User rejected')) {
         throw new Error('Connection request was declined in Phantom.');
@@ -141,18 +298,35 @@ export const connectToWallet = async (
 
   // 2. METAMASK / COINBASE / INJECTED EVM
   if (walletId === 'metamask' || walletId === 'coinbase' || walletId === 'injected') {
-    const eth = getInjectedEthereum();
-    if (!eth) {
-      const url = walletId === 'coinbase' 
-        ? 'https://www.coinbase.com/wallet/downloads' 
-        : 'https://metamask.io/download/';
-      window.open(url, '_blank', 'noopener,noreferrer');
-      throw new Error(`${walletId === 'coinbase' ? 'Coinbase Wallet' : 'MetaMask'} not detected on this device. Redirecting to official download...`);
+    const provider = await waitForProvider(
+      () => {
+        if (walletId === 'metamask') return getMetaMaskProvider();
+        if (walletId === 'coinbase') return getCoinbaseProvider();
+        return getInjectedEthereum();
+      },
+      600
+    );
+
+    if (!provider || typeof provider.request !== 'function') {
+      const isSafari = isSafariBrowser();
+      const walletLabel = walletId === 'coinbase' ? 'Coinbase Wallet' : walletId === 'metamask' ? 'MetaMask' : 'EVM Wallet';
+
+      if (isSafari) {
+        throw new Error(
+          `SAFARI_WALLET_NOT_DETECTED: ${walletLabel} extension was not detected in Safari.\n\n` +
+          `• If you installed ${walletLabel} in Google Chrome, Brave, or Arc: Please open this URL in that browser!\n` +
+          `• If you installed the ${walletLabel} Safari extension: Go to Safari Settings → Extensions → Enable ${walletLabel} and grant permissions for localhost.`
+        );
+      }
+
+      throw new Error(
+        `EXTENSION_NOT_DETECTED: ${walletLabel} extension is not detected in this browser window. Please check your browser extension settings or allow access on this site.`
+      );
     }
 
     try {
       // Direct EIP-1193 trigger: pops up extension window on user's device
-      const accounts: string[] = await eth.request({
+      const accounts: string[] = await provider.request({
         method: 'eth_requestAccounts'
       });
 
@@ -160,9 +334,9 @@ export const connectToWallet = async (
         throw new Error('No accounts authorized from browser wallet extension.');
       }
 
-      const connectorName = eth.isMetaMask 
+      const connectorName = provider.isMetaMask 
         ? 'MetaMask' 
-        : eth.isCoinbaseWallet 
+        : provider.isCoinbaseWallet 
           ? 'Coinbase Wallet' 
           : 'Injected EVM Provider';
 
@@ -173,7 +347,7 @@ export const connectToWallet = async (
       };
     } catch (err: any) {
       if (err.code === 4001 || err.code === 'ACTION_REJECTED') {
-        throw new Error('Connection request was declined in your wallet extension.');
+        throw new Error(`Connection request was declined in ${walletId === 'metamask' ? 'MetaMask' : 'your wallet extension'}.`);
       }
       throw new Error(err.message || 'Failed to connect to browser wallet extension.');
     }
@@ -183,8 +357,7 @@ export const connectToWallet = async (
   return {
     address: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e',
     walletType: 'demo',
-    connectorName: 'Demo Wallet',
+    connectorName: 'Instant Demo Wallet',
     balance: 25.0
   };
 };
-

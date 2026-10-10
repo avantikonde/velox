@@ -18,6 +18,7 @@ import { INITIAL_TOKENS, MOCK_HOT_CALLOUTS, MOCK_LEADERBOARD } from './data/mock
 import { SUPPORTED_CHAINS, DEFAULT_CHAIN, ChainConfig } from './data/chains';
 import { Token, Trade, WalletState, ViewMode, HotCallout, LeaderboardEntry, User, NavigationTab } from './types';
 import { authService } from './services/authService';
+import { neonService } from './services/neonService';
 import { Search, Flame, Sparkles, Trophy, CheckCircle, Code2, Compass } from 'lucide-react';
 
 const VALID_TABS: NavigationTab[] = ['home', 'explore', 'leaderboard', 'live-feed', 'terminal', 'rewards'];
@@ -79,6 +80,22 @@ export const App: React.FC = () => {
     };
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  // Fetch cloud tokens from Neon PostgreSQL on startup
+  useEffect(() => {
+    neonService.getCommunityTokens().then((dbTokens) => {
+      if (dbTokens && dbTokens.length > 0) {
+        setTokens(prev => {
+          const existingIds = new Set(prev.map(t => t.id));
+          const newFromDb = dbTokens.filter(t => !existingIds.has(t.id));
+          if (newFromDb.length === 0) return prev;
+          return [...newFromDb, ...prev];
+        });
+      }
+    }).catch(err => {
+      console.warn('Neon getCommunityTokens initial load:', err);
+    });
   }, []);
 
   const handleSelectTab = (tab: NavigationTab) => {
@@ -353,6 +370,9 @@ export const App: React.FC = () => {
       console.warn('Could not persist token:', err);
     }
 
+    // Persist to Neon PostgreSQL Cloud Database
+    neonService.saveToken(tokenWithShield).catch(err => console.warn('Neon saveToken:', err));
+
     setTokens(prev => [tokenWithShield, ...prev]);
     setSelectedToken(tokenWithShield);
   };
@@ -396,8 +416,9 @@ export const App: React.FC = () => {
 
     const activeTok = tokens.find(t => t.id === tokenId);
     if (activeTok) {
+      const now = Date.now();
       const newTrade: Trade = {
-        id: `tx-${Date.now()}`,
+        id: `tx-${now}`,
         tokenId,
         tokenSymbol: activeTok.symbol,
         tokenImageUrl: activeTok.imageUrl,
@@ -406,11 +427,15 @@ export const App: React.FC = () => {
         monAmount,
         tokenAmount,
         timestamp: 'Just now',
+        timestampMs: now,
         txHash: `0x${Math.random().toString(16).slice(2, 10)}...`,
         latencyMs: 792,
         currencySymbol: activeTok.chainSymbol || activeChain.symbol
       };
       setRecentTrades(prev => [newTrade, ...prev.slice(0, 15)]);
+
+      // Persist to Neon PostgreSQL Cloud Database
+      neonService.saveTrade(newTrade).catch(err => console.warn('Neon saveTrade:', err));
     }
   };
 

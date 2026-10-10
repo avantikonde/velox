@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Mail, ArrowRight, Smartphone, ChevronRight, AlertCircle, Loader2, Wallet } from 'lucide-react';
+import { X, Mail, ArrowRight, Smartphone, ChevronRight, AlertCircle, Loader2, Wallet, Copy, Check } from 'lucide-react';
 import { User, WalletState } from '../types';
 import { authService } from '../services/authService';
 import { connectToWallet, isMetaMaskInstalled, isPhantomInstalled, AvailableWallet, getAvailableWallets } from '../services/walletService';
@@ -15,19 +15,27 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showMoreWallets, setShowMoreWallets] = useState(false);
-  const [allWallets, setAllWallets] = useState<AvailableWallet[]>([]);
-
-  const hasMetaMask = isMetaMaskInstalled();
-  const hasPhantom = isPhantomInstalled();
+  const [wallets, setWallets] = useState<AvailableWallet[]>([]);
+  const [copiedUrl, setCopiedUrl] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      setAllWallets(getAvailableWallets());
+      const update = () => {
+        const w = getAvailableWallets();
+        setWallets(w);
+      };
+      update();
       setError(null);
       setIsLoading(false);
       setShowMoreWallets(false);
+
+      const timers = [80, 250, 600, 1200].map((t) => setTimeout(update, t));
+      return () => timers.forEach(clearTimeout);
     }
   }, [isOpen]);
+
+  const hasMetaMask = wallets.find((w) => w.id === 'metamask')?.isInstalled ?? isMetaMaskInstalled();
+  const hasPhantom = wallets.find((w) => w.id === 'phantom')?.isInstalled ?? isPhantomInstalled();
 
   if (!isOpen) return null;
 
@@ -123,10 +131,43 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
 
         {/* Error notification */}
         {error && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2 font-mono">
-            <AlertCircle className="w-4 h-4 flex-shrink-0" />
-            <span className="flex-1">{error}</span>
-          </div>
+          error.includes('SAFARI') ? (
+            <div className="mb-4 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs">
+              <div className="flex items-center gap-2 font-bold text-amber-300 mb-1">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                <span>MetaMask not detected in Safari</span>
+              </div>
+              <p className="text-[11px] text-amber-200/90 leading-relaxed mb-2.5">
+                Extensions installed in Chrome/Brave don't automatically run in Safari. If you have MetaMask in Chrome, open Velox there:
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    setCopiedUrl(true);
+                    setTimeout(() => setCopiedUrl(false), 2000);
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 text-[11px] font-mono font-semibold flex items-center gap-1.5 border border-amber-500/30 transition-all"
+                >
+                  {copiedUrl ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copiedUrl ? 'Copied link!' : 'Copy Link for Chrome'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleWalletConnect('demo')}
+                  className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[11px] font-mono transition-colors"
+                >
+                  Use Demo Wallet
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2 font-mono">
+              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              <span className="flex-1 whitespace-pre-line">{error}</span>
+            </div>
+          )
         )}
 
         {/* SOCIAL SIGN IN SECTION */}
@@ -231,12 +272,25 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
               </span>
             </div>
             {hasMetaMask ? (
-              <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-mono font-bold flex items-center gap-1 border border-emerald-500/20">
+              <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 text-[10px] font-mono font-bold flex items-center gap-1.5 border border-emerald-500/20">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                 DETECTED
               </span>
             ) : (
-              <span className="text-[10px] text-slate-500 font-mono">Install ↗</span>
+              <div className="flex items-center gap-2">
+                <a
+                  href="https://metamask.io/download/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-[10px] text-slate-400 hover:text-white underline font-mono"
+                >
+                  Install ↗
+                </a>
+                <span className="px-2.5 py-1 rounded-lg bg-white/10 text-white text-[10px] font-mono font-bold border border-white/10">
+                  Connect
+                </span>
+              </div>
             )}
           </button>
 
@@ -253,12 +307,25 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
               <span className="text-xs font-bold text-white font-mono">Phantom</span>
             </div>
             {hasPhantom ? (
-              <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-mono font-bold flex items-center gap-1 border border-emerald-500/20">
+              <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 text-[10px] font-mono font-bold flex items-center gap-1.5 border border-emerald-500/20">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                 DETECTED
               </span>
             ) : (
-              <span className="text-[10px] text-slate-500 font-mono">Install ↗</span>
+              <div className="flex items-center gap-2">
+                <a
+                  href="https://phantom.app/download"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-[10px] text-slate-400 hover:text-white underline font-mono"
+                >
+                  Install ↗
+                </a>
+                <span className="px-2.5 py-1 rounded-lg bg-white/10 text-white text-[10px] font-mono font-bold border border-white/10">
+                  Connect
+                </span>
+              </div>
             )}
           </button>
 

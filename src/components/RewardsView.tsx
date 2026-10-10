@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { Coins, Sparkles, Gift, Share2, Check, ArrowRight, Shield, Zap, Users, Flame } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Coins, Sparkles, Gift, Share2, Check, ArrowRight, Shield, Zap, Users, Flame, Clock } from 'lucide-react';
 import { ChainConfig } from '../data/chains';
+import { neonService } from '../services/neonService';
+import confetti from 'canvas-confetti';
 
 interface RewardsViewProps {
   userAddress: string;
@@ -8,22 +10,149 @@ interface RewardsViewProps {
   onOpenLaunchModal: () => void;
 }
 
+const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
+
 export const RewardsView: React.FC<RewardsViewProps> = ({
   userAddress,
   activeChain,
   onOpenLaunchModal
 }) => {
-  const [points, setPoints] = useState(4250);
-  const [streakDays, setStreakDays] = useState(7);
-  const [claimedToday, setClaimedToday] = useState(false);
+  const accountKey = userAddress ? userAddress.toLowerCase() : 'default_trader';
+
+  // Helpers to read persisted rewards data
+  const getPersistedPoints = (): number => {
+    try {
+      const val = localStorage.getItem(`velox_rewards_points_${accountKey}`);
+      return val ? parseInt(val, 10) : 4250;
+    } catch {
+      return 4250;
+    }
+  };
+
+  const getPersistedStreak = (): number => {
+    try {
+      const val = localStorage.getItem(`velox_rewards_streak_${accountKey}`);
+      return val ? parseInt(val, 10) : 7;
+    } catch {
+      return 7;
+    }
+  };
+
+  const getPersistedLastClaim = (): number => {
+    try {
+      const val = localStorage.getItem(`velox_rewards_last_claim_${accountKey}`);
+      return val ? parseInt(val, 10) : 0;
+    } catch {
+      return 0;
+    }
+  };
+
+  const [points, setPoints] = useState<number>(getPersistedPoints);
+  const [streakDays, setStreakDays] = useState<number>(getPersistedStreak);
+  const [claimedToday, setClaimedToday] = useState<boolean>(() => {
+    const lastClaim = getPersistedLastClaim();
+    return lastClaim > 0 && Date.now() - lastClaim < TWENTY_FOUR_HOURS_MS;
+  });
+  const [timeRemainingMs, setTimeRemainingMs] = useState<number>(() => {
+    const lastClaim = getPersistedLastClaim();
+    if (lastClaim <= 0) return 0;
+    const elapsed = Date.now() - lastClaim;
+    return elapsed < TWENTY_FOUR_HOURS_MS ? TWENTY_FOUR_HOURS_MS - elapsed : 0;
+  });
   const [copiedRef, setCopiedRef] = useState(false);
 
+  // Sync state whenever active account changes & fetch from Neon PostgreSQL
+  useEffect(() => {
+    setPoints(getPersistedPoints());
+    setStreakDays(getPersistedStreak());
+
+    neonService.getRewards(accountKey).then((cloudRewards) => {
+      if (cloudRewards && cloudRewards.points) {
+        setPoints(cloudRewards.points);
+        setStreakDays(cloudRewards.streak);
+        localStorage.setItem(`velox_rewards_points_${accountKey}`, cloudRewards.points.toString());
+        localStorage.setItem(`velox_rewards_streak_${accountKey}`, cloudRewards.streak.toString());
+        if (cloudRewards.lastClaim) {
+          localStorage.setItem(`velox_rewards_last_claim_${accountKey}`, cloudRewards.lastClaim.toString());
+        }
+      }
+    }).catch(err => console.warn('Neon getRewards sync:', err));
+  }, [accountKey]);
+
+  // Real-time 1-second countdown timer enforcing exact 24-hour interval
+  useEffect(() => {
+    const updateCountdown = () => {
+      const lastClaim = getPersistedLastClaim();
+      if (!lastClaim) {
+        setClaimedToday(false);
+        setTimeRemainingMs(0);
+        return;
+      }
+
+      const elapsed = Date.now() - lastClaim;
+      if (elapsed < TWENTY_FOUR_HOURS_MS) {
+        setClaimedToday(true);
+        setTimeRemainingMs(TWENTY_FOUR_HOURS_MS - elapsed);
+      } else {
+        setClaimedToday(false);
+        setTimeRemainingMs(0);
+      }
+    };
+
+    updateCountdown();
+    const timer = setInterval(updateCountdown, 1000);
+    return () => clearInterval(timer);
+  }, [accountKey]);
+
   const handleClaimDailyStreak = () => {
-    if (!claimedToday) {
-      setPoints(prev => prev + 50);
-      setStreakDays(prev => prev + 1);
-      setClaimedToday(true);
+    const lastClaim = getPersistedLastClaim();
+    const elapsed = Date.now() - lastClaim;
+
+    // Strict 24-hour enforcement: Prevent duplicate claims
+    if (lastClaim > 0 && elapsed < TWENTY_FOUR_HOURS_MS) {
+      return;
     }
+
+    const newPoints = points + 50;
+    // Streak increments if claimed within 48h (or first claim); resets if missed >48h
+    const newStreak = (lastClaim > 0 && elapsed <= 48 * 60 * 60 * 1000) 
+      ? streakDays + 1 
+      : (lastClaim === 0 ? streakDays + 1 : 1);
+    const nowMs = Date.now();
+
+    setPoints(newPoints);
+    setStreakDays(newStreak);
+    setClaimedToday(true);
+    setTimeRemainingMs(TWENTY_FOUR_HOURS_MS);
+
+    // Persist to localStorage across all views, refreshes, and tabs
+    try {
+      localStorage.setItem(`velox_rewards_points_${accountKey}`, newPoints.toString());
+      localStorage.setItem(`velox_rewards_streak_${accountKey}`, newStreak.toString());
+      localStorage.setItem(`velox_rewards_last_claim_${accountKey}`, nowMs.toString());
+    } catch (e) {
+      console.warn('Could not persist rewards claim:', e);
+    }
+
+    // Persist to Neon PostgreSQL Cloud Database
+    neonService.saveRewards(accountKey, newPoints, newStreak, nowMs).catch(err => console.warn('Neon saveRewards:', err));
+
+    // Celebration confetti
+    confetti({
+      particleCount: 60,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#68CFEB', '#FFD700', '#1F4B5D']
+    });
+  };
+
+  const formatCountdown = (ms: number): string => {
+    if (ms <= 0) return '00h 00m 00s';
+    const totalSec = Math.floor(ms / 1000);
+    const hours = Math.floor(totalSec / 3600);
+    const minutes = Math.floor((totalSec % 3600) / 60);
+    const seconds = totalSec % 60;
+    return `${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
   };
 
   const referralLink = `https://velox.trade/ref/${userAddress.slice(0, 8)}`;
@@ -132,13 +261,13 @@ export const RewardsView: React.FC<RewardsViewProps> = ({
             </p>
           </div>
 
-          <div className="pt-2">
+          <div className="pt-2 space-y-2">
             <button
               onClick={handleClaimDailyStreak}
               disabled={claimedToday}
               className={`w-full py-3 px-4 rounded-xl font-extrabold text-xs transition-all flex items-center justify-center gap-2 font-mono ${
                 claimedToday
-                  ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 cursor-default'
+                  ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 cursor-default'
                   : 'bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] hover:from-[#90DEF2] hover:to-[#2B6882] text-[#141310] shadow-md shadow-[#68CFEB]/20 active:scale-95'
               }`}
             >
@@ -154,6 +283,24 @@ export const RewardsView: React.FC<RewardsViewProps> = ({
                 </>
               )}
             </button>
+
+            {/* 24-Hour Countdown & Streak Info Bar */}
+            {claimedToday ? (
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#141310] border border-emerald-500/20 text-xs font-mono">
+                <div className="flex items-center gap-1.5 text-slate-300">
+                  <Clock className="w-3.5 h-3.5 text-[#68CFEB] animate-pulse" />
+                  <span className="text-[11px]">Next check-in unlocks in:</span>
+                </div>
+                <span className="font-bold text-[#68CFEB] text-[11px]">
+                  {formatCountdown(timeRemainingMs)}
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between p-2 rounded-xl bg-white/[0.03] text-[11px] font-mono text-slate-400">
+                <span>Available to claim today</span>
+                <span className="text-emerald-400 font-bold">● Ready</span>
+              </div>
+            )}
           </div>
         </div>
 

@@ -1,4 +1,5 @@
 import { User } from '../types';
+import { neonService } from './neonService';
 
 const USERS_STORAGE_KEY = 'velox_users_db';
 const ACTIVE_USER_STORAGE_KEY = 'velox_active_user';
@@ -160,6 +161,9 @@ export const authService = {
 
     const { passwordHash: _, ...safeUser } = user;
     localStorage.setItem(ACTIVE_USER_STORAGE_KEY, JSON.stringify(safeUser));
+    
+    // Asynchronously sync to Neon PostgreSQL
+    neonService.saveUser(safeUser).catch(err => console.warn('Neon saveUser sync:', err));
     return safeUser;
   },
 
@@ -188,6 +192,9 @@ export const authService = {
 
     const { passwordHash: _, ...safeUser } = user;
     localStorage.setItem(ACTIVE_USER_STORAGE_KEY, JSON.stringify(safeUser));
+
+    // Asynchronously sync to Neon PostgreSQL
+    neonService.saveUser(safeUser).catch(err => console.warn('Neon saveUser sync:', err));
     return safeUser;
   },
 
@@ -215,7 +222,46 @@ export const authService = {
 
     const { passwordHash: _, ...safeUser } = user;
     localStorage.setItem(ACTIVE_USER_STORAGE_KEY, JSON.stringify(safeUser));
+
+    // Asynchronously sync to Neon PostgreSQL
+    neonService.saveUser(safeUser).catch(err => console.warn('Neon saveUser sync:', err));
     return safeUser;
+  },
+
+  // Get all known accounts on this device & Neon
+  getStoredAccounts: (): User[] => {
+    try {
+      authService.initDB();
+      const users: StoredUserAccount[] = JSON.parse(localStorage.getItem(USERS_STORAGE_KEY) || '[]');
+      return users.map(({ passwordHash: _, ...safe }) => safe);
+    } catch {
+      return [];
+    }
+  },
+
+  // Update current user profile
+  updateUserProfile: (newUsername: string, newAvatarUrl?: string): User | null => {
+    try {
+      const current = authService.getCurrentUser();
+      if (!current) return null;
+
+      authService.initDB();
+      const users: StoredUserAccount[] = JSON.parse(localStorage.getItem(USERS_STORAGE_KEY) || '[]');
+      const updatedUser: User = {
+        ...current,
+        username: newUsername.trim(),
+        avatarUrl: newAvatarUrl || current.avatarUrl
+      };
+
+      const updatedUsers = users.map(u => u.id === current.id ? { ...u, ...updatedUser } : u);
+      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(updatedUsers));
+      localStorage.setItem(ACTIVE_USER_STORAGE_KEY, JSON.stringify(updatedUser));
+
+      neonService.saveUser(updatedUser).catch(err => console.warn('Neon updateUser sync:', err));
+      return updatedUser;
+    } catch {
+      return null;
+    }
   },
 
   // Logout

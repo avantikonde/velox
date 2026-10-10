@@ -6,6 +6,7 @@ export interface Token {
   imageUrl: string;
   creator: string;
   createdAt: string;
+  createdTimestampMs?: number;
   marketCapMon: number;
   priceMon: number;
   bondingProgress: number; // 0 - 100
@@ -44,6 +45,7 @@ export interface Trade {
   monAmount: number;
   tokenAmount: number;
   timestamp: string;
+  timestampMs?: number;
   txHash: string;
   latencyMs: number;
   currencySymbol?: string;
