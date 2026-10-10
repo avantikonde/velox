@@ -138,6 +138,30 @@ export const App: React.FC = () => {
     return () => clearInterval(interval);
   }, [tokens]);
 
+  // Real-time countdown timer for Anti-Sniper Shield active tokens
+  useEffect(() => {
+    const shieldTimer = setInterval(() => {
+      setTokens(prev => {
+        let hasActiveShield = false;
+        const updated = prev.map(t => {
+          if (t.shieldActive && (t.shieldRemainingSeconds ?? 0) > 0) {
+            hasActiveShield = true;
+            const remaining = (t.shieldRemainingSeconds ?? 0) - 1;
+            return {
+              ...t,
+              shieldRemainingSeconds: remaining,
+              shieldActive: remaining > 0
+            };
+          }
+          return t;
+        });
+        return hasActiveShield ? updated : prev;
+      });
+    }, 1000);
+
+    return () => clearInterval(shieldTimer);
+  }, []);
+
   const toggleWallet = () => {
     setWallet(prev => ({
       ...prev,
@@ -153,18 +177,25 @@ export const App: React.FC = () => {
   };
 
   const handleLaunchToken = (newToken: Token, initialBuyMon: number) => {
+    const tokenWithShield: Token = {
+      ...newToken,
+      shieldActive: true,
+      shieldRemainingSeconds: 60,
+      maxShieldBuyMon: 0.2
+    };
+
     if (initialBuyMon > 0) {
       setWallet(prev => ({
         ...prev,
         monBalance: prev.monBalance - initialBuyMon,
         tokens: {
           ...prev.tokens,
-          [newToken.id]: Math.round(initialBuyMon / newToken.priceMon)
+          [tokenWithShield.id]: Math.round(initialBuyMon / tokenWithShield.priceMon)
         }
       }));
     }
-    setTokens(prev => [newToken, ...prev]);
-    setSelectedToken(newToken);
+    setTokens(prev => [tokenWithShield, ...prev]);
+    setSelectedToken(tokenWithShield);
   };
 
   const handleExecuteTrade = (tokenId: string, type: 'BUY' | 'SELL', monAmount: number, tokenAmount: number) => {
@@ -229,7 +260,7 @@ export const App: React.FC = () => {
     return true;
   });
 
-  const kingOfTheHillToken = tokens[0] || INITIAL_TOKENS[0];
+  const kingOfTheHillToken = tokens.find(t => t.id === 'chog-monad') || tokens[0] || INITIAL_TOKENS[0];
 
   const handleSelectSidebarTab = (tab: 'home' | 'explore' | 'leaderboard' | 'callouts' | 'terminal') => {
     setActiveTab(tab);
@@ -292,7 +323,7 @@ export const App: React.FC = () => {
 
         {/* Hero: King of the Hill Spotlight Card */}
         <KingOfTheHill
-          token={kingOfTheHillToken}
+          token={tokens.find(t => t.id === kingOfTheHillToken.id) || kingOfTheHillToken}
           onSelectToken={(t) => setSelectedToken(t)}
           onQuickBuy={(t) => setSelectedToken(t)}
         />
@@ -424,7 +455,7 @@ export const App: React.FC = () => {
       />
 
       <TradeModal
-        token={selectedToken}
+        token={tokens.find(t => t.id === selectedToken?.id) || selectedToken}
         isOpen={!!selectedToken}
         onClose={() => setSelectedToken(null)}
         wallet={wallet}
@@ -485,6 +516,8 @@ contract MonadPumpToken is ERC20 {
 contract MonadPumpFactory {
     uint256 public constant GRADUATION_TARGET = 50 ether; // 50 MON to graduate
     uint256 public constant TOTAL_SUPPLY = 1_000_000_000 ether;
+    uint256 public constant MAX_SHIELD_BUY = 0.2 ether; // Anti-Sniper Shield cap
+    uint256 public constant SHIELD_DURATION = 60; // 60 seconds
 
     struct TokenState {
         address token;
@@ -492,6 +525,7 @@ contract MonadPumpFactory {
         string symbol;
         uint256 monRaised;
         bool graduated;
+        uint256 shieldEndTime;
     }
 
     mapping(address => TokenState) public tokens;
@@ -502,7 +536,7 @@ contract MonadPumpFactory {
 
     function createToken(string memory name, string memory symbol) external payable returns (address) {
         MonadPumpToken token = new MonadPumpToken(name, symbol, address(this));
-        tokens[address(token)] = TokenState(address(token), name, symbol, msg.value, false);
+        tokens[address(token)] = TokenState(address(token), name, symbol, 0, false, block.timestamp + SHIELD_DURATION);
         emit TokenLaunched(address(token), name, symbol, msg.sender);
 
         if (msg.value > 0) {
@@ -518,6 +552,11 @@ contract MonadPumpFactory {
     function _buy(address token, address buyer, uint256 monIn) internal {
         TokenState storage state = tokens[token];
         require(!state.graduated, "Token graduated to DEX AMM");
+
+        // Anti-Sniper Shield (FairSlot Genesis) check
+        if (block.timestamp < state.shieldEndTime) {
+            require(monIn <= MAX_SHIELD_BUY, "Anti-Sniper Shield: Max 0.2 MON during first 60s");
+        }
 
         state.monRaised += monIn;
         uint256 tokensOut = (monIn * TOTAL_SUPPLY) / GRADUATION_TARGET;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Token } from '../types';
-import { TrendingUp, TrendingDown, Users, ArrowUpRight, Zap } from 'lucide-react';
+import { TrendingUp, TrendingDown, Users, ArrowUpRight, Zap, ShieldCheck } from 'lucide-react';
 
 interface TokenCardProps {
   token: Token;
@@ -65,9 +65,22 @@ export const TokenCard: React.FC<TokenCardProps> = ({
         </div>
 
         {/* Description */}
-        <p className="text-xs text-slate-400 line-clamp-2 mb-3.5 leading-relaxed">
+        <p className="text-xs text-slate-400 line-clamp-2 mb-2.5 leading-relaxed">
           {token.description}
         </p>
+
+        {/* Anti-Sniper Shield (FairSlot Genesis) Badge */}
+        {token.shieldActive && (
+          <div className="mb-3">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-[#193153]/90 border border-[#EB96FF]/40 text-[#F9D4E0] shadow-[0_0_10px_rgba(235,150,255,0.2)]">
+              <ShieldCheck className="w-3 h-3 text-[#EB96FF] flex-shrink-0 animate-pulse" />
+              <span>Anti-Sniper Shield (Max {token.maxShieldBuyMon || 0.2} MON)</span>
+              {token.shieldRemainingSeconds !== undefined && token.shieldRemainingSeconds > 0 && (
+                <span className="text-[#EB96FF] font-bold">({token.shieldRemainingSeconds}s)</span>
+              )}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Bonding Curve Section & Bottom Actions */}

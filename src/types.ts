@@ -16,6 +16,9 @@ export interface Token {
   priceChange24h: number;
   isGraduated: boolean;
   repliesCount?: number;
+  shieldActive?: boolean;
+  shieldRemainingSeconds?: number;
+  maxShieldBuyMon?: number;
 }
 
 export interface Trade {

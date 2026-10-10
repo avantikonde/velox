@@ -38,6 +38,9 @@ Built for **Monad Blitz Pune V3** (October 2026).
    * Continuous multi-threaded transactions simulating high throughput on Monad.
 5. **Solidity Smart Contracts**:
    * [`contracts/MonadPump.sol`](./contracts/MonadPump.sol) ready to deploy with Foundry or Hardhat to Monad Testnet.
+6. **Anti-Sniper Shield (FairSlot Genesis)**:
+   * Automatically activates for 60 seconds upon token launch.
+   * Caps maximum buy at 0.2 MON to prevent frontrunning bots and guarantee fair, uniform community distribution.
 
 ---
 

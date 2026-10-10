@@ -2,6 +2,28 @@ import { Token, HotCallout, LeaderboardEntry } from '../types';
 
 export const INITIAL_TOKENS: Token[] = [
   {
+    id: 'fairslot-genesis',
+    name: 'FairSlot Genesis',
+    symbol: 'FAIR',
+    description: 'Freshly launched with active Anti-Sniper Shield. 0.2 MON max allocation per buy for fair genesis distribution.',
+    imageUrl: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=400&auto=format&fit=crop&q=80',
+    creator: '0xFA1R...987A',
+    createdAt: '15s ago',
+    marketCapMon: 5.6,
+    priceMon: 0.0001,
+    bondingProgress: 6,
+    monRaised: 3.0,
+    monTarget: 50.0,
+    holdersCount: 16,
+    volume24h: 3.0,
+    priceChange24h: 14.2,
+    isGraduated: false,
+    repliesCount: 12,
+    shieldActive: true,
+    shieldRemainingSeconds: 45,
+    maxShieldBuyMon: 0.2
+  },
+  {
     id: 'chog-monad',
     name: 'Chog the Mascot',
     symbol: 'CHOG',

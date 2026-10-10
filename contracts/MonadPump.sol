@@ -53,10 +53,13 @@ contract BondingCurveToken {
 /**
  * @title MonadPumpFactory
  * @notice High-throughput Fair-Launch Meme Token Factory for Monad Parallel L1
+ *         Equipped with Anti-Sniper Shield (FairSlot Genesis)
  */
 contract MonadPumpFactory {
     uint256 public constant GRADUATION_TARGET = 50 ether; // 50 MON to graduate to DEX
     uint256 public constant TOTAL_SUPPLY = 1_000_000_000 * 10**18;
+    uint256 public constant MAX_SHIELD_BUY = 0.2 ether; // Anti-Sniper Shield max buy cap
+    uint256 public constant SHIELD_DURATION = 60; // 60 seconds Genesis Anti-Sniper Shield window
 
     struct TokenInfo {
         address tokenAddress;
@@ -64,6 +67,7 @@ contract MonadPumpFactory {
         string symbol;
         uint256 monRaised;
         bool graduated;
+        uint256 shieldEndTime;
     }
 
     mapping(address => TokenInfo) public tokens;
@@ -75,7 +79,7 @@ contract MonadPumpFactory {
     event TokenGraduated(address indexed token, uint256 totalMonLocked);
 
     /**
-     * @notice Launch a new token on the bonding curve
+     * @notice Launch a new token on the bonding curve with 60-Second Anti-Sniper Shield
      */
     function createToken(string memory name, string memory symbol) external payable returns (address) {
         BondingCurveToken token = new BondingCurveToken(name, symbol, address(this));
@@ -86,7 +90,8 @@ contract MonadPumpFactory {
             name: name,
             symbol: symbol,
             monRaised: 0,
-            graduated: false
+            graduated: false,
+            shieldEndTime: block.timestamp + SHIELD_DURATION
         });
         allTokens.push(tokenAddr);
 
@@ -112,9 +117,14 @@ contract MonadPumpFactory {
         require(info.tokenAddress != address(0), "Token not found");
         require(!info.graduated, "Already graduated to Monad DEX");
 
+        // Anti-Sniper Shield (FairSlot Genesis) enforcement
+        if (block.timestamp < info.shieldEndTime) {
+            require(monIn <= MAX_SHIELD_BUY, "Anti-Sniper Shield: Max 0.2 MON during first 60s");
+        }
+
         info.monRaised += monIn;
 
-        // Linear bonding curve: tokensOut proportional to monIn
+        // Guaranteed flat seed price during active shield, standard linear bonding curve afterwards
         uint256 tokensOut = (monIn * TOTAL_SUPPLY) / (GRADUATION_TARGET * 2);
         require(tokensOut > 0, "Zero tokens received");
 

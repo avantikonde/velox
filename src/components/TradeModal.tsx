@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, TrendingUp, ShieldCheck, Zap } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, TrendingUp, ShieldCheck, Zap, Shield, AlertCircle } from 'lucide-react';
 import { Token, WalletState } from '../types';
 import confetti from 'canvas-confetti';
 
@@ -27,6 +27,15 @@ export const TradeModal: React.FC<TradeModalProps> = ({
 
   const userTokenBalance = wallet.tokens[token.id] || 0;
   const isBuy = tab === 'BUY';
+  const isShieldActive = Boolean(token.shieldActive);
+  const shieldCap = token.maxShieldBuyMon || 0.2;
+
+  // Enforce/clamp default amount when shield is active
+  useEffect(() => {
+    if (isShieldActive && parseFloat(amount) > shieldCap) {
+      setAmount(shieldCap.toString());
+    }
+  }, [token.id, isShieldActive, shieldCap]);
 
   // Linear bonding curve preview math
   const numAmount = parseFloat(amount) || 0;
@@ -37,6 +46,12 @@ export const TradeModal: React.FC<TradeModalProps> = ({
   const handleTrade = (e: React.FormEvent) => {
     e.preventDefault();
     if (numAmount <= 0) return;
+
+    if (isBuy && isShieldActive && numAmount > shieldCap) {
+      alert(`Anti-Sniper Shield Active: Maximum buy is capped at ${shieldCap} MON per transaction during the initial genesis window.`);
+      setAmount(shieldCap.toString());
+      return;
+    }
 
     if (isBuy && numAmount > wallet.monBalance) {
       alert(`Insufficient MON balance (${wallet.monBalance.toFixed(2)} MON available)`);
@@ -71,11 +86,17 @@ export const TradeModal: React.FC<TradeModalProps> = ({
     }, 800);
   };
 
-  const presetAmounts = isBuy ? ['0.1', '0.5', '1.0', '2.5'] : ['25%', '50%', '75%', '100%'];
+  const presetAmounts = isBuy 
+    ? (isShieldActive ? ['0.05', '0.1', '0.15', '0.2'] : ['0.1', '0.5', '1.0', '2.5']) 
+    : ['25%', '50%', '75%', '100%'];
 
   const handlePreset = (val: string) => {
     if (isBuy) {
-      setAmount(val);
+      if (isShieldActive && parseFloat(val) > shieldCap) {
+        setAmount(shieldCap.toString());
+      } else {
+        setAmount(val);
+      }
     } else {
       const pct = parseInt(val) / 100;
       setAmount((userTokenBalance * pct).toFixed(0));
@@ -116,6 +137,27 @@ export const TradeModal: React.FC<TradeModalProps> = ({
             <X className="w-5 h-5" />
           </button>
         </div>
+
+        {/* Anti-Sniper Shield Protective Banner */}
+        {isShieldActive && (
+          <div className="mb-4 p-3 rounded-xl bg-gradient-to-r from-[#193153]/90 to-[#0B5777]/80 border border-[#EB96FF]/40 text-[#F9D4E0] shadow-[0_0_15px_rgba(235,150,255,0.2)] flex items-center justify-between text-xs font-mono">
+            <div className="flex items-center gap-2 min-w-0">
+              <Shield className="w-4 h-4 text-[#EB96FF] animate-pulse flex-shrink-0" />
+              <div className="truncate">
+                <span className="font-bold text-white">Anti-Sniper Shield Active</span>
+                <span className="text-[#EB96FF] mx-1.5">•</span>
+                <span>Cap: {shieldCap} MON</span>
+                <span className="text-[#EB96FF] mx-1.5">•</span>
+                <span className="text-slate-300">Uniform Genesis Price</span>
+              </div>
+            </div>
+            {token.shieldRemainingSeconds !== undefined && token.shieldRemainingSeconds > 0 && (
+              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-[#193153] border border-[#EB96FF]/40 text-[#EB96FF] font-bold flex-shrink-0 ml-2">
+                {token.shieldRemainingSeconds}s left
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Bonding Curve Progress Bar */}
         <div className="mb-5 p-3.5 rounded-xl bg-[#131926] border border-white/[0.06] space-y-1.5 font-mono">
@@ -233,6 +275,14 @@ export const TradeModal: React.FC<TradeModalProps> = ({
                 </button>
               ))}
             </div>
+
+            {/* Anti-Sniper Cap Notice */}
+            {isBuy && isShieldActive && numAmount > shieldCap && (
+              <div className="flex items-center gap-1.5 text-[11px] text-[#F9D4E0] bg-[#193153]/90 px-2.5 py-1.5 rounded-lg border border-[#EB96FF]/40 mt-1">
+                <AlertCircle className="w-3.5 h-3.5 text-[#EB96FF] flex-shrink-0" />
+                <span>Anti-Sniper Shield active: Buy capped at {shieldCap} MON per trade during genesis.</span>
+              </div>
+            )}
           </div>
 
           {/* Estimated Output */}

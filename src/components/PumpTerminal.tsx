@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Token, HotCallout, LeaderboardEntry, FilterTimeframe } from '../types';
-import { TrendingUp, TrendingDown, MessageSquare, Heart, Flame, Trophy, CheckCircle2, ArrowUpRight } from 'lucide-react';
+import { TrendingUp, TrendingDown, MessageSquare, Heart, Flame, Trophy, CheckCircle2, ArrowUpRight, ShieldCheck } from 'lucide-react';
 
 interface PumpTerminalProps {
   tokens: Token[];
@@ -101,6 +101,12 @@ export const PumpTerminal: React.FC<PumpTerminalProps> = ({
                       <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded bg-white/[0.06] text-slate-300">
                         ${token.symbol}
                       </span>
+                      {token.shieldActive && (
+                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-[#193153]/90 text-[#EB96FF] border border-[#EB96FF]/40 shadow-[0_0_6px_rgba(235,150,255,0.25)] flex items-center gap-0.5 flex-shrink-0" title="Anti-Sniper Shield Active">
+                          <ShieldCheck className="w-2.5 h-2.5 text-[#EB96FF]" />
+                          <span>Shield</span>
+                        </span>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-2 text-[11px] text-slate-400 font-mono mt-0.5">
