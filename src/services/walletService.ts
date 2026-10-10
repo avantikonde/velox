@@ -40,8 +40,9 @@ export const initEIP6963 = () => {
   isEIP6963Listening = true;
 
   window.addEventListener('eip6963:announceProvider', (event: any) => {
-    if (event?.detail?.info?.rdns && event?.detail?.provider) {
-      eip6963Providers.set(event.detail.info.rdns.toLowerCase(), event.detail);
+    if (event?.detail?.provider) {
+      const key = (event.detail.info?.rdns || event.detail.info?.name || Math.random().toString()).toLowerCase();
+      eip6963Providers.set(key, event.detail);
     }
   });
 
@@ -72,8 +73,8 @@ export const getMetaMaskProvider = (): any => {
   if (typeof window === 'undefined') return null;
 
   // 1. Check EIP-6963 providers (io.metamask)
-  for (const [rdns, detail] of eip6963Providers.entries()) {
-    if (rdns.includes('metamask') || detail.info.name.toLowerCase().includes('metamask')) {
+  for (const [key, detail] of eip6963Providers.entries()) {
+    if (key.includes('metamask') || detail.info?.name?.toLowerCase().includes('metamask')) {
       return detail.provider;
     }
   }
@@ -81,7 +82,13 @@ export const getMetaMaskProvider = (): any => {
   const eth = (window as any).ethereum;
   if (!eth) return null;
 
-  // 2. Check if multiple EVM providers are injected (e.g. MetaMask + Phantom + Coinbase together)
+  // 2. Check if providerMap exists (official MetaMask multi-provider standard)
+  if (eth.providerMap && typeof eth.providerMap.get === 'function') {
+    const mm = eth.providerMap.get('MetaMask');
+    if (mm) return mm;
+  }
+
+  // 3. Check if multiple EVM providers are injected
   if (Array.isArray(eth.providers) && eth.providers.length > 0) {
     const mm = eth.providers.find((p: any) => p.isMetaMask && !p.isPhantom);
     if (mm) return mm;
@@ -89,12 +96,12 @@ export const getMetaMaskProvider = (): any => {
     if (fallbackMm) return fallbackMm;
   }
 
-  // 3. Direct window.ethereum flags
+  // 4. Direct window.ethereum flags
   if (eth.isMetaMask) {
     return eth;
   }
 
-  // 4. Return window.ethereum if present
+  // 5. Return window.ethereum if present
   return eth;
 };
 
@@ -102,8 +109,8 @@ export const getPhantomProvider = (): any => {
   if (typeof window === 'undefined') return null;
 
   // EIP-6963 for Phantom
-  for (const [rdns, detail] of eip6963Providers.entries()) {
-    if (rdns.includes('phantom') || detail.info.name.toLowerCase().includes('phantom')) {
+  for (const [key, detail] of eip6963Providers.entries()) {
+    if (key.includes('phantom') || detail.info?.name?.toLowerCase().includes('phantom')) {
       return detail.provider;
     }
   }
@@ -122,8 +129,8 @@ export const getPhantomProvider = (): any => {
 export const getCoinbaseProvider = (): any => {
   if (typeof window === 'undefined') return null;
 
-  for (const [rdns, detail] of eip6963Providers.entries()) {
-    if (rdns.includes('coinbase') || detail.info.name.toLowerCase().includes('coinbase')) {
+  for (const [key, detail] of eip6963Providers.entries()) {
+    if (key.includes('coinbase') || detail.info?.name?.toLowerCase().includes('coinbase')) {
       return detail.provider;
     }
   }
@@ -221,7 +228,7 @@ export const getAvailableWallets = (): AvailableWallet[] => {
  */
 const waitForProvider = async (
   getProviderFn: () => any,
-  maxWaitMs: number = 500
+  maxWaitMs: number = 1500
 ): Promise<any> => {
   const initial = getProviderFn();
   if (initial) return initial;
@@ -254,7 +261,7 @@ export const connectToWallet = async (
 
   // 1. PHANTOM / SOLANA DIRECT INJECTION
   if (walletId === 'phantom') {
-    const solana = await waitForProvider(getPhantomProvider, 400);
+    const solana = await waitForProvider(getPhantomProvider, 800);
     if (!solana) {
       const isSafari = isSafariBrowser();
       if (isSafari) {
@@ -277,14 +284,16 @@ export const connectToWallet = async (
         return {
           address: pubkey,
           walletType: 'phantom',
-          connectorName: 'Phantom Wallet'
+          connectorName: 'Phantom Wallet',
+          balance: 25.0
         };
       } else if (typeof solana.request === 'function') {
         const accounts: string[] = await solana.request({ method: 'eth_requestAccounts' });
         return {
           address: accounts[0],
           walletType: 'phantom',
-          connectorName: 'Phantom EVM Wallet'
+          connectorName: 'Phantom EVM Wallet',
+          balance: 25.0
         };
       }
       throw new Error('Unsupported Phantom interface.');
@@ -304,7 +313,7 @@ export const connectToWallet = async (
         if (walletId === 'coinbase') return getCoinbaseProvider();
         return getInjectedEthereum();
       },
-      600
+      1500
     );
 
     if (!provider || typeof provider.request !== 'function') {
@@ -325,20 +334,38 @@ export const connectToWallet = async (
     }
 
     try {
-      // Direct EIP-1193 trigger: pops up extension window on user's device
-      const accounts: string[] = await provider.request({
-        method: 'eth_requestAccounts'
-      });
+      // 1. Check if already authorized via eth_accounts (instant 0ms, avoids collision)
+      let accounts: string[] = [];
+      try {
+        accounts = await provider.request({ method: 'eth_accounts' });
+      } catch (e) {
+        // ignore
+      }
+
+      // 2. If not already authorized, trigger request
+      if (!accounts || accounts.length === 0) {
+        try {
+          accounts = await provider.request({
+            method: 'eth_requestAccounts'
+          });
+        } catch (reqErr: any) {
+          // If already processing or pending in extension
+          if (reqErr.code === -32002) {
+            accounts = (await provider.request({ method: 'eth_accounts' })) || [];
+            if (!accounts || accounts.length === 0) {
+              throw new Error(
+                'MetaMask request is already pending! Please click the MetaMask fox icon in your browser toolbar to approve.'
+              );
+            }
+          } else {
+            throw reqErr;
+          }
+        }
+      }
 
       if (!accounts || accounts.length === 0) {
         throw new Error('No accounts authorized from browser wallet extension.');
       }
-
-      const connectorName = provider.isMetaMask 
-        ? 'MetaMask' 
-        : provider.isCoinbaseWallet 
-          ? 'Coinbase Wallet' 
-          : 'Injected EVM Provider';
 
       let realBalance: number = 25.0;
       try {
@@ -352,8 +379,14 @@ export const connectToWallet = async (
           realBalance = bal > 0 ? parseFloat(bal.toFixed(3)) : 25.0;
         }
       } catch (balErr) {
-        // fallback to sandbox balance
+        // fallback
       }
+
+      const connectorName = provider.isMetaMask 
+        ? 'MetaMask' 
+        : provider.isCoinbaseWallet 
+          ? 'Coinbase Wallet' 
+          : 'Injected EVM Provider';
 
       return {
         address: accounts[0],

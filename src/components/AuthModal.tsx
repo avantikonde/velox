@@ -99,7 +99,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
         isConnected: true,
         address: result.address,
         walletType: result.walletType,
-        connectorName: result.connectorName
+        connectorName: result.connectorName,
+        monBalance: result.balance ?? 25.0
       });
       onClose();
     } catch (err: any) {

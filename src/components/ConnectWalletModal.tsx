@@ -54,7 +54,8 @@ export const ConnectWalletModal: React.FC<ConnectWalletModalProps> = ({
         isConnected: true,
         address: result.address,
         walletType: result.walletType,
-        connectorName: result.connectorName
+        connectorName: result.connectorName,
+        monBalance: result.balance ?? 25.0
       });
       setConnectingId(null);
       onClose();
