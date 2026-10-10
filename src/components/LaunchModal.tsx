@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { X, Sparkles, Shield, AlertCircle, Wand2, Wallet, ExternalLink } from 'lucide-react';
-import { Token, WalletState } from '../types';
+import { X, Sparkles, Shield, AlertCircle, Wand2, Wallet, ExternalLink, Lock, CheckCircle2, Loader2 } from 'lucide-react';
+import { Token, WalletState, User } from '../types';
+import { ChainConfig } from '../data/chains';
+import { dispatchWeb3Transaction } from '../services/web3TransactionService';
 import confetti from 'canvas-confetti';
 
 interface LaunchModalProps {
@@ -12,6 +14,9 @@ interface LaunchModalProps {
   chainName?: string;
   wallet?: WalletState;
   onOpenConnectWallet?: () => void;
+  currentUser?: User | null;
+  onOpenAuthModal?: () => void;
+  chainConfig?: ChainConfig;
 }
 
 const PRESET_AVATARS = [
@@ -29,7 +34,10 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
   currencySymbol = 'MON',
   chainName = 'Monad',
   wallet,
-  onOpenConnectWallet
+  onOpenConnectWallet,
+  currentUser,
+  onOpenAuthModal,
+  chainConfig
 }) => {
   const [name, setName] = useState('');
   const [symbol, setSymbol] = useState('');
@@ -37,12 +45,22 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
   const [imageUrl, setImageUrl] = useState(PRESET_AVATARS[0].url);
   const [initialBuy, setInitialBuy] = useState('0.1');
   const [isDeploying, setIsDeploying] = useState(false);
+  const [deployStep, setDeployStep] = useState<string>('');
   const [error, setError] = useState('');
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // 1. Mandatory Sign-in Check
+    if (!currentUser) {
+      setError('You must sign in before launching a token so collaborators can verify your account and ownership.');
+      if (onOpenAuthModal) onOpenAuthModal();
+      return;
+    }
+
+    // 2. Wallet Connection Check
     if (!wallet?.isConnected) {
       setError('Please connect your device wallet (MetaMask, Phantom, etc.) before launching.');
       if (onOpenConnectWallet) onOpenConnectWallet();
@@ -66,20 +84,51 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
 
     setError('');
     setIsDeploying(true);
+    setDeployStep('Confirming transaction in your wallet extension...');
 
-    // Simulate parallel smart contract deployment
-    setTimeout(() => {
-      const creatorAddress = wallet?.address 
-        ? `${wallet.address.slice(0, 6)}...${wallet.address.slice(-4)}`
-        : '0xYou...Me';
+    try {
+      // 3. Dispatch real Web3 Transaction to user's connected wallet extension!
+      const currentChain: ChainConfig = chainConfig || {
+        id: 'monad',
+        name: chainName || 'Monad Testnet',
+        symbol: currencySymbol,
+        badge: 'Parallel L1',
+        iconColor: '#68CFEB',
+        tps: '10,000 TPS',
+        finality: '~800ms',
+        gasCost: '< 0.0001 MON',
+        rpcUrl: 'https://testnet-rpc.monad.xyz',
+        faucetAmount: 10.0,
+        explorerName: 'MonadScan'
+      };
+
+      const txResult = await dispatchWeb3Transaction({
+        fromAddress: wallet.address,
+        amount: buyAmount,
+        tokenName: name.trim(),
+        tokenSymbol: symbol.trim().toUpperCase(),
+        txType: 'LAUNCH_TOKEN',
+        chainConfig: currentChain
+      });
+
+      if (!txResult.success) {
+        setIsDeploying(false);
+        setDeployStep('');
+        setError(txResult.error || 'Transaction confirmation was declined in your wallet.');
+        return;
+      }
+
+      setDeployStep('Broadcasting contract to Monad Parallel L1 engine...');
+
+      const creatorUsername = currentUser.username || 'creator';
 
       const newToken: Token = {
         id: `token-${Date.now()}`,
         name: name.trim(),
         symbol: symbol.trim().toUpperCase(),
-        description: description.trim() || `A high-speed community coin launched on ${chainName} Parallel L1.`,
+        description: description.trim() || `A high-speed community coin launched on ${chainName} Parallel L1 by @${creatorUsername}.`,
         imageUrl,
-        creator: creatorAddress,
+        creator: creatorUsername,
         createdAt: 'Just now',
         marketCapMon: buyAmount > 0 ? 5.0 + buyAmount * 2 : 5.0,
         priceMon: 0.0001,
@@ -93,21 +142,32 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
         repliesCount: 0,
         shieldActive: true,
         shieldRemainingSeconds: 60,
-        maxShieldBuyMon: 0.5
+        maxShieldBuyMon: 0.5,
+        chain: currentChain.id,
+        chainSymbol: currentChain.symbol,
+        contractAddress: txResult.txHash ? `0x${txResult.txHash.replace('0x', '').slice(0, 40)}` : '0xFA1R892A0B577719BCA019',
+        usdPrice: 0.0001,
+        usdMarketCap: buyAmount > 0 ? 50000 + buyAmount * 20000 : 50000,
+        sparkline7d: [0.000095, 0.000098, 0.0001]
       };
 
       setIsDeploying(false);
+      setDeployStep('');
       onLaunch(newToken, buyAmount);
 
       confetti({
-        particleCount: 70,
-        spread: 70,
+        particleCount: 80,
+        spread: 80,
         origin: { y: 0.6 },
         colors: ['#68CFEB', '#1F4B5D', '#90DEF2']
       });
 
       onClose();
-    }, 1000);
+    } catch (err: any) {
+      setIsDeploying(false);
+      setDeployStep('');
+      setError(err?.message || 'Transaction failed during launch.');
+    }
   };
 
   const autofillMeme = () => {
@@ -140,6 +200,51 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
             <X className="w-5 h-5" />
           </button>
         </div>
+
+        {/* Creator Account Authentication Card */}
+        {currentUser ? (
+          <div className="mb-3 p-3 rounded-xl bg-[#232326] border border-white/[0.08] flex items-center justify-between font-mono text-xs">
+            <div className="flex items-center gap-2.5">
+              <img
+                src={currentUser.avatarUrl}
+                alt={currentUser.username}
+                className="w-7 h-7 rounded-lg object-cover border border-[#68CFEB]/40 flex-shrink-0"
+              />
+              <div>
+                <div className="text-[10px] text-slate-400">Creator Account</div>
+                <div className="text-white font-bold flex items-center gap-1.5">
+                  <span>@{currentUser.username}</span>
+                  <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
+                    Verified
+                  </span>
+                </div>
+              </div>
+            </div>
+            <span className="text-[10px] text-slate-400 truncate max-w-[140px] hidden sm:inline">
+              {currentUser.email}
+            </span>
+          </div>
+        ) : (
+          <div className="mb-3 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between font-mono text-xs">
+            <div className="flex items-center gap-2.5">
+              <Lock className="w-4 h-4 text-amber-400 flex-shrink-0" />
+              <div>
+                <div className="text-amber-300 font-bold text-xs">Sign In Required</div>
+                <div className="text-[10px] text-slate-300">Sign in to verify token ownership for all collaborators</div>
+              </div>
+            </div>
+
+            {onOpenAuthModal && (
+              <button
+                type="button"
+                onClick={onOpenAuthModal}
+                className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-black text-xs font-bold transition-all shadow-sm active:scale-95 flex-shrink-0"
+              >
+                Sign In ➔
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Deployer Wallet Section */}
         {wallet?.isConnected ? (
@@ -329,20 +434,36 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
           {/* Action Button */}
           <div className="pt-1">
             <button
-              type={wallet?.isConnected ? "submit" : "button"}
+              type={currentUser && wallet?.isConnected ? "submit" : "button"}
               onClick={() => {
-                if (!wallet?.isConnected && onOpenConnectWallet) {
+                if (!currentUser && onOpenAuthModal) {
+                  onOpenAuthModal();
+                } else if (!wallet?.isConnected && onOpenConnectWallet) {
                   onOpenConnectWallet();
                 }
               }}
               disabled={isDeploying}
-              className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] hover:from-[#90DEF2] hover:to-[#2B6882] text-[#1F1E19] text-xs font-extrabold font-mono transition-all active:scale-98 disabled:opacity-50 shadow-md shadow-[#68CFEB]/20"
+              className={`
+                w-full py-3 px-4 rounded-xl text-xs font-extrabold font-mono transition-all active:scale-98 disabled:opacity-50 shadow-md
+                ${!currentUser
+                  ? 'bg-white hover:bg-slate-100 text-black shadow-lg shadow-white/10'
+                  : !wallet?.isConnected
+                    ? 'bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] hover:from-[#90DEF2] hover:to-[#2B6882] text-[#1F1E19] shadow-[#68CFEB]/20'
+                    : 'bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] hover:from-[#90DEF2] hover:to-[#2B6882] text-[#1F1E19] shadow-[#68CFEB]/20'}
+              `}
             >
-              {isDeploying 
-                ? `Deploying to ${chainName} Parallel Engine...` 
-                : wallet?.isConnected 
-                  ? 'Launch Token in 1 Click 🚀' 
-                  : 'Connect Device Wallet to Launch 🦊👻'}
+              {isDeploying ? (
+                <div className="flex items-center justify-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin text-[#1F1E19]" />
+                  <span>{deployStep || `Confirming in ${wallet?.connectorName || 'Wallet Extension'}...`}</span>
+                </div>
+              ) : !currentUser ? (
+                <span>Sign In to Launch Token ➔</span>
+              ) : !wallet?.isConnected ? (
+                <span>Connect Device Wallet to Confirm 🦊👻</span>
+              ) : (
+                <span>Launch Token on {chainName} (Confirm in Wallet) 🚀</span>
+              )}
             </button>
           </div>
         </form>

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { X, TrendingUp, ShieldCheck, Zap, Shield, AlertCircle, ExternalLink } from 'lucide-react';
+import { X, TrendingUp, ShieldCheck, Zap, Shield, AlertCircle, ExternalLink, Loader2 } from 'lucide-react';
 import { Token, WalletState } from '../types';
+import { ChainConfig } from '../data/chains';
+import { dispatchWeb3Transaction } from '../services/web3TransactionService';
 import { CoinLiveChart } from './CoinLiveChart';
 import confetti from 'canvas-confetti';
 
@@ -12,6 +14,7 @@ interface TradeModalProps {
   onExecuteTrade: (tokenId: string, type: 'BUY' | 'SELL', monAmount: number, tokenAmount: number) => void;
   currencySymbol?: string;
   onOpenConnectWallet?: () => void;
+  chainConfig?: ChainConfig;
 }
 
 export const TradeModal: React.FC<TradeModalProps> = ({
@@ -21,7 +24,8 @@ export const TradeModal: React.FC<TradeModalProps> = ({
   wallet,
   onExecuteTrade,
   currencySymbol,
-  onOpenConnectWallet
+  onOpenConnectWallet,
+  chainConfig
 }) => {
   const [tab, setTab] = useState<'BUY' | 'SELL'>('BUY');
   const [amount, setAmount] = useState('0.5');
@@ -51,7 +55,7 @@ export const TradeModal: React.FC<TradeModalProps> = ({
     ? Math.round(numAmount / price)
     : Math.round(numAmount * price * 0.98 * 1000) / 1000;
 
-  const handleTrade = (e: React.FormEvent) => {
+  const handleTrade = async (e: React.FormEvent) => {
     e.preventDefault();
     if (numAmount <= 0) return;
 
@@ -73,17 +77,44 @@ export const TradeModal: React.FC<TradeModalProps> = ({
     setIsExecuting(true);
     setLastTxSuccess(null);
 
-    // Simulate Monad Sub-second execution (800ms)
-    const startTime = performance.now();
-    setTimeout(() => {
-      const latency = Math.round(performance.now() - startTime);
+    try {
+      const currentChain: ChainConfig = chainConfig || {
+        id: token.chain || 'monad',
+        name: token.chain === 'monad' ? 'Monad Testnet' : (token.chain || 'Monad Testnet'),
+        symbol: currSymbol,
+        badge: 'Parallel L1',
+        iconColor: '#68CFEB',
+        tps: '10,000 TPS',
+        finality: '~800ms',
+        gasCost: '< 0.0001 MON',
+        rpcUrl: 'https://testnet-rpc.monad.xyz',
+        faucetAmount: 10.0,
+        explorerName: 'MonadScan'
+      };
+
+      const txResult = await dispatchWeb3Transaction({
+        fromAddress: wallet.address,
+        toAddress: token.contractAddress,
+        amount: isBuy ? numAmount : 0,
+        txType: isBuy ? 'BUY_TOKEN' : 'SELL_TOKEN',
+        tokenName: token.name,
+        tokenSymbol: token.symbol,
+        chainConfig: currentChain
+      });
+
+      if (!txResult.success) {
+        setIsExecuting(false);
+        alert(txResult.error || 'Transaction was declined in your wallet extension.');
+        return;
+      }
+
       setIsExecuting(false);
-      
       const monSpent = isBuy ? numAmount : (numAmount * token.priceMon);
       const tokensTraded = isBuy ? estimatedTokens : numAmount;
 
       onExecuteTrade(token.id, tab, monSpent, tokensTraded);
-      setLastTxSuccess(`⚡ Confirmed in ${latency}ms on Monad block #${Math.floor(Math.random() * 80000 + 100000)}`);
+      const shortTx = txResult.txHash ? `${txResult.txHash.slice(0, 10)}...` : 'Confirmed';
+      setLastTxSuccess(`⚡ Confirmed on ${currentChain.name} (Tx: ${shortTx})`);
 
       confetti({
         particleCount: 50,
@@ -91,7 +122,10 @@ export const TradeModal: React.FC<TradeModalProps> = ({
         origin: { y: 0.7 },
         colors: ['#68CFEB', '#1F4B5D', '#90DEF2']
       });
-    }, 800);
+    } catch (err: any) {
+      setIsExecuting(false);
+      alert(err?.message || 'Transaction failed.');
+    }
   };
 
   const presetAmounts = isBuy 

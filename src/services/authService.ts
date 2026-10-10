@@ -111,29 +111,104 @@ export const authService = {
 
   // Google Authentication Link / Sign-In
   loginWithGoogle: async (googleEmail?: string, googleName?: string): Promise<User> => {
+    return authService.loginWithSocial('google', googleEmail, googleName);
+  },
+
+  // Universal Social Sign-in (Google, Apple, GitHub)
+  loginWithSocial: async (
+    provider: 'google' | 'apple' | 'github',
+    customEmail?: string,
+    customName?: string
+  ): Promise<User> => {
     authService.initDB();
     const users: StoredUserAccount[] = JSON.parse(localStorage.getItem(USERS_STORAGE_KEY) || '[]');
 
-    const email = (googleEmail || 'builder.monad@gmail.com').toLowerCase();
-    const name = googleName || email.split('@')[0];
+    const fallbackEmail = provider === 'google' 
+      ? 'builder.monad@gmail.com' 
+      : provider === 'apple' 
+        ? 'trader.apple@icloud.com' 
+        : 'monad.coder@github.com';
+
+    const email = (customEmail || fallbackEmail).toLowerCase();
+    const defaultName = customName || (email.split('@')[0]);
 
     let user = users.find(u => u.email.toLowerCase() === email);
 
     if (!user) {
-      // Create new account linked with Google
       const randomHex = Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
       const newAddress = `0x${randomHex}`;
 
+      const avatar = provider === 'github'
+        ? 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=100&auto=format&fit=crop&q=80'
+        : provider === 'apple'
+          ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80'
+          : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80';
+
       user = {
-        id: `usr_google_${Date.now()}`,
-        username: name.toLowerCase().replace(/\s+/g, '_'),
+        id: `usr_${provider}_${Date.now()}`,
+        username: defaultName.toLowerCase().replace(/\s+/g, '_'),
         email,
-        avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
-        authProvider: 'google',
+        avatarUrl: avatar,
+        authProvider: provider,
         createdAt: new Date().toISOString().split('T')[0],
         monadWalletAddress: newAddress
       };
 
+      users.push(user);
+      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+    }
+
+    const { passwordHash: _, ...safeUser } = user;
+    localStorage.setItem(ACTIVE_USER_STORAGE_KEY, JSON.stringify(safeUser));
+    return safeUser;
+  },
+
+  // Instant passwordless sign in with email
+  loginWithEmailOnly: async (email: string): Promise<User> => {
+    authService.initDB();
+    const users: StoredUserAccount[] = JSON.parse(localStorage.getItem(USERS_STORAGE_KEY) || '[]');
+    const cleanEmail = email.trim().toLowerCase();
+
+    let user = users.find(u => u.email.toLowerCase() === cleanEmail);
+    if (!user) {
+      const username = cleanEmail.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '_');
+      const randomHex = Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+      user = {
+        id: `usr_email_${Date.now()}`,
+        username,
+        email: cleanEmail,
+        avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80',
+        authProvider: 'email',
+        createdAt: new Date().toISOString().split('T')[0],
+        monadWalletAddress: `0x${randomHex}`
+      };
+      users.push(user);
+      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+    }
+
+    const { passwordHash: _, ...safeUser } = user;
+    localStorage.setItem(ACTIVE_USER_STORAGE_KEY, JSON.stringify(safeUser));
+    return safeUser;
+  },
+
+  // Link / Sign in with connected device wallet address
+  loginWithWalletAddress: async (address: string, walletName?: string): Promise<User> => {
+    authService.initDB();
+    const users: StoredUserAccount[] = JSON.parse(localStorage.getItem(USERS_STORAGE_KEY) || '[]');
+    const cleanAddr = address.toLowerCase();
+
+    let user = users.find(u => u.monadWalletAddress.toLowerCase() === cleanAddr);
+    if (!user) {
+      const shortHandle = `${walletName?.toLowerCase() || 'trader'}_${address.slice(2, 6)}`;
+      user = {
+        id: `usr_wallet_${Date.now()}`,
+        username: shortHandle,
+        email: `${shortHandle}@velox.app`,
+        avatarUrl: 'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=100&auto=format&fit=crop&q=80',
+        authProvider: 'wallet',
+        createdAt: new Date().toISOString().split('T')[0],
+        monadWalletAddress: address
+      };
       users.push(user);
       localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
     }

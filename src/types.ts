@@ -85,7 +85,7 @@ export interface User {
   username: string;
   email: string;
   avatarUrl: string;
-  authProvider: 'google' | 'email';
+  authProvider: 'google' | 'email' | 'apple' | 'github' | 'wallet';
   createdAt: string;
   monadWalletAddress: string;
 }

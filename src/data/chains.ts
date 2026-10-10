@@ -10,6 +10,8 @@ export interface ChainConfig {
   rpcUrl: string;
   faucetAmount: number;
   explorerName: string;
+  chainIdHex?: string;
+  chainDecimalId?: number;
 }
 
 export const SUPPORTED_CHAINS: ChainConfig[] = [
@@ -22,9 +24,11 @@ export const SUPPORTED_CHAINS: ChainConfig[] = [
     tps: '10,000 TPS',
     finality: '~800ms',
     gasCost: '< 0.0001 MON',
-    rpcUrl: 'testnet-rpc.monad.xyz',
+    rpcUrl: 'https://testnet-rpc.monad.xyz',
     faucetAmount: 10.0,
-    explorerName: 'MonadScan'
+    explorerName: 'MonadScan',
+    chainIdHex: '0x279f',
+    chainDecimalId: 10143
   },
   {
     id: 'ethereum',

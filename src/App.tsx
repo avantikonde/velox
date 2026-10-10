@@ -22,8 +22,23 @@ import { Search, Flame, Sparkles, Trophy, CheckCircle, Code2, Compass } from 'lu
 
 const VALID_TABS: NavigationTab[] = ['home', 'explore', 'leaderboard', 'live-feed', 'terminal', 'rewards'];
 
+const loadInitialTokens = (): Token[] => {
+  try {
+    const saved = localStorage.getItem('velox_community_tokens');
+    if (saved) {
+      const customTokens: Token[] = JSON.parse(saved);
+      const customIds = new Set(customTokens.map(t => t.id));
+      const filteredInitial = INITIAL_TOKENS.filter(t => !customIds.has(t.id));
+      return [...customTokens, ...filteredInitial];
+    }
+  } catch (e) {
+    console.warn('Failed to parse saved tokens:', e);
+  }
+  return INITIAL_TOKENS;
+};
+
 export const App: React.FC = () => {
-  const [tokens, setTokens] = useState<Token[]>(INITIAL_TOKENS);
+  const [tokens, setTokens] = useState<Token[]>(loadInitialTokens);
   const [callouts, setCallouts] = useState<HotCallout[]>(MOCK_HOT_CALLOUTS);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>(MOCK_LEADERBOARD);
   const [searchQuery, setSearchQuery] = useState('');
@@ -297,6 +312,14 @@ export const App: React.FC = () => {
     }));
   };
 
+  const handleOpenLaunchModal = () => {
+    if (!currentUser) {
+      setIsAuthOpen(true);
+      return;
+    }
+    setIsLaunchOpen(true);
+  };
+
   const handleLaunchToken = (newToken: Token, initialBuyMon: number) => {
     const tokenWithShield: Token = {
       ...newToken,
@@ -320,6 +343,16 @@ export const App: React.FC = () => {
         }
       }));
     }
+
+    // Persist to community tokens so collaborators & all sessions can view it
+    try {
+      const saved = JSON.parse(localStorage.getItem('velox_community_tokens') || '[]');
+      const updated = [tokenWithShield, ...saved];
+      localStorage.setItem('velox_community_tokens', JSON.stringify(updated));
+    } catch (err) {
+      console.warn('Could not persist token:', err);
+    }
+
     setTokens(prev => [tokenWithShield, ...prev]);
     setSelectedToken(tokenWithShield);
   };
@@ -408,7 +441,7 @@ export const App: React.FC = () => {
         onToggleExpand={() => setIsSidebarExpanded(!isSidebarExpanded)}
         activeTab={activeTab}
         onSelectTab={handleSelectTab}
-        onOpenLaunchModal={() => setIsLaunchOpen(true)}
+        onOpenLaunchModal={handleOpenLaunchModal}
         onOpenHowItWorks={() => setIsHowItWorksOpen(true)}
         onOpenContractsModal={() => setShowContractsModal(true)}
         viewMode={viewMode}
@@ -427,7 +460,7 @@ export const App: React.FC = () => {
         <PumpTopHeader
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
-          onOpenLaunchModal={() => setIsLaunchOpen(true)}
+          onOpenLaunchModal={handleOpenLaunchModal}
           onOpenAuthModal={() => setIsAuthOpen(true)}
           onClaimFaucet={claimFaucet}
           currentUser={currentUser}
@@ -506,7 +539,7 @@ export const App: React.FC = () => {
                 callouts={callouts}
                 leaderboard={leaderboard}
                 onSelectToken={(t) => setSelectedToken(t)}
-                onOpenLaunchModal={() => setIsLaunchOpen(true)}
+                onOpenLaunchModal={handleOpenLaunchModal}
                 currencySymbol={activeChain.symbol}
               />
             </div>
@@ -517,7 +550,7 @@ export const App: React.FC = () => {
             <RewardsView
               userAddress={wallet.address}
               activeChain={activeChain}
-              onOpenLaunchModal={() => setIsLaunchOpen(true)}
+              onOpenLaunchModal={handleOpenLaunchModal}
             />
           )}
 
@@ -620,7 +653,7 @@ export const App: React.FC = () => {
                     Be the first to launch a token for this keyword on the bonding curve!
                   </p>
                   <button 
-                    onClick={() => setIsLaunchOpen(true)} 
+                    onClick={handleOpenLaunchModal} 
                     className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] hover:from-[#90DEF2] hover:to-[#2B6882] text-[#1F1E19] text-xs font-extrabold transition-all active:scale-95 shadow-md shadow-[#68CFEB]/20 inline-block"
                   >
                     Launch Coin 🚀
@@ -663,6 +696,9 @@ export const App: React.FC = () => {
         chainName={activeChain.name}
         wallet={wallet}
         onOpenConnectWallet={handleOpenConnectWallet}
+        currentUser={currentUser}
+        onOpenAuthModal={() => setIsAuthOpen(true)}
+        chainConfig={activeChain}
       />
 
       <TradeModal
@@ -673,6 +709,7 @@ export const App: React.FC = () => {
         onExecuteTrade={handleExecuteTrade}
         currencySymbol={activeChain.symbol}
         onOpenConnectWallet={handleOpenConnectWallet}
+        chainConfig={activeChain}
       />
 
       <ConnectWalletModal
@@ -690,8 +727,15 @@ export const App: React.FC = () => {
       <AuthModal
         isOpen={isAuthOpen}
         onClose={() => setIsAuthOpen(false)}
-        onAuthSuccess={(user: User) => {
+        onAuthSuccess={(user: User, connectedWallet?: Partial<WalletState>) => {
           setCurrentUser(user);
+          if (connectedWallet) {
+            setWallet(prev => ({
+              ...prev,
+              ...connectedWallet,
+              isConnected: true
+            }));
+          }
           setIsAuthOpen(false);
         }}
       />
