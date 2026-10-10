@@ -33,10 +33,10 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#070c16]/90 backdrop-blur-2xl">
+    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#1F1E19]/90 backdrop-blur-2xl">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         
-        {/* LEFT: Official Monad Logo + MONADPUMP Text (Matching Monad's App Format) */}
+        {/* LEFT: Official Monad Logo + VELOX Text */}
         <div 
           onClick={() => onSelectNavTab?.('home')}
           className="flex items-center gap-3 cursor-pointer group flex-shrink-0"
@@ -58,17 +58,17 @@ export const Navbar: React.FC<NavbarProps> = ({
               />
               <defs>
                 <linearGradient id="monadBrandGradient" x1="4" y1="4" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#EB96FF" />
-                  <stop offset="0.5" stopColor="#A855F7" />
-                  <stop offset="1" stopColor="#0B5777" />
+                  <stop stopColor="#68CFEB" />
+                  <stop offset="0.5" stopColor="#4BB5D3" />
+                  <stop offset="1" stopColor="#1F4B5D" />
                 </linearGradient>
               </defs>
             </svg>
           </div>
 
           <div className="flex items-center tracking-wider">
-            <span className="font-extrabold text-base tracking-[0.14em] text-white">
-              VELOX<span className="text-[#EB96FF]">.</span>
+            <span className="font-extrabold text-base tracking-[0.14em] text-[#FAFAFA]">
+              VELOX<span className="text-[#68CFEB]">.</span>
             </span>
           </div>
         </div>
@@ -82,7 +82,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               onSelectNavTab?.('home');
             }}
             className={`transition-colors py-1 hover:text-white ${
-              viewMode === 'grid' ? 'text-white border-b-2 border-[#EB96FF]' : 'text-slate-400'
+              viewMode === 'grid' ? 'text-white border-b-2 border-[#68CFEB]' : 'text-slate-400'
             }`}
           >
             HOME
@@ -94,7 +94,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               onSelectNavTab?.('terminal');
             }}
             className={`transition-colors py-1 hover:text-white flex items-center gap-1 ${
-              viewMode === 'terminal' ? 'text-white border-b-2 border-[#EB96FF]' : 'text-slate-400'
+              viewMode === 'terminal' ? 'text-white border-b-2 border-[#68CFEB]' : 'text-slate-400'
             }`}
           >
             <span>TERMINAL</span>
@@ -136,10 +136,10 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* RIGHT: Search Trigger, GET MON Button, Launch Coin Button & Wallet */}
         <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           
-          {/* Minimalist Search / ⌘K Trigger (Matching Monad App) */}
+          {/* Minimalist Search */}
           <div className="relative">
             {isSearchOpen ? (
-              <div className="flex items-center bg-[#193153]/60 border border-[#EB96FF]/40 rounded-full px-3 py-1 animate-in fade-in duration-200">
+              <div className="flex items-center bg-[#25241E] border border-[#68CFEB]/40 rounded-full px-3 py-1 animate-in fade-in duration-200">
                 <Search className="w-3.5 h-3.5 text-slate-400 mr-2" />
                 <input
                   type="text"
@@ -167,17 +167,17 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </div>
 
-          {/* "GET MON" Faucet Button (Exact Format as Attached Monad App Image) */}
+          {/* "GET MON" Faucet Button */}
           <button
             onClick={onClaimFaucet}
             title="Claim +10 MON Faucet Testnet Tokens"
-            className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#6e54ff] to-[#836EF9] hover:from-[#7c63ff] hover:to-[#917eff] text-white font-extrabold text-xs tracking-wider uppercase shadow-md shadow-[#6e54ff]/25 transition-all active:scale-95 flex items-center gap-1.5 font-mono"
+            className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] hover:from-[#90DEF2] hover:to-[#2B6882] text-[#1F1E19] font-extrabold text-xs tracking-wider uppercase shadow-md shadow-[#68CFEB]/25 transition-all active:scale-95 flex items-center gap-1.5 font-mono"
           >
             <span>GET MON</span>
             <span className="hidden xl:inline text-[10px] opacity-80">(+10)</span>
           </button>
 
-          {/* Signature Liquid Aurora Capsule Button: LAUNCH COIN (Image 4 Style, Kept at Top Bar) */}
+          {/* LAUNCH COIN Button */}
           <AuroraButton
             onClick={onOpenLaunchModal}
             size="sm"
@@ -193,14 +193,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold
               transition-all duration-200 border
               ${wallet.isConnected 
-                ? 'bg-[#193153]/70 hover:bg-[#193153] border-[#EB96FF]/40 text-white' 
+                ? 'bg-[#25241E] hover:bg-[#2C2B24] border-[#68CFEB]/40 text-[#FAFAFA]' 
                 : 'bg-white/5 hover:bg-white/10 border-white/10 text-slate-200'}
             `}
           >
-            <Wallet className="w-3.5 h-3.5 text-[#EB96FF]" />
+            <Wallet className="w-3.5 h-3.5 text-[#68CFEB]" />
             {wallet.isConnected ? (
               <span className="flex items-center gap-1.5 font-mono">
-                <span className="text-[#F9D4E0] font-bold">{wallet.monBalance.toFixed(1)} MON</span>
+                <span className="text-[#68CFEB] font-bold">{wallet.monBalance.toFixed(1)} MON</span>
                 <span className="text-slate-400 hidden md:inline">({wallet.address.slice(0, 4)}...{wallet.address.slice(-3)})</span>
               </span>
             ) : (

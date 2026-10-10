@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Search, Plus, Clipboard, Check, LogOut, Wallet, PlusCircle, Sparkles } from 'lucide-react';
+import { Search, Plus, Clipboard, Check, LogOut, Wallet, PlusCircle, ChevronDown, Globe } from 'lucide-react';
 import { User, WalletState } from '../types';
+import { ChainConfig, SUPPORTED_CHAINS } from '../data/chains';
 
 interface PumpTopHeaderProps {
   searchQuery: string;
@@ -12,6 +13,8 @@ interface PumpTopHeaderProps {
   onLogout: () => void;
   wallet: WalletState;
   onConnectWallet: () => void;
+  activeChain: ChainConfig;
+  onSelectChain: (chain: ChainConfig) => void;
 }
 
 export const PumpTopHeader: React.FC<PumpTopHeaderProps> = ({
@@ -23,10 +26,13 @@ export const PumpTopHeader: React.FC<PumpTopHeaderProps> = ({
   currentUser,
   onLogout,
   wallet,
-  onConnectWallet
+  onConnectWallet,
+  activeChain,
+  onSelectChain
 }) => {
   const [copied, setCopied] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showChainMenu, setShowChainMenu] = useState(false);
 
   const handlePasteClipboard = async () => {
     try {
@@ -46,7 +52,7 @@ export const PumpTopHeader: React.FC<PumpTopHeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#080B11]/90 backdrop-blur-md border-b border-white/[0.08] py-2.5 px-4 sm:px-6">
+    <header className="sticky top-0 z-40 w-full bg-[#1F1E19]/90 backdrop-blur-md border-b border-white/[0.08] py-2.5 px-4 sm:px-6">
       <div className="flex items-center justify-between gap-3 max-w-[1440px] mx-auto">
         
         {/* Search Bar */}
@@ -58,7 +64,7 @@ export const PumpTopHeader: React.FC<PumpTopHeaderProps> = ({
               placeholder="Search coin name, ticker, address..."
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="w-full pl-10 pr-12 py-2 rounded-xl bg-[#0D111A] border border-white/[0.08] text-white placeholder-slate-500 text-xs focus:outline-none focus:border-[#836EF9] transition-all font-mono"
+              className="w-full pl-10 pr-12 py-2 rounded-xl bg-[#25241E] border border-white/[0.08] text-[#FAFAFA] placeholder-slate-400 text-xs focus:outline-none focus:border-[#68CFEB] transition-all font-mono"
             />
             <span className="absolute right-2.5 text-[10px] text-slate-500 font-mono bg-white/[0.05] px-1.5 py-0.5 rounded border border-white/[0.05] pointer-events-none">
               ⌘K
@@ -68,7 +74,7 @@ export const PumpTopHeader: React.FC<PumpTopHeaderProps> = ({
           <button
             onClick={handlePasteClipboard}
             title="Paste search query"
-            className="flex items-center justify-center w-8 h-8 rounded-xl bg-[#0D111A] border border-white/[0.08] text-slate-400 hover:text-white hover:border-white/20 transition-all flex-shrink-0 active:scale-95"
+            className="flex items-center justify-center w-8 h-8 rounded-xl bg-[#25241E] border border-white/[0.08] text-slate-400 hover:text-white hover:border-[#68CFEB]/40 transition-all flex-shrink-0 active:scale-95"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Clipboard className="w-3.5 h-3.5" />}
           </button>
@@ -77,32 +83,76 @@ export const PumpTopHeader: React.FC<PumpTopHeaderProps> = ({
         {/* Center Live Network Telemetry */}
         <div className="hidden xl:flex items-center gap-2 text-xs text-slate-400 font-mono">
           <span className="flex items-center gap-1.5 text-slate-300">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            Monad Parallel L1
+            <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: activeChain.iconColor }}></span>
+            {activeChain.name}
           </span>
           <span className="text-slate-600">•</span>
-          <span className="text-emerald-400 font-semibold">10,000 TPS</span>
+          <span className="text-emerald-400 font-semibold">{activeChain.tps}</span>
           <span className="text-slate-600">•</span>
-          <span className="text-[#836EF9] font-medium">&lt; 0.0001 MON Gas</span>
+          <span className="text-[#68CFEB] font-medium">{activeChain.gasCost} Gas</span>
         </div>
 
         {/* Action Controls */}
         <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 font-mono">
           
+          {/* Multi-Chain Network Dropdown Selector */}
+          <div className="relative">
+            <button
+              onClick={() => setShowChainMenu(!showChainMenu)}
+              title="Select Active Blockchain"
+              className="flex items-center gap-2 py-1.5 px-2.5 rounded-xl bg-[#25241E] border border-white/[0.08] hover:border-[#68CFEB]/40 transition-all text-xs"
+            >
+              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: activeChain.iconColor }}></span>
+              <span className="font-bold text-[#FAFAFA] hidden md:inline">{activeChain.name}</span>
+              <span className="font-bold text-[#68CFEB] md:hidden">{activeChain.symbol}</span>
+              <ChevronDown className="w-3 h-3 text-slate-400" />
+            </button>
+
+            {showChainMenu && (
+              <div className="absolute right-0 top-full mt-2 w-56 rounded-2xl bg-[#1F1E19] p-2 border border-white/10 shadow-2xl z-50 animate-in fade-in duration-150">
+                <div className="px-2.5 py-1.5 text-[10px] uppercase font-bold text-slate-500 tracking-wider border-b border-white/[0.06] mb-1">
+                  Select Blockchain
+                </div>
+                {SUPPORTED_CHAINS.map((chain) => (
+                  <button
+                    key={chain.id}
+                    onClick={() => {
+                      onSelectChain(chain);
+                      setShowChainMenu(false);
+                    }}
+                    className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs transition-all ${
+                      activeChain.id === chain.id
+                        ? 'bg-[#1F4B5D]/40 text-[#68CFEB] font-bold border border-[#68CFEB]/30'
+                        : 'text-slate-300 hover:text-white hover:bg-white/[0.05]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: chain.iconColor }}></span>
+                      <span className="font-medium">{chain.name}</span>
+                    </div>
+                    <span className="text-[10px] text-slate-500 font-mono">
+                      {chain.symbol}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           {/* Faucet Claim Button */}
           <button
             onClick={onClaimFaucet}
-            title="Claim +10 MON Faucet"
-            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#836EF9]/10 hover:bg-[#836EF9]/20 text-[#A78BFA] border border-[#836EF9]/30 text-xs font-semibold transition-all active:scale-95"
+            title={`Claim +${activeChain.faucetAmount} ${activeChain.symbol} Faucet`}
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1F4B5D]/40 hover:bg-[#1F4B5D]/60 text-[#68CFEB] border border-[#68CFEB]/30 text-xs font-semibold transition-all active:scale-95"
           >
-            <PlusCircle className="w-3.5 h-3.5 text-[#836EF9]" />
-            <span>+10 MON</span>
+            <PlusCircle className="w-3.5 h-3.5 text-[#68CFEB]" />
+            <span>+{activeChain.faucetAmount} {activeChain.symbol}</span>
           </button>
 
           {/* Quick Create Launch Button */}
           <button
             onClick={onOpenLaunchModal}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#836EF9] hover:bg-[#7259f7] text-white text-xs font-bold transition-all shadow-md shadow-[#836EF9]/20 active:scale-95"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] hover:from-[#90DEF2] hover:to-[#2B6882] text-[#1F1E19] text-xs font-extrabold transition-all shadow-md shadow-[#68CFEB]/20 active:scale-95"
           >
             <Plus className="w-3.5 h-3.5 stroke-[3]" />
             <span className="hidden sm:inline">Launch Coin</span>
@@ -113,26 +163,26 @@ export const PumpTopHeader: React.FC<PumpTopHeaderProps> = ({
             <div className="relative">
               <button
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
-                className="flex items-center gap-2 py-1 px-2.5 rounded-xl bg-[#0D111A] border border-white/[0.08] hover:border-[#836EF9]/50 transition-all"
+                className="flex items-center gap-2 py-1 px-2.5 rounded-xl bg-[#25241E] border border-white/[0.08] hover:border-[#68CFEB]/50 transition-all"
               >
                 <img
                   src={currentUser.avatarUrl}
                   alt={currentUser.username}
-                  className="w-6 h-6 rounded-lg object-cover border border-[#836EF9]/40"
+                  className="w-6 h-6 rounded-lg object-cover border border-[#68CFEB]/40"
                 />
                 <div className="text-left font-mono text-[11px] hidden sm:block">
-                  <div className="font-bold text-white flex items-center gap-1">
+                  <div className="font-bold text-[#FAFAFA] flex items-center gap-1">
                     <span>@{currentUser.username}</span>
                   </div>
                 </div>
               </button>
 
               {showProfileMenu && (
-                <div className="absolute right-0 top-full mt-2 w-56 rounded-xl bg-[#0D111A] p-3 border border-white/10 shadow-2xl z-50 animate-in fade-in duration-150">
+                <div className="absolute right-0 top-full mt-2 w-56 rounded-xl bg-[#1F1E19] p-3 border border-white/10 shadow-2xl z-50 animate-in fade-in duration-150">
                   <div className="pb-2 border-b border-white/10 mb-2">
-                    <div className="font-bold text-xs text-white">@{currentUser.username}</div>
+                    <div className="font-bold text-xs text-[#FAFAFA]">@{currentUser.username}</div>
                     <div className="text-[10px] text-slate-400 truncate">{currentUser.email}</div>
-                    <div className="text-[9px] font-mono text-purple-300 mt-1 bg-white/[0.05] p-1 rounded truncate">
+                    <div className="text-[9px] font-mono text-[#68CFEB] mt-1 bg-white/[0.05] p-1 rounded truncate">
                       {currentUser.monadWalletAddress.slice(0, 8)}...{currentUser.monadWalletAddress.slice(-6)}
                     </div>
                   </div>
@@ -165,14 +215,14 @@ export const PumpTopHeader: React.FC<PumpTopHeaderProps> = ({
               inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold
               transition-all border
               ${wallet.isConnected 
-                ? 'bg-[#0D111A] hover:bg-[#131926] border-emerald-500/30 text-white' 
+                ? 'bg-[#25241E] hover:bg-[#2C2B24] border-emerald-500/30 text-[#FAFAFA]' 
                 : 'bg-white/[0.06] hover:bg-white/10 border-white/10 text-slate-300'}
             `}
           >
-            <Wallet className="w-3.5 h-3.5 text-[#836EF9]" />
+            <Wallet className="w-3.5 h-3.5 text-[#68CFEB]" />
             {wallet.isConnected ? (
               <span className="font-mono text-emerald-400 font-bold">
-                {wallet.monBalance.toFixed(1)} MON
+                {wallet.monBalance.toFixed(1)} {activeChain.symbol}
               </span>
             ) : (
               <span>Connect</span>

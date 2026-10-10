@@ -8,6 +8,8 @@ interface LaunchModalProps {
   onClose: () => void;
   onLaunch: (newToken: Token, initialBuyMon: number) => void;
   userBalance: number;
+  currencySymbol?: string;
+  chainName?: string;
 }
 
 const PRESET_AVATARS = [
@@ -21,7 +23,9 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
   isOpen,
   onClose,
   onLaunch,
-  userBalance
+  userBalance,
+  currencySymbol = 'MON',
+  chainName = 'Monad'
 }) => {
   const [name, setName] = useState('');
   const [symbol, setSymbol] = useState('');
@@ -42,11 +46,11 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
 
     const buyAmount = parseFloat(initialBuy) || 0;
     if (buyAmount > 0.5) {
-      setError('Anti-Sniper Shield: Initial genesis buy is capped at 0.5 MON to ensure fair launch.');
+      setError(`Anti-Sniper Shield: Initial genesis buy is capped at 0.5 ${currencySymbol} to ensure fair launch.`);
       return;
     }
     if (buyAmount > userBalance) {
-      setError(`Insufficient MON balance (you have ${userBalance.toFixed(2)} MON)`);
+      setError(`Insufficient ${currencySymbol} balance (you have ${userBalance.toFixed(2)} ${currencySymbol})`);
       return;
     }
 
@@ -85,7 +89,7 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
         particleCount: 70,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ['#836EF9', '#00F59B', '#A78BFA']
+        colors: ['#68CFEB', '#1F4B5D', '#90DEF2']
       });
 
       onClose();
@@ -102,16 +106,16 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-xl rounded-2xl bg-[#0D111A] border border-white/10 p-6 sm:p-7 shadow-2xl my-8">
+      <div className="relative w-full max-w-xl rounded-2xl bg-[#1F1E19] border border-white/10 p-6 sm:p-7 shadow-2xl my-8">
         
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-4 border-b border-white/[0.08] mb-5">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-[#836EF9]/15 text-[#A78BFA]">
+            <div className="p-2 rounded-xl bg-[#1F4B5D]/40 text-[#68CFEB]">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">Launch a Coin on Monad</h2>
+              <h2 className="text-lg font-bold text-[#FAFAFA]">Launch a Coin on Monad</h2>
               <p className="text-xs text-slate-400">Fair launch bonding curve • Zero seed capital needed</p>
             </div>
           </div>
@@ -128,7 +132,7 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
           <button
             type="button"
             onClick={autofillMeme}
-            className="inline-flex items-center gap-1.5 text-xs text-[#A78BFA] hover:text-white bg-[#836EF9]/10 px-3 py-1 rounded-lg border border-[#836EF9]/30 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs text-[#68CFEB] hover:text-white bg-[#1F4B5D]/30 px-3 py-1 rounded-lg border border-[#68CFEB]/30 transition-colors"
           >
             <Wand2 className="w-3.5 h-3.5" />
             Autofill Demo Coin
@@ -147,20 +151,20 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Coin Name <span className="text-[#836EF9]">*</span>
+                Coin Name <span className="text-[#68CFEB]">*</span>
               </label>
               <input
                 type="text"
                 placeholder="e.g. Giga Monad"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-3.5 py-2 rounded-xl bg-[#131926] border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-[#836EF9] transition-colors"
+                className="w-full px-3.5 py-2 rounded-xl bg-[#25241E] border border-white/10 text-[#FAFAFA] placeholder-slate-400 text-xs focus:outline-none focus:border-[#68CFEB] transition-colors"
               />
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Ticker Symbol <span className="text-[#836EF9]">*</span>
+                Ticker Symbol <span className="text-[#68CFEB]">*</span>
               </label>
               <input
                 type="text"
@@ -168,7 +172,7 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
                 value={symbol}
                 onChange={(e) => setSymbol(e.target.value)}
                 maxLength={8}
-                className="w-full px-3.5 py-2 rounded-xl bg-[#131926] border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-[#836EF9] transition-colors uppercase font-mono font-bold"
+                className="w-full px-3.5 py-2 rounded-xl bg-[#25241E] border border-white/10 text-[#FAFAFA] placeholder-slate-400 text-xs focus:outline-none focus:border-[#68CFEB] transition-colors uppercase font-mono font-bold"
               />
             </div>
           </div>
@@ -182,7 +186,7 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
               placeholder="What makes this coin unstoppable on Monad?"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3.5 py-2 rounded-xl bg-[#131926] border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-[#836EF9] transition-colors resize-none font-sans"
+              className="w-full px-3.5 py-2 rounded-xl bg-[#25241E] border border-white/10 text-[#FAFAFA] placeholder-slate-400 text-xs focus:outline-none focus:border-[#68CFEB] transition-colors resize-none font-sans"
             />
           </div>
 
@@ -198,7 +202,7 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
                   key={idx}
                   onClick={() => setImageUrl(avatar.url)}
                   className={`relative rounded-xl overflow-hidden aspect-square border-2 transition-all ${
-                    imageUrl === avatar.url ? 'border-[#836EF9] scale-95 shadow-md' : 'border-white/10 opacity-70 hover:opacity-100'
+                    imageUrl === avatar.url ? 'border-[#68CFEB] scale-95 shadow-md shadow-[#68CFEB]/20' : 'border-white/10 opacity-70 hover:opacity-100'
                   }`}
                 >
                   <img src={avatar.url} alt={avatar.label} className="w-full h-full object-cover" />
@@ -210,12 +214,12 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
               placeholder="Or paste custom image URL"
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
-              className="w-full px-3 py-1.5 rounded-lg bg-[#131926] border border-white/10 text-white placeholder-slate-500 text-xs font-mono focus:outline-none focus:border-[#836EF9]"
+              className="w-full px-3 py-1.5 rounded-lg bg-[#25241E] border border-white/10 text-[#FAFAFA] placeholder-slate-400 text-xs font-mono focus:outline-none focus:border-[#68CFEB]"
             />
           </div>
 
           {/* Initial Buy Option */}
-          <div className="p-3.5 rounded-xl bg-[#131926] border border-white/[0.06] space-y-1.5">
+          <div className="p-3.5 rounded-xl bg-[#25241E] border border-white/[0.06] space-y-1.5">
             <div className="flex justify-between items-center">
               <label className="text-xs font-semibold text-white flex items-center gap-1.5">
                 <span>Genesis Buy Amount (Optional)</span>
@@ -224,7 +228,7 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
                 </span>
               </label>
               <span className="text-xs text-slate-400 font-mono">
-                Balance: {userBalance.toFixed(2)} MON
+                Balance: {userBalance.toFixed(2)} {currencySymbol}
               </span>
             </div>
 
@@ -236,23 +240,23 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
                 max={userBalance}
                 value={initialBuy}
                 onChange={(e) => setInitialBuy(e.target.value)}
-                className="flex-1 px-3 py-1.5 rounded-lg bg-[#080B11] border border-white/10 text-white font-mono text-sm focus:outline-none focus:border-[#836EF9]"
+                className="flex-1 px-3 py-1.5 rounded-lg bg-[#141310] border border-white/10 text-[#FAFAFA] font-mono text-sm focus:outline-none focus:border-[#68CFEB]"
                 placeholder="0.0"
               />
-              <span className="text-sm font-bold text-slate-300 font-mono px-2">MON</span>
+              <span className="text-sm font-bold text-slate-300 font-mono px-2">{currencySymbol}</span>
             </div>
           </div>
 
           {/* Anti-Sniper Shield & Rug-proof Notices */}
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-xs text-[#F9D4E0] bg-[#193153]/85 p-2.5 rounded-xl border border-[#EB96FF]/40 shadow-[0_0_12px_rgba(235,150,255,0.15)]">
-              <Shield className="w-4 h-4 text-[#EB96FF] flex-shrink-0 animate-pulse" />
-              <span>Auto-enables 60-Second Anti-Sniper Shield on launch (Max 0.5 MON cap)</span>
+            <div className="flex items-center gap-2 text-xs text-[#FAFAFA] bg-[#1F4B5D]/90 p-2.5 rounded-xl border border-[#68CFEB]/50 shadow-[0_0_12px_rgba(104,207,235,0.2)]">
+              <Shield className="w-4 h-4 text-[#68CFEB] flex-shrink-0 animate-pulse" />
+              <span>Auto-enables 60-Second Anti-Sniper Shield on launch (Max 0.5 {currencySymbol} cap)</span>
             </div>
 
             <div className="flex items-center gap-2 text-xs text-emerald-300 bg-emerald-500/10 p-2.5 rounded-xl border border-emerald-500/20">
               <Shield className="w-4 h-4 flex-shrink-0" />
-              <span>Target 50 MON reached ➔ 100% liquidity automatically burned & locked on DEX.</span>
+              <span>Target 50 {currencySymbol} reached ➔ 100% liquidity automatically burned & locked on DEX.</span>
             </div>
           </div>
 
@@ -261,9 +265,9 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
             <button
               type="submit"
               disabled={isDeploying}
-              className="w-full py-2.5 px-4 rounded-xl bg-[#836EF9] hover:bg-[#7259f7] text-white text-xs font-bold font-mono transition-all active:scale-98 disabled:opacity-50 shadow-md shadow-[#836EF9]/20"
+              className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] hover:from-[#90DEF2] hover:to-[#2B6882] text-[#1F1E19] text-xs font-extrabold font-mono transition-all active:scale-98 disabled:opacity-50 shadow-md shadow-[#68CFEB]/20"
             >
-              {isDeploying ? 'Deploying to Monad (Parallel Engine)...' : 'Launch Token in 1 Click 🚀'}
+              {isDeploying ? `Deploying to ${chainName} Parallel Engine...` : 'Launch Token in 1 Click 🚀'}
             </button>
           </div>
         </form>

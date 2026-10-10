@@ -18,13 +18,13 @@ import {
   Code2,
   ExternalLink
 } from 'lucide-react';
-import { ViewMode } from '../types';
+import { ViewMode, NavigationTab } from '../types';
 
 interface PumpSidebarProps {
   isExpanded: boolean;
   onToggleExpand: () => void;
-  activeTab: 'home' | 'explore' | 'leaderboard' | 'callouts' | 'terminal';
-  onSelectTab: (tab: 'home' | 'explore' | 'leaderboard' | 'callouts' | 'terminal') => void;
+  activeTab: NavigationTab;
+  onSelectTab: (tab: NavigationTab) => void;
   onOpenLaunchModal: () => void;
   onOpenHowItWorks: () => void;
   onOpenContractsModal: () => void;
@@ -47,7 +47,7 @@ export const PumpSidebar: React.FC<PumpSidebarProps> = ({
     <aside
       className={`
         fixed left-0 top-0 bottom-0 z-50 flex flex-col justify-between
-        bg-[#080B11] border-r border-white/[0.08]
+        bg-[#1F1E19] border-r border-white/[0.08]
         transition-all duration-300 ease-in-out select-none
         ${isExpanded ? 'w-[220px]' : 'w-[64px]'}
       `}
@@ -78,9 +78,9 @@ export const PumpSidebar: React.FC<PumpSidebarProps> = ({
                 />
                 <defs>
                   <linearGradient id="simpleMonadGrad" x1="4" y1="4" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#836EF9" />
-                    <stop offset="0.6" stopColor="#A78BFA" />
-                    <stop offset="1" stopColor="#00F59B" />
+                    <stop stopColor="#68CFEB" />
+                    <stop offset="0.6" stopColor="#4BB5D3" />
+                    <stop offset="1" stopColor="#1F4B5D" />
                   </linearGradient>
                 </defs>
               </svg>
@@ -89,8 +89,8 @@ export const PumpSidebar: React.FC<PumpSidebarProps> = ({
             {/* Brand Title */}
             {isExpanded && (
               <div className="flex items-center tracking-tight overflow-hidden whitespace-nowrap animate-in fade-in duration-150">
-                <span className="font-extrabold text-sm tracking-widest text-white">
-                  VELOX<span className="text-[#836EF9]">.</span>
+                <span className="font-extrabold text-sm tracking-widest text-[#FAFAFA]">
+                  VELOX<span className="text-[#68CFEB]">.</span>
                 </span>
               </div>
             )}
@@ -102,9 +102,9 @@ export const PumpSidebar: React.FC<PumpSidebarProps> = ({
             title={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
             className={`
               flex items-center justify-center w-6 h-6 rounded-full
-              bg-[#0D111A] hover:bg-[#131926]
-              border border-white/10 hover:border-[#836EF9]/50
-              text-[#836EF9] hover:text-white
+              bg-[#25241E] hover:bg-[#2C2B24]
+              border border-white/10 hover:border-[#68CFEB]/50
+              text-[#68CFEB] hover:text-[#FAFAFA]
               transition-all duration-200 active:scale-90
               ${isExpanded ? 'ml-auto' : 'mx-auto mt-0.5'}
             `}
@@ -127,8 +127,8 @@ export const PumpSidebar: React.FC<PumpSidebarProps> = ({
             className={`
               w-full flex items-center gap-3 px-3 py-2 rounded-xl font-medium transition-all
               ${activeTab === 'home'
-                ? 'bg-[#836EF9]/15 text-[#A78BFA] font-bold border border-[#836EF9]/30'
-                : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
+                ? 'bg-[#1F4B5D]/40 text-[#68CFEB] font-bold border border-[#68CFEB]/40 shadow-[0_0_12px_rgba(104,207,235,0.15)]'
+                : 'text-slate-400 hover:text-[#FAFAFA] hover:bg-white/[0.05]'
               }
               ${!isExpanded ? 'justify-center px-0' : ''}
             `}
@@ -144,8 +144,8 @@ export const PumpSidebar: React.FC<PumpSidebarProps> = ({
             className={`
               w-full flex items-center gap-3 px-3 py-2 rounded-xl font-medium transition-all
               ${activeTab === 'explore'
-                ? 'bg-[#836EF9]/15 text-[#A78BFA] font-bold border border-[#836EF9]/30'
-                : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
+                ? 'bg-[#1F4B5D]/40 text-[#68CFEB] font-bold border border-[#68CFEB]/40 shadow-[0_0_12px_rgba(104,207,235,0.15)]'
+                : 'text-slate-400 hover:text-[#FAFAFA] hover:bg-white/[0.05]'
               }
               ${!isExpanded ? 'justify-center px-0' : ''}
             `}
@@ -161,8 +161,8 @@ export const PumpSidebar: React.FC<PumpSidebarProps> = ({
             className={`
               w-full flex items-center gap-3 px-3 py-2 rounded-xl font-medium transition-all
               ${activeTab === 'leaderboard'
-                ? 'bg-[#836EF9]/15 text-[#A78BFA] font-bold border border-[#836EF9]/30'
-                : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
+                ? 'bg-[#1F4B5D]/40 text-[#68CFEB] font-bold border border-[#68CFEB]/40 shadow-[0_0_12px_rgba(104,207,235,0.15)]'
+                : 'text-slate-400 hover:text-[#FAFAFA] hover:bg-white/[0.05]'
               }
               ${!isExpanded ? 'justify-center px-0' : ''}
             `}
@@ -171,15 +171,15 @@ export const PumpSidebar: React.FC<PumpSidebarProps> = ({
             {isExpanded && <span>Leaderboard</span>}
           </button>
 
-          {/* Live Swaps */}
+          {/* Live Feed */}
           <button
-            onClick={() => onSelectTab('callouts')}
-            title="Live"
+            onClick={() => onSelectTab('live-feed')}
+            title="Live Feed"
             className={`
               w-full flex items-center gap-3 px-3 py-2 rounded-xl font-medium transition-all
-              ${activeTab === 'callouts'
-                ? 'bg-[#836EF9]/15 text-[#A78BFA] font-bold border border-[#836EF9]/30'
-                : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
+              ${activeTab === 'live-feed'
+                ? 'bg-[#1F4B5D]/40 text-[#68CFEB] font-bold border border-[#68CFEB]/40 shadow-[0_0_12px_rgba(104,207,235,0.15)]'
+                : 'text-slate-400 hover:text-[#FAFAFA] hover:bg-white/[0.05]'
               }
               ${!isExpanded ? 'justify-center px-0' : ''}
             `}
@@ -203,27 +203,33 @@ export const PumpSidebar: React.FC<PumpSidebarProps> = ({
             )}
           </div>
 
-          {/* Mayhem */}
+          {/* Terminal */}
           <button
             onClick={() => onSelectTab('terminal')}
             title="Terminal"
             className={`
-              w-full flex items-center gap-3 px-3 py-2 rounded-xl font-medium
-              text-slate-400 hover:text-white hover:bg-white/[0.05] transition-all
+              w-full flex items-center gap-3 px-3 py-2 rounded-xl font-medium transition-all
+              ${activeTab === 'terminal'
+                ? 'bg-[#1F4B5D]/40 text-[#68CFEB] font-bold border border-[#68CFEB]/40 shadow-[0_0_12px_rgba(104,207,235,0.15)]'
+                : 'text-slate-400 hover:text-[#FAFAFA] hover:bg-white/[0.05]'
+              }
               ${!isExpanded ? 'justify-center px-0' : ''}
             `}
           >
-            <Activity className="w-4 h-4 flex-shrink-0 text-purple-400" />
+            <Activity className="w-4 h-4 flex-shrink-0 text-[#68CFEB]" />
             {isExpanded && <span>Terminal</span>}
           </button>
 
           {/* Rewards */}
           <button
-            onClick={onOpenHowItWorks}
+            onClick={() => onSelectTab('rewards')}
             title="Rewards"
             className={`
-              w-full flex items-center gap-3 px-3 py-2 rounded-xl font-medium
-              text-slate-400 hover:text-white hover:bg-white/[0.05] transition-all
+              w-full flex items-center gap-3 px-3 py-2 rounded-xl font-medium transition-all
+              ${activeTab === 'rewards'
+                ? 'bg-[#1F4B5D]/40 text-[#68CFEB] font-bold border border-[#68CFEB]/40 shadow-[0_0_12px_rgba(104,207,235,0.15)]'
+                : 'text-slate-400 hover:text-[#FAFAFA] hover:bg-white/[0.05]'
+              }
               ${!isExpanded ? 'justify-center px-0' : ''}
             `}
           >
@@ -231,8 +237,8 @@ export const PumpSidebar: React.FC<PumpSidebarProps> = ({
             {isExpanded && (
               <span className="flex items-center justify-between flex-1">
                 <span>Rewards</span>
-                <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400">
-                  New
+                <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-400/20 text-amber-300">
+                  Airdrop
                 </span>
               </span>
             )}
@@ -243,7 +249,7 @@ export const PumpSidebar: React.FC<PumpSidebarProps> = ({
             {isExpanded ? (
               <button
                 onClick={onOpenLaunchModal}
-                className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-[#836EF9] hover:bg-[#7259f7] text-white font-bold text-xs shadow-md shadow-[#836EF9]/20 transition-all active:scale-95"
+                className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] hover:from-[#90DEF2] hover:to-[#2B6882] text-[#1F1E19] font-extrabold text-xs shadow-md shadow-[#68CFEB]/20 transition-all active:scale-95"
               >
                 <Plus className="w-4 h-4 stroke-[3]" />
                 <span>Launch Coin</span>
@@ -252,7 +258,7 @@ export const PumpSidebar: React.FC<PumpSidebarProps> = ({
               <button
                 onClick={onOpenLaunchModal}
                 title="Launch coin"
-                className="w-9 h-9 mx-auto rounded-xl bg-[#836EF9] hover:bg-[#7259f7] text-white flex items-center justify-center font-bold shadow-md shadow-[#836EF9]/20 transition-all active:scale-95"
+                className="w-9 h-9 mx-auto rounded-xl bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] hover:from-[#90DEF2] hover:to-[#2B6882] text-[#1F1E19] flex items-center justify-center font-bold shadow-md shadow-[#68CFEB]/20 transition-all active:scale-95"
               >
                 <Plus className="w-4 h-4 stroke-[3]" />
               </button>
@@ -271,7 +277,7 @@ export const PumpSidebar: React.FC<PumpSidebarProps> = ({
           title="Support & Docs"
           className={`
             w-full flex items-center gap-3 px-3 py-1.5 rounded-lg font-medium
-            text-slate-400 hover:text-white hover:bg-white/[0.05] transition-colors
+            text-slate-400 hover:text-[#FAFAFA] hover:bg-white/[0.05] transition-colors
             ${!isExpanded ? 'justify-center px-0' : ''}
           `}
         >
@@ -285,11 +291,11 @@ export const PumpSidebar: React.FC<PumpSidebarProps> = ({
           title="Smart Contracts"
           className={`
             w-full flex items-center gap-3 px-3 py-1.5 rounded-lg font-medium
-            text-slate-400 hover:text-white hover:bg-white/[0.05] transition-colors
+            text-slate-400 hover:text-[#FAFAFA] hover:bg-white/[0.05] transition-colors
             ${!isExpanded ? 'justify-center px-0' : ''}
           `}
         >
-          <Code2 className="w-4 h-4 flex-shrink-0 text-[#836EF9]" />
+          <Code2 className="w-4 h-4 flex-shrink-0 text-[#68CFEB]" />
           {isExpanded && (
             <span className="flex items-center justify-between flex-1">
               <span>Contracts</span>
@@ -307,12 +313,12 @@ export const PumpSidebar: React.FC<PumpSidebarProps> = ({
             </span>
           )}
           
-          <div className="flex items-center gap-1 bg-[#0D111A] p-0.5 rounded-lg border border-white/10">
+          <div className="flex items-center gap-1 bg-[#25241E] p-0.5 rounded-lg border border-white/10">
             <button
               onClick={() => onToggleViewMode('terminal')}
               title="Terminal View"
               className={`p-1 rounded transition-colors ${
-                viewMode === 'terminal' ? 'bg-[#836EF9] text-white' : 'text-slate-400 hover:text-white'
+                viewMode === 'terminal' ? 'bg-[#68CFEB] text-[#1F1E19] font-bold shadow-sm' : 'text-slate-400 hover:text-[#FAFAFA]'
               }`}
             >
               <Columns3 className="w-3.5 h-3.5" />
@@ -321,7 +327,7 @@ export const PumpSidebar: React.FC<PumpSidebarProps> = ({
               onClick={() => onToggleViewMode('grid')}
               title="Grid View"
               className={`p-1 rounded transition-colors ${
-                viewMode === 'grid' ? 'bg-[#836EF9] text-white' : 'text-slate-400 hover:text-white'
+                viewMode === 'grid' ? 'bg-[#68CFEB] text-[#1F1E19] font-bold shadow-sm' : 'text-slate-400 hover:text-[#FAFAFA]'
               }`}
             >
               <LayoutGrid className="w-3.5 h-3.5" />

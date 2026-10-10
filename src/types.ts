@@ -19,6 +19,8 @@ export interface Token {
   shieldActive?: boolean;
   shieldRemainingSeconds?: number;
   maxShieldBuyMon?: number;
+  chain?: string;
+  chainSymbol?: string;
 }
 
 export interface Trade {
@@ -33,6 +35,7 @@ export interface Trade {
   timestamp: string;
   txHash: string;
   latencyMs: number;
+  currencySymbol?: string;
 }
 
 export interface HotCallout {
@@ -49,6 +52,7 @@ export interface HotCallout {
   isPositive: boolean;
   replies: number;
   likes: number;
+  currencySymbol?: string;
 }
 
 export interface LeaderboardEntry {
@@ -58,6 +62,9 @@ export interface LeaderboardEntry {
   profitMon: number;
   winRate: number;
   tradesCount: number;
+  volumeMon?: number;
+  badge?: string;
+  favToken?: string;
 }
 
 export interface User {
@@ -74,8 +81,10 @@ export interface WalletState {
   isConnected: boolean;
   address: string;
   monBalance: number;
+  chainBalances?: Record<string, number>; // chainId -> balance
   tokens: Record<string, number>; // tokenId -> user balance
 }
 
 export type ViewMode = 'terminal' | 'grid';
+export type NavigationTab = 'home' | 'explore' | 'terminal' | 'live-feed' | 'leaderboard' | 'rewards';
 export type FilterTimeframe = '1h' | '4h' | '12h' | '24h';

@@ -36,12 +36,12 @@ export const AuroraButton: React.FC<AuroraButtonProps> = ({
       className={`
         group relative inline-flex items-center justify-center rounded-full
         transition-all duration-300 ease-out active:scale-95 disabled:opacity-50 disabled:pointer-events-none
-        ${isPrimary ? 'aurora-pill-btn' : 'bg-[#193153]/60 hover:bg-[#193153] border border-[#EB96FF]/20 rounded-full'}
+        ${isPrimary ? 'aurora-pill-btn' : 'bg-[#1F4B5D]/60 hover:bg-[#1F4B5D] border border-[#68CFEB]/30 rounded-full'}
         ${className}
       `}
       {...props}
     >
-      {/* Liquid Aurora Shimmer Ribbon inside capsule (Image 2 style) */}
+      {/* Liquid Aurora Shimmer Ribbon inside capsule */}
       {isPrimary && (
         <span 
           className={`aurora-liquid-ribbon pointer-events-none transition-opacity duration-500 ${
@@ -53,25 +53,25 @@ export const AuroraButton: React.FC<AuroraButtonProps> = ({
       {/* Glass Inner Capsule Mask */}
       <span
         className={`
-          relative z-10 inline-flex items-center justify-center gap-2 rounded-full font-medium tracking-wide text-white
+          relative z-10 inline-flex items-center justify-center gap-2 rounded-full font-medium tracking-wide text-[#FAFAFA]
           backdrop-blur-md transition-all duration-200
-          ${isPrimary ? 'bg-[#0e1626]/60 group-hover:bg-[#0e1626]/40' : 'bg-transparent'}
+          ${isPrimary ? 'bg-[#1F1E19]/70 group-hover:bg-[#1F1E19]/50' : 'bg-transparent'}
           ${sizeStyles[size]}
         `}
       >
         {loading ? (
           <>
             <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#EB96FF] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#F9D4E0]"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#68CFEB] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#FAFAFA]"></span>
             </span>
-            <span className="bg-gradient-to-r from-white via-[#F9D4E0] to-[#EB96FF] bg-clip-text text-transparent font-semibold">
+            <span className="bg-gradient-to-r from-white via-[#FAFAFA] to-[#68CFEB] bg-clip-text text-transparent font-semibold">
               {loadingText}
             </span>
           </>
         ) : (
           <>
-            {icon && <span className="text-[#EB96FF] group-hover:scale-110 transition-transform duration-200">{icon}</span>}
+            {icon && <span className="text-[#68CFEB] group-hover:scale-110 transition-transform duration-200">{icon}</span>}
             <span className="drop-shadow-sm">{children}</span>
           </>
         )}

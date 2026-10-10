@@ -8,6 +8,7 @@ interface PumpTerminalProps {
   leaderboard: LeaderboardEntry[];
   onSelectToken: (token: Token) => void;
   onOpenLaunchModal: () => void;
+  currencySymbol?: string;
 }
 
 export const PumpTerminal: React.FC<PumpTerminalProps> = ({
@@ -15,35 +16,37 @@ export const PumpTerminal: React.FC<PumpTerminalProps> = ({
   callouts,
   leaderboard,
   onSelectToken,
-  onOpenLaunchModal
+  onOpenLaunchModal,
+  currencySymbol = 'MON'
 }) => {
   const [timeframe, setTimeframe] = useState<FilterTimeframe>('24h');
   const [category, setCategory] = useState<'memes' | 'all'>('memes');
   const [leaderboardTab, setLeaderboardTab] = useState<'traders' | 'earners'>('traders');
+  const currSymbol = currencySymbol;
 
   return (
     <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-5 mb-8">
       
       {/* COLUMN 1: TRENDING TOKENS */}
-      <section className="lg:col-span-5 rounded-2xl bg-[#0D111A] border border-white/[0.08] p-4 flex flex-col h-[680px]">
+      <section className="lg:col-span-5 rounded-2xl bg-[#1F1E19] border border-white/[0.08] p-4 flex flex-col h-[680px]">
         {/* Column Header */}
         <div className="flex items-center justify-between pb-3 border-b border-white/[0.06] mb-3">
           <div className="flex items-center gap-2">
             <Flame className="w-4 h-4 text-amber-400" />
-            <h3 className="font-bold text-sm text-white">Trending Coins</h3>
+            <h3 className="font-bold text-sm text-[#FAFAFA]">Trending Coins</h3>
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-mono font-bold">
               Live
             </span>
           </div>
 
           {/* Timeframe Chips */}
-          <div className="flex items-center gap-1 bg-[#131926] p-0.5 rounded-lg border border-white/5 text-[11px] font-mono">
+          <div className="flex items-center gap-1 bg-[#25241E] p-0.5 rounded-lg border border-white/5 text-[11px] font-mono">
             {(['1h', '4h', '12h', '24h'] as FilterTimeframe[]).map((tf) => (
               <button
                 key={tf}
                 onClick={() => setTimeframe(tf)}
                 className={`px-2 py-0.5 rounded transition-all font-medium ${
-                  timeframe === tf ? 'bg-[#836EF9] text-white shadow-sm' : 'text-slate-400 hover:text-white'
+                  timeframe === tf ? 'bg-[#68CFEB] text-[#1F1E19] font-bold shadow-sm' : 'text-slate-400 hover:text-white'
                 }`}
               >
                 {tf}
@@ -80,7 +83,7 @@ export const PumpTerminal: React.FC<PumpTerminalProps> = ({
               <div
                 key={token.id}
                 onClick={() => onSelectToken(token)}
-                className="group flex items-center justify-between p-2.5 rounded-xl bg-[#131926]/60 hover:bg-[#131926] border border-white/[0.04] hover:border-[#836EF9]/30 transition-all cursor-pointer"
+                className="group flex items-center justify-between p-2.5 rounded-xl bg-[#25241E]/60 hover:bg-[#25241E] border border-white/[0.04] hover:border-[#68CFEB]/30 transition-all cursor-pointer"
               >
                 {/* Left: Avatar & Ticker */}
                 <div className="flex items-center gap-3 min-w-0">
@@ -95,30 +98,30 @@ export const PumpTerminal: React.FC<PumpTerminalProps> = ({
 
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5">
-                      <span className="font-bold text-sm text-white group-hover:text-[#A78BFA] transition-colors truncate">
+                      <span className="font-bold text-sm text-[#FAFAFA] group-hover:text-[#68CFEB] transition-colors truncate">
                         {token.name}
                       </span>
                       <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded bg-white/[0.06] text-slate-300">
                         ${token.symbol}
                       </span>
                       {token.shieldActive && (
-                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-[#193153]/90 text-[#EB96FF] border border-[#EB96FF]/40 shadow-[0_0_6px_rgba(235,150,255,0.25)] flex items-center gap-0.5 flex-shrink-0" title="Anti-Sniper Shield Active">
-                          <ShieldCheck className="w-2.5 h-2.5 text-[#EB96FF]" />
+                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-[#1F4B5D]/90 text-[#68CFEB] border border-[#68CFEB]/50 shadow-[0_0_6px_rgba(104,207,235,0.25)] flex items-center gap-0.5 flex-shrink-0" title="Anti-Sniper Shield Active">
+                          <ShieldCheck className="w-2.5 h-2.5 text-[#68CFEB]" />
                           <span>Shield</span>
                         </span>
                       )}
                     </div>
 
                     <div className="flex items-center gap-2 text-[11px] text-slate-400 font-mono mt-0.5">
-                      <span>{token.priceMon} MON</span>
+                      <span>{token.priceMon} {token.chainSymbol || currSymbol}</span>
                       <span>•</span>
                       <span>Curve: {token.bondingProgress}%</span>
                     </div>
 
                     {/* Progress Bar Mini */}
-                    <div className="w-28 h-1 bg-[#080B11] rounded-full overflow-hidden mt-1 border border-white/5">
+                    <div className="w-28 h-1 bg-[#141310] rounded-full overflow-hidden mt-1 border border-white/5">
                       <div
-                        className="h-full rounded-full bg-gradient-to-r from-[#836EF9] to-[#00F59B]"
+                        className="h-full rounded-full bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D]"
                         style={{ width: `${token.bondingProgress}%` }}
                       ></div>
                     </div>
@@ -127,8 +130,8 @@ export const PumpTerminal: React.FC<PumpTerminalProps> = ({
 
                 {/* Right: Market Cap & Price Change */}
                 <div className="text-right flex-shrink-0 ml-3">
-                  <div className="text-xs font-mono font-bold text-white">
-                    {token.marketCapMon} <span className="text-[10px] text-slate-400 font-normal">MON</span>
+                  <div className="text-xs font-mono font-bold text-[#FAFAFA]">
+                    {token.marketCapMon} <span className="text-[10px] text-slate-400 font-normal">{token.chainSymbol || currSymbol}</span>
                   </div>
                   <div className={`text-[11px] font-mono font-medium flex items-center justify-end gap-0.5 mt-0.5 ${
                     isPos ? 'text-emerald-400' : 'text-rose-400'
@@ -144,12 +147,12 @@ export const PumpTerminal: React.FC<PumpTerminalProps> = ({
       </section>
 
       {/* COLUMN 2: HOT CALLOUTS & TRADES */}
-      <section className="lg:col-span-4 rounded-2xl bg-[#0D111A] border border-white/[0.08] p-4 flex flex-col h-[680px]">
+      <section className="lg:col-span-4 rounded-2xl bg-[#1F1E19] border border-white/[0.08] p-4 flex flex-col h-[680px]">
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-white/[0.06] mb-3">
           <div className="flex items-center gap-2">
-            <MessageSquare className="w-4 h-4 text-[#836EF9]" />
-            <h3 className="font-bold text-sm text-white">Hot Callouts</h3>
+            <MessageSquare className="w-4 h-4 text-[#68CFEB]" />
+            <h3 className="font-bold text-sm text-[#FAFAFA]">Hot Callouts</h3>
           </div>
           <span className="text-xs font-mono text-slate-500">Live Feed</span>
         </div>
@@ -159,7 +162,7 @@ export const PumpTerminal: React.FC<PumpTerminalProps> = ({
           {callouts.map((c) => (
             <div
               key={c.id}
-              className="p-3.5 rounded-xl bg-[#131926]/50 border border-white/[0.04] hover:border-white/10 transition-all space-y-2.5"
+              className="p-3.5 rounded-xl bg-[#25241E]/50 border border-white/[0.04] hover:border-white/10 transition-all space-y-2.5"
             >
               {/* Author row */}
               <div className="flex items-center justify-between">
@@ -170,7 +173,7 @@ export const PumpTerminal: React.FC<PumpTerminalProps> = ({
                 </div>
 
                 <div className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
-                  +{c.profitMon} MON
+                  +{c.profitMon} {c.currencySymbol || currSymbol}
                 </div>
               </div>
 
@@ -185,19 +188,19 @@ export const PumpTerminal: React.FC<PumpTerminalProps> = ({
                   const tok = tokens.find(t => t.symbol === c.tokenSymbol);
                   if (tok) onSelectToken(tok);
                 }}
-                className="flex items-center justify-between p-2 rounded-lg bg-[#080B11] border border-white/[0.06] hover:border-[#836EF9]/40 cursor-pointer transition-colors"
+                className="flex items-center justify-between p-2 rounded-lg bg-[#141310] border border-white/[0.06] hover:border-[#68CFEB]/40 cursor-pointer transition-colors"
               >
                 <div className="flex items-center gap-2">
                   <img src={c.tokenImageUrl} alt={c.tokenSymbol} className="w-6 h-6 rounded-md object-cover" />
                   <div>
-                    <span className="text-xs font-bold text-white font-mono">${c.tokenSymbol}</span>
+                    <span className="text-xs font-bold text-[#FAFAFA] font-mono">${c.tokenSymbol}</span>
                     <span className="text-[10px] text-slate-400 ml-1.5">{c.tokenName}</span>
                   </div>
                 </div>
 
                 <div className="text-right text-[11px] font-mono">
                   <span className="text-slate-500">Position: </span>
-                  <span className="text-[#A78BFA] font-bold">{c.positionMon} MON</span>
+                  <span className="text-[#68CFEB] font-bold">{c.positionMon} {c.currencySymbol || currSymbol}</span>
                 </div>
               </div>
 
@@ -214,13 +217,13 @@ export const PumpTerminal: React.FC<PumpTerminalProps> = ({
           ))}
 
           {/* Quick CTA inside Callouts */}
-          <div className="p-4 rounded-xl bg-[#131926]/40 border border-white/[0.06] text-center space-y-2">
+          <div className="p-4 rounded-xl bg-[#25241E]/40 border border-white/[0.06] text-center space-y-2">
             <p className="text-xs text-slate-400">
               Have an unstoppable meme thesis? Launch in 1 click with zero seed liquidity.
             </p>
             <button
               onClick={onOpenLaunchModal}
-              className="px-4 py-2 rounded-xl bg-[#836EF9] hover:bg-[#7259f7] text-white text-xs font-bold transition-all shadow-md active:scale-95 inline-block"
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] hover:from-[#90DEF2] hover:to-[#2B6882] text-[#1F1E19] text-xs font-extrabold transition-all shadow-md shadow-[#68CFEB]/20 active:scale-95 inline-block"
             >
               Launch Coin 🚀
             </button>
@@ -229,22 +232,22 @@ export const PumpTerminal: React.FC<PumpTerminalProps> = ({
       </section>
 
       {/* COLUMN 3: LEADERBOARD */}
-      <section className="lg:col-span-3 rounded-2xl bg-[#0D111A] border border-white/[0.08] p-4 flex flex-col h-[680px]">
+      <section className="lg:col-span-3 rounded-2xl bg-[#1F1E19] border border-white/[0.08] p-4 flex flex-col h-[680px]">
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-white/[0.06] mb-3">
           <div className="flex items-center gap-2">
             <Trophy className="w-4 h-4 text-amber-400" />
-            <h3 className="font-bold text-sm text-white">Leaderboard</h3>
+            <h3 className="font-bold text-sm text-[#FAFAFA]">Leaderboard</h3>
           </div>
           <span className="text-xs font-mono text-emerald-400 font-bold">Top PnL</span>
         </div>
 
         {/* Tab switcher: Traders | Earners */}
-        <div className="flex rounded-lg bg-[#131926] p-0.5 border border-white/5 mb-3 text-xs font-mono">
+        <div className="flex rounded-lg bg-[#25241E] p-0.5 border border-white/5 mb-3 text-xs font-mono">
           <button
             onClick={() => setLeaderboardTab('traders')}
             className={`flex-1 py-1 rounded-md font-medium transition-all ${
-              leaderboardTab === 'traders' ? 'bg-[#836EF9] text-white shadow-sm' : 'text-slate-400 hover:text-white'
+              leaderboardTab === 'traders' ? 'bg-[#68CFEB] text-[#1F1E19] font-bold shadow-sm' : 'text-slate-400 hover:text-white'
             }`}
           >
             Traders
@@ -252,7 +255,7 @@ export const PumpTerminal: React.FC<PumpTerminalProps> = ({
           <button
             onClick={() => setLeaderboardTab('earners')}
             className={`flex-1 py-1 rounded-md font-medium transition-all ${
-              leaderboardTab === 'earners' ? 'bg-[#836EF9] text-white shadow-sm' : 'text-slate-400 hover:text-white'
+              leaderboardTab === 'earners' ? 'bg-[#68CFEB] text-[#1F1E19] font-bold shadow-sm' : 'text-slate-400 hover:text-white'
             }`}
           >
             Earners
@@ -264,7 +267,7 @@ export const PumpTerminal: React.FC<PumpTerminalProps> = ({
           {leaderboard.map((lb) => (
             <div
               key={lb.rank}
-              className="flex items-center justify-between p-2.5 rounded-xl bg-[#131926]/50 border border-white/[0.04] hover:border-white/10 transition-all"
+              className="flex items-center justify-between p-2.5 rounded-xl bg-[#25241E]/50 border border-white/[0.04] hover:border-white/10 transition-all"
             >
               <div className="flex items-center gap-2.5 min-w-0">
                 {/* Rank number badge */}
@@ -280,7 +283,7 @@ export const PumpTerminal: React.FC<PumpTerminalProps> = ({
                 <img src={lb.avatarUrl} alt={lb.handle} className="w-8 h-8 rounded-full object-cover border border-white/10" />
 
                 <div className="min-w-0">
-                  <div className="font-bold text-xs text-white truncate font-mono">
+                  <div className="font-bold text-xs text-[#FAFAFA] truncate font-mono">
                     @{lb.handle}
                   </div>
                   <div className="text-[10px] text-slate-400 font-mono">
@@ -292,7 +295,7 @@ export const PumpTerminal: React.FC<PumpTerminalProps> = ({
               {/* Profit */}
               <div className="text-right flex-shrink-0 font-mono">
                 <span className="text-xs font-bold text-emerald-400">
-                  +{lb.profitMon.toFixed(1)} MON
+                  +{lb.profitMon.toFixed(1)} {currSymbol}
                 </span>
               </div>
             </div>
@@ -305,7 +308,7 @@ export const PumpTerminal: React.FC<PumpTerminalProps> = ({
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             Monad Parallel L1
           </span>
-          <span className="text-[#836EF9] font-medium">~800ms Finality</span>
+          <span className="text-[#68CFEB] font-medium">~800ms Finality</span>
         </div>
       </section>
 

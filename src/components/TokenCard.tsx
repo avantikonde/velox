@@ -6,24 +6,27 @@ interface TokenCardProps {
   token: Token;
   onSelect: (token: Token) => void;
   onQuickBuyAmount?: (token: Token, monAmount: number) => void;
+  currencySymbol?: string;
 }
 
 export const TokenCard: React.FC<TokenCardProps> = ({ 
   token, 
   onSelect,
-  onQuickBuyAmount
+  onQuickBuyAmount,
+  currencySymbol
 }) => {
   const isPositive = token.priceChange24h >= 0;
+  const currSymbol = currencySymbol || token.chainSymbol || 'MON';
 
   return (
     <div
       onClick={() => onSelect(token)}
-      className="group relative flex flex-col justify-between rounded-2xl bg-[#0D111A] border border-white/[0.08] hover:border-[#836EF9]/40 p-4 sm:p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/50 cursor-pointer overflow-hidden"
+      className="group relative flex flex-col justify-between rounded-2xl bg-[#1F1E19] border border-white/[0.08] hover:border-[#68CFEB]/40 p-4 sm:p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/50 cursor-pointer overflow-hidden"
     >
       <div>
         {/* Token Header: Image, Name, Badge */}
         <div className="flex items-start gap-3.5 mb-3.5">
-          <div className="relative flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border border-white/10 group-hover:border-[#836EF9]/40 transition-colors shadow-md">
+          <div className="relative flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border border-white/10 group-hover:border-[#68CFEB]/40 transition-colors shadow-md">
             <img
               src={token.imageUrl}
               alt={token.name}
@@ -38,10 +41,10 @@ export const TokenCard: React.FC<TokenCardProps> = ({
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-1 mb-0.5">
-              <h3 className="font-bold text-sm sm:text-base text-white group-hover:text-[#A78BFA] transition-colors truncate">
+              <h3 className="font-bold text-sm sm:text-base text-[#FAFAFA] group-hover:text-[#68CFEB] transition-colors truncate">
                 {token.name}
               </h3>
-              <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-[#836EF9]/10 text-[#A78BFA] border border-[#836EF9]/20 flex-shrink-0">
+              <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-[#1F4B5D]/30 text-[#68CFEB] border border-[#68CFEB]/30 flex-shrink-0">
                 ${token.symbol}
               </span>
             </div>
@@ -54,7 +57,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({
 
             <div className="flex items-center gap-2 font-mono">
               <div className="text-xs font-bold text-slate-200">
-                MCap: <span className="text-white">{token.marketCapMon} MON</span>
+                MCap: <span className="text-[#FAFAFA]">{token.marketCapMon} {currSymbol}</span>
               </div>
               <div className={`flex items-center text-xs font-semibold ${isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
                 {isPositive ? <TrendingUp className="w-3 h-3 mr-0.5" /> : <TrendingDown className="w-3 h-3 mr-0.5" />}
@@ -72,11 +75,11 @@ export const TokenCard: React.FC<TokenCardProps> = ({
         {/* Anti-Sniper Shield (FairSlot Genesis) Badge */}
         {token.shieldActive && (
           <div className="mb-3">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-[#193153]/90 border border-[#EB96FF]/40 text-[#F9D4E0] shadow-[0_0_10px_rgba(235,150,255,0.2)]">
-              <ShieldCheck className="w-3 h-3 text-[#EB96FF] flex-shrink-0 animate-pulse" />
-              <span>Anti-Sniper Shield (Max {token.maxShieldBuyMon || 0.5} MON)</span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-[#1F4B5D]/90 border border-[#68CFEB]/50 text-[#FAFAFA] shadow-[0_0_10px_rgba(104,207,235,0.2)]">
+              <ShieldCheck className="w-3 h-3 text-[#68CFEB] flex-shrink-0 animate-pulse" />
+              <span>Anti-Sniper Shield (Max {token.maxShieldBuyMon || 0.5} {currSymbol})</span>
               {token.shieldRemainingSeconds !== undefined && token.shieldRemainingSeconds > 0 && (
-                <span className="text-[#EB96FF] font-bold">({token.shieldRemainingSeconds}s)</span>
+                <span className="text-[#68CFEB] font-bold">({token.shieldRemainingSeconds}s)</span>
               )}
             </span>
           </div>
@@ -90,11 +93,11 @@ export const TokenCard: React.FC<TokenCardProps> = ({
         <div>
           <div className="flex justify-between items-center text-[11px] mb-1">
             <span className="text-slate-400">Bonding Curve</span>
-            <span className="font-bold text-emerald-400">{token.bondingProgress}%</span>
+            <span className="font-bold text-[#68CFEB]">{token.bondingProgress}%</span>
           </div>
-          <div className="w-full h-1.5 bg-[#080B11] rounded-full overflow-hidden p-0.5 border border-white/5">
+          <div className="w-full h-1.5 bg-[#141310] rounded-full overflow-hidden p-0.5 border border-white/5">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-[#836EF9] to-[#00F59B] transition-all duration-300"
+              className="h-full rounded-full bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] transition-all duration-300"
               style={{ width: `${token.bondingProgress}%` }}
             ></div>
           </div>
@@ -112,7 +115,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({
               e.stopPropagation();
               onSelect(token);
             }}
-            className="px-3 py-1.5 rounded-xl bg-[#836EF9] hover:bg-[#7259f7] text-white text-xs font-bold inline-flex items-center gap-1 active:scale-95 transition-all shadow-sm"
+            className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] hover:from-[#90DEF2] hover:to-[#2B6882] text-[#1F1E19] text-xs font-extrabold inline-flex items-center gap-1 active:scale-95 transition-all shadow-sm"
           >
             <span>Trade</span>
             <ArrowUpRight className="w-3 h-3 stroke-[2.5]" />

@@ -7,14 +7,33 @@ export default {
   theme: {
     extend: {
       colors: {
+        ocean: {
+          DEFAULT: '#1F4B5D',
+          dark: '#143542',
+          light: '#2B6882',
+        },
+        aqua: {
+          DEFAULT: '#68CFEB',
+          light: '#90DEF2',
+          dark: '#47B6D4',
+        },
+        softwhite: '#FAFAFA',
+        charcoal: {
+          DEFAULT: '#1F1E19',
+          deep: '#141310',
+          card: '#1F1E19',
+          surface: '#25241E',
+          hover: '#2C2B24',
+          border: 'rgba(104, 207, 235, 0.15)',
+        },
         monad: {
-          dark: '#080B11',
-          card: '#0D111A',
-          hover: '#131926',
-          border: 'rgba(255, 255, 255, 0.08)',
-          purple: '#836EF9',
-          purpleLight: '#A78BFA',
-          green: '#00F59B',
+          dark: '#141310',
+          card: '#1F1E19',
+          hover: '#25241E',
+          border: 'rgba(104, 207, 235, 0.15)',
+          purple: '#68CFEB',
+          purpleLight: '#90DEF2',
+          green: '#68CFEB',
           emerald: '#10B981',
           gold: '#FBBF24',
         },

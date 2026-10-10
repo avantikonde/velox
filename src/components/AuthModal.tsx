@@ -84,7 +84,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-md rounded-2xl bg-[#0D111A] border border-white/10 p-6 sm:p-7 shadow-2xl my-8">
+      <div className="relative w-full max-w-md rounded-2xl bg-[#1F1E19] border border-white/10 p-6 sm:p-7 shadow-2xl my-8">
         
         {/* Close Button */}
         <button
@@ -96,10 +96,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
 
         {/* Modal Header */}
         <div className="text-center mb-5">
-          <div className="w-10 h-10 mx-auto mb-2.5 rounded-xl bg-[#836EF9]/15 text-[#A78BFA] flex items-center justify-center font-bold">
+          <div className="w-10 h-10 mx-auto mb-2.5 rounded-xl bg-[#1F4B5D]/40 text-[#68CFEB] flex items-center justify-center font-bold">
             <Sparkles className="w-5 h-5" />
           </div>
-          <h2 className="text-lg font-bold text-white">
+          <h2 className="text-lg font-bold text-[#FAFAFA]">
             {tab === 'signin' ? 'Sign in to Velox' : 'Create your Account'}
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
@@ -108,14 +108,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
         </div>
 
         {/* Tab Switcher: Sign in | Sign up */}
-        <div className="flex rounded-xl bg-[#131926] p-1 border border-white/[0.06] mb-5 text-xs font-mono font-medium">
+        <div className="flex rounded-xl bg-[#25241E] p-1 border border-white/[0.06] mb-5 text-xs font-mono font-medium">
           <button
             onClick={() => {
               setTab('signin');
               setError(null);
             }}
             className={`flex-1 py-1.5 rounded-lg transition-all ${
-              tab === 'signin' ? 'bg-[#836EF9] text-white font-bold shadow-sm' : 'text-slate-400 hover:text-white'
+              tab === 'signin' ? 'bg-[#68CFEB] text-[#1F1E19] font-bold shadow-sm' : 'text-slate-400 hover:text-white'
             }`}
           >
             Sign in
@@ -126,7 +126,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
               setError(null);
             }}
             className={`flex-1 py-1.5 rounded-lg transition-all ${
-              tab === 'signup' ? 'bg-[#836EF9] text-white font-bold shadow-sm' : 'text-slate-400 hover:text-white'
+              tab === 'signup' ? 'bg-[#68CFEB] text-[#1F1E19] font-bold shadow-sm' : 'text-slate-400 hover:text-white'
             }`}
           >
             Create account
@@ -173,7 +173,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
           <div className="text-center font-sans">
             <button
               onClick={() => setShowGoogleInput(!showGoogleInput)}
-              className="text-[11px] text-slate-400 hover:text-[#A78BFA] transition-colors"
+              className="text-[11px] text-slate-400 hover:text-[#68CFEB] transition-colors"
             >
               {showGoogleInput ? 'Hide custom Google account' : 'Sign in with specific Google email'}
             </button>
@@ -186,11 +186,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                 placeholder="your.email@gmail.com"
                 value={customGoogleEmail}
                 onChange={(e) => setCustomGoogleEmail(e.target.value)}
-                className="flex-1 px-3 py-1.5 rounded-lg bg-[#131926] border border-white/10 text-xs text-white placeholder-slate-500 font-mono focus:outline-none focus:border-[#836EF9]"
+                className="flex-1 px-3 py-1.5 rounded-lg bg-[#25241E] border border-white/10 text-xs text-[#FAFAFA] placeholder-slate-400 font-mono focus:outline-none focus:border-[#68CFEB]"
               />
               <button
                 onClick={() => handleGoogleAuth(customGoogleEmail)}
-                className="px-3 py-1.5 rounded-lg bg-[#836EF9] text-white text-xs font-semibold hover:bg-[#7259f7]"
+                className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] text-[#1F1E19] font-bold text-xs hover:from-[#90DEF2] hover:to-[#2B6882]"
               >
                 Link
               </button>
@@ -201,7 +201,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
         {/* Divider */}
         <div className="relative flex items-center justify-center my-4 font-mono text-[10px] text-slate-500">
           <div className="border-t border-white/[0.08] w-full"></div>
-          <span className="bg-[#0D111A] px-2.5 uppercase tracking-wider whitespace-nowrap">
+          <span className="bg-[#1F1E19] px-2.5 uppercase tracking-wider whitespace-nowrap">
             or email
           </span>
           <div className="border-t border-white/[0.08] w-full"></div>
@@ -221,7 +221,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                   placeholder="trader@monad.xyz"
                   value={emailOrUser}
                   onChange={(e) => setEmailOrUser(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#131926] border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-[#836EF9]"
+                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#25241E] border border-white/10 text-[#FAFAFA] placeholder-slate-400 text-xs focus:outline-none focus:border-[#68CFEB]"
                 />
               </div>
             </div>
@@ -237,7 +237,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#131926] border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-[#836EF9]"
+                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#25241E] border border-white/10 text-[#FAFAFA] placeholder-slate-400 text-xs focus:outline-none focus:border-[#68CFEB]"
                 />
               </div>
             </div>
@@ -246,7 +246,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-2.5 px-4 rounded-xl bg-[#836EF9] hover:bg-[#7259f7] text-white text-xs font-bold transition-all active:scale-98 disabled:opacity-50 shadow-md shadow-[#836EF9]/20"
+                className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] hover:from-[#90DEF2] hover:to-[#2B6882] text-[#1F1E19] text-xs font-extrabold transition-all active:scale-98 disabled:opacity-50 shadow-md shadow-[#68CFEB]/20"
               >
                 {isLoading ? 'Verifying session...' : 'Sign in ⚡'}
               </button>
@@ -266,7 +266,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                   placeholder="monad_trader"
                   value={signupUsername}
                   onChange={(e) => setSignupUsername(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#131926] border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-[#836EF9]"
+                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#25241E] border border-white/10 text-[#FAFAFA] placeholder-slate-400 text-xs focus:outline-none focus:border-[#68CFEB]"
                 />
               </div>
             </div>
@@ -282,7 +282,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                   placeholder="your.email@example.com"
                   value={signupEmail}
                   onChange={(e) => setSignupEmail(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#131926] border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-[#836EF9]"
+                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#25241E] border border-white/10 text-[#FAFAFA] placeholder-slate-400 text-xs focus:outline-none focus:border-[#68CFEB]"
                 />
               </div>
             </div>
@@ -298,7 +298,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                   placeholder="Create a password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#131926] border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-[#836EF9]"
+                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#25241E] border border-white/10 text-[#FAFAFA] placeholder-slate-400 text-xs focus:outline-none focus:border-[#68CFEB]"
                 />
               </div>
             </div>
@@ -307,7 +307,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-xs font-bold transition-all active:scale-98 disabled:opacity-50 shadow-md"
+                className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] hover:from-[#90DEF2] hover:to-[#2B6882] text-[#1F1E19] text-xs font-extrabold transition-all active:scale-98 disabled:opacity-50 shadow-md shadow-[#68CFEB]/20"
               >
                 {isLoading ? 'Creating account...' : 'Create Account 🚀'}
               </button>

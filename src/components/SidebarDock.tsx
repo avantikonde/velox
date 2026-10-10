@@ -24,26 +24,26 @@ export const SidebarDock: React.FC<SidebarDockProps> = ({
         <button
           onClick={onOpenLaunchModal}
           title="Launch Token in 1-Click"
-          className="group relative flex items-center justify-center w-11 h-11 rounded-full bg-gradient-to-tr from-[#0B5777] via-[#EB96FF] to-[#F9D4E0] text-[#070c16] shadow-lg shadow-[#EB96FF]/30 hover:scale-110 active:scale-95 transition-all mb-1"
+          className="group relative flex items-center justify-center w-11 h-11 rounded-full bg-gradient-to-tr from-[#1F4B5D] to-[#68CFEB] text-[#1F1E19] shadow-lg shadow-[#68CFEB]/30 hover:scale-110 active:scale-95 transition-all mb-1"
         >
           <Plus className="w-5 h-5 stroke-[2.5] group-hover:rotate-90 transition-transform duration-300" />
         </button>
 
         <div className="w-6 h-[1px] bg-white/10 my-0.5"></div>
 
-        {/* 1. Terminal 3-Column View (pump.fun Pro View) */}
+        {/* 1. Terminal 3-Column View */}
         <button
           onClick={() => onSelectTab('terminal')}
-          title="Terminal Multi-Column Feed (pump.fun View)"
+          title="Terminal Multi-Column Feed"
           className={`relative flex items-center justify-center w-11 h-11 rounded-full transition-all ${
             currentTab === 'terminal'
-              ? 'bg-[#EB96FF] text-[#070c16] shadow-md shadow-[#EB96FF]/40 font-bold'
+              ? 'bg-[#68CFEB] text-[#1F1E19] shadow-md shadow-[#68CFEB]/40 font-bold'
               : 'text-slate-400 hover:text-white hover:bg-white/10'
           }`}
         >
           <Columns3 className="w-5 h-5" />
           {currentTab === 'terminal' && (
-            <span className="absolute -right-1 top-1 w-2 h-2 rounded-full bg-[#F9D4E0] animate-ping" />
+            <span className="absolute -right-1 top-1 w-2 h-2 rounded-full bg-[#68CFEB] animate-ping" />
           )}
         </button>
 
@@ -53,7 +53,7 @@ export const SidebarDock: React.FC<SidebarDockProps> = ({
           title="Tokens Grid View"
           className={`relative flex items-center justify-center w-11 h-11 rounded-full transition-all ${
             currentTab === 'tokens'
-              ? 'bg-[#EB96FF] text-[#070c16] shadow-md shadow-[#EB96FF]/40 font-bold'
+              ? 'bg-[#68CFEB] text-[#1F1E19] shadow-md shadow-[#68CFEB]/40 font-bold'
               : 'text-slate-400 hover:text-white hover:bg-white/10'
           }`}
         >
@@ -66,7 +66,7 @@ export const SidebarDock: React.FC<SidebarDockProps> = ({
           title="King of the Hill Spotlight"
           className={`relative flex items-center justify-center w-11 h-11 rounded-full transition-all ${
             currentTab === 'spotlight'
-              ? 'bg-[#EB96FF] text-[#070c16] shadow-md shadow-[#EB96FF]/40 font-bold'
+              ? 'bg-[#68CFEB] text-[#1F1E19] shadow-md shadow-[#68CFEB]/40 font-bold'
               : 'text-slate-400 hover:text-white hover:bg-white/10'
           }`}
         >
@@ -79,7 +79,7 @@ export const SidebarDock: React.FC<SidebarDockProps> = ({
           title="Hot Callouts & Trades Stream"
           className={`relative flex items-center justify-center w-11 h-11 rounded-full transition-all ${
             currentTab === 'callouts'
-              ? 'bg-[#EB96FF] text-[#070c16] shadow-md shadow-[#EB96FF]/40 font-bold'
+              ? 'bg-[#68CFEB] text-[#1F1E19] shadow-md shadow-[#68CFEB]/40 font-bold'
               : 'text-slate-400 hover:text-white hover:bg-white/10'
           }`}
         >
@@ -92,7 +92,7 @@ export const SidebarDock: React.FC<SidebarDockProps> = ({
           title="Leaderboard (Top Traders & Earners)"
           className={`relative flex items-center justify-center w-11 h-11 rounded-full transition-all ${
             currentTab === 'leaderboard'
-              ? 'bg-[#EB96FF] text-[#070c16] shadow-md shadow-[#EB96FF]/40 font-bold'
+              ? 'bg-[#68CFEB] text-[#1F1E19] shadow-md shadow-[#68CFEB]/40 font-bold'
               : 'text-slate-400 hover:text-white hover:bg-white/10'
           }`}
         >
@@ -105,7 +105,7 @@ export const SidebarDock: React.FC<SidebarDockProps> = ({
         <button
           onClick={onOpenHowItWorks}
           title="Protocol Mechanics & Architecture"
-          className="flex items-center justify-center w-10 h-10 rounded-full text-slate-400 hover:text-[#EB96FF] hover:bg-white/10 transition-colors"
+          className="flex items-center justify-center w-10 h-10 rounded-full text-slate-400 hover:text-[#68CFEB] hover:bg-white/10 transition-colors"
         >
           <HelpCircle className="w-4 h-4" />
         </button>

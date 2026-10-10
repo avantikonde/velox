@@ -51,18 +51,18 @@ export const SimpleInteractiveBackground: React.FC = () => {
       mouse.x += (mouse.targetX - mouse.x) * 0.05;
       mouse.y += (mouse.targetY - mouse.y) * 0.05;
 
-      // 1. Interactive Cursor Ambient Radial Glow (Monad Purple & Emerald Tint)
+      // 1. Interactive Cursor Ambient Radial Glow (Aqua & Ocean Blue Tint)
       const grad = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 420);
-      grad.addColorStop(0, 'rgba(131, 110, 249, 0.09)');
-      grad.addColorStop(0.5, 'rgba(0, 245, 155, 0.03)');
+      grad.addColorStop(0, 'rgba(104, 207, 235, 0.08)');
+      grad.addColorStop(0.5, 'rgba(31, 75, 93, 0.04)');
       grad.addColorStop(1, 'transparent');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, width, height);
 
       // 2. Secondary soft top breathing ambient glow
-      const breath = Math.sin(time) * 0.02 + 0.06;
+      const breath = Math.sin(time) * 0.02 + 0.05;
       const topGrad = ctx.createRadialGradient(width * 0.6, 0, 0, width * 0.6, 0, 600);
-      topGrad.addColorStop(0, `rgba(131, 110, 249, ${breath})`);
+      topGrad.addColorStop(0, `rgba(104, 207, 235, ${breath})`);
       topGrad.addColorStop(1, 'transparent');
       ctx.fillStyle = topGrad;
       ctx.fillRect(0, 0, width, height);
@@ -79,7 +79,7 @@ export const SimpleInteractiveBackground: React.FC = () => {
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(167, 139, 250, ${p.alpha})`;
+        ctx.fillStyle = `rgba(104, 207, 235, ${p.alpha})`;
         ctx.fill();
       });
 

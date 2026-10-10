@@ -14,7 +14,7 @@ export const LiveActivityTicker: React.FC<LiveActivityTickerProps> = ({
   tokens = []
 }) => {
   return (
-    <div className="w-full h-8 bg-[#0D111A]/90 border-b border-white/[0.08] flex items-center px-3 sm:px-6 overflow-hidden select-none z-30 font-mono text-xs">
+    <div className="w-full h-8 bg-[#1F1E19]/90 border-b border-white/[0.08] flex items-center px-3 sm:px-6 overflow-hidden select-none z-30 font-mono text-xs">
       
       {/* Live Swaps Indicator Label */}
       <div className="flex items-center gap-1.5 pr-3 border-r border-white/10 text-[10px] font-bold tracking-wider text-emerald-400 uppercase flex-shrink-0">
@@ -38,7 +38,7 @@ export const LiveActivityTicker: React.FC<LiveActivityTickerProps> = ({
                 }
               }}
               title={`Click to trade $${trade.tokenSymbol}`}
-              className="inline-flex items-center gap-1.5 h-6 px-2.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.06] hover:border-[#836EF9]/40 transition-all cursor-pointer flex-shrink-0 group active:scale-95"
+              className="inline-flex items-center gap-1.5 h-6 px-2.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.06] hover:border-[#68CFEB]/40 transition-all cursor-pointer flex-shrink-0 group active:scale-95"
             >
               {/* Meme Coin Logo */}
               <div className="w-4 h-4 rounded-full overflow-hidden border border-white/20 shadow-sm flex-shrink-0 group-hover:scale-110 transition-transform">
@@ -61,7 +61,7 @@ export const LiveActivityTicker: React.FC<LiveActivityTickerProps> = ({
               </span>
 
               {/* Token Symbol */}
-              <span className="font-bold text-white text-[11px] group-hover:text-[#A78BFA] transition-colors">
+              <span className="font-bold text-[#FAFAFA] text-[11px] group-hover:text-[#68CFEB] transition-colors">
                 ${trade.tokenSymbol}
               </span>
 
@@ -72,7 +72,7 @@ export const LiveActivityTicker: React.FC<LiveActivityTickerProps> = ({
               </span>
 
               {/* Monad Speed Latency Tag */}
-              <span className="text-[9px] text-[#A78BFA] bg-[#836EF9]/10 px-1 py-0.2 rounded font-mono font-medium">
+              <span className="text-[9px] text-[#68CFEB] bg-[#1F4B5D]/40 border border-[#68CFEB]/30 px-1 py-0.2 rounded font-mono font-medium">
                 {trade.latencyMs}ms
               </span>
             </div>

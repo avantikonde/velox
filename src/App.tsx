@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { PumpSidebar } from './components/PumpSidebar';
 import { PumpTopHeader } from './components/PumpTopHeader';
 import { KingOfTheHill } from './components/KingOfTheHill';
 import { TokenCard } from './components/TokenCard';
 import { PumpTerminal } from './components/PumpTerminal';
+import { LeaderboardView } from './components/LeaderboardView';
+import { LiveFeedView } from './components/LiveFeedView';
+import { RewardsView } from './components/RewardsView';
 import { LaunchModal } from './components/LaunchModal';
 import { TradeModal } from './components/TradeModal';
 import { HowItWorksModal } from './components/HowItWorksModal';
@@ -11,34 +14,87 @@ import { LiveActivityTicker } from './components/LiveActivityTicker';
 import { AuthModal } from './components/AuthModal';
 import { SimpleInteractiveBackground } from './components/SimpleInteractiveBackground';
 import { INITIAL_TOKENS, MOCK_HOT_CALLOUTS, MOCK_LEADERBOARD } from './data/mockTokens';
-import { Token, Trade, WalletState, ViewMode, HotCallout, LeaderboardEntry, User } from './types';
+import { SUPPORTED_CHAINS, DEFAULT_CHAIN, ChainConfig } from './data/chains';
+import { Token, Trade, WalletState, ViewMode, HotCallout, LeaderboardEntry, User, NavigationTab } from './types';
 import { authService } from './services/authService';
-import { Search, Flame, Sparkles, Trophy, CheckCircle, Code2 } from 'lucide-react';
+import { Search, Flame, Sparkles, Trophy, CheckCircle, Code2, Compass } from 'lucide-react';
+
+const VALID_TABS: NavigationTab[] = ['home', 'explore', 'leaderboard', 'live-feed', 'terminal', 'rewards'];
 
 export const App: React.FC = () => {
   const [tokens, setTokens] = useState<Token[]>(INITIAL_TOKENS);
   const [callouts, setCallouts] = useState<HotCallout[]>(MOCK_HOT_CALLOUTS);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>(MOCK_LEADERBOARD);
   const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState<ViewMode>('terminal');
-  const [activeTab, setActiveTab] = useState<'home' | 'explore' | 'leaderboard' | 'callouts' | 'terminal'>('home');
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [activeFilter, setActiveFilter] = useState<'trending' | 'new' | 'graduating' | 'graduated'>('trending');
   
+  // Multi-Chain State
+  const [activeChain, setActiveChain] = useState<ChainConfig>(DEFAULT_CHAIN);
+  const [chainBalances, setChainBalances] = useState<Record<string, number>>({
+    monad: 25.0,
+    ethereum: 4.8,
+    solana: 38.5,
+    base: 1.25,
+    arbitrum: 320.0
+  });
+
+  // URL Hash Routing
+  const getInitialTab = (): NavigationTab => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash.replace('#', '') as NavigationTab;
+      if (hash === ('callouts' as any)) return 'live-feed';
+      if (VALID_TABS.includes(hash)) return hash;
+    }
+    return 'home';
+  };
+
+  const [activeTab, setActiveTab] = useState<NavigationTab>(getInitialTab);
+
+  // Sync hash routing on browser back/forward buttons
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '') as NavigationTab;
+      if (hash === ('callouts' as any)) {
+        setActiveTab('live-feed');
+      } else if (VALID_TABS.includes(hash)) {
+        setActiveTab(hash);
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  const handleSelectTab = (tab: NavigationTab) => {
+    setActiveTab(tab);
+    window.location.hash = tab;
+  };
+
   // Left Sidebar Expand/Collapse State
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
 
   // Wallet State
+  const currentChainBal = chainBalances[activeChain.id] ?? 25.0;
   const [wallet, setWallet] = useState<WalletState>({
     isConnected: true,
     address: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e',
-    monBalance: 25.0,
+    monBalance: currentChainBal,
+    chainBalances,
     tokens: {
       'chog-monad': 150000,
       'giga-parallel': 50000
     }
   });
 
-  // Authentication State (Google + Email)
+  // Keep wallet monBalance in sync with activeChain balance
+  useEffect(() => {
+    setWallet(prev => ({
+      ...prev,
+      monBalance: chainBalances[activeChain.id] ?? 25.0
+    }));
+  }, [activeChain.id, chainBalances]);
+
+  // Authentication State
   const [currentUser, setCurrentUser] = useState<User | null>(() => authService.getCurrentUser());
   const [isAuthOpen, setIsAuthOpen] = useState(false);
 
@@ -48,46 +104,49 @@ export const App: React.FC = () => {
   const [selectedToken, setSelectedToken] = useState<Token | null>(null);
   const [showContractsModal, setShowContractsModal] = useState(false);
 
-  // Live Trades with token logos
+  // Live Trades
   const [recentTrades, setRecentTrades] = useState<Trade[]>([
     {
       id: 'tx-1',
       tokenId: 'chog-monad',
       tokenSymbol: 'CHOG',
-      tokenImageUrl: INITIAL_TOKENS[0].imageUrl,
+      tokenImageUrl: INITIAL_TOKENS[1].imageUrl,
       type: 'BUY',
       user: '0x84f...19e',
       monAmount: 0.5,
       tokenAmount: 1028,
       timestamp: 'Just now',
       txHash: '0x918f...28b',
-      latencyMs: 780
+      latencyMs: 780,
+      currencySymbol: 'MON'
     },
     {
       id: 'tx-2',
       tokenId: 'giga-parallel',
       tokenSymbol: 'PARALLEL',
-      tokenImageUrl: INITIAL_TOKENS[1].imageUrl,
+      tokenImageUrl: INITIAL_TOKENS[2].imageUrl,
       type: 'BUY',
       user: '0x32a...49f',
       monAmount: 1.2,
       tokenAmount: 3738,
       timestamp: '1m ago',
       txHash: '0x38fa...99a',
-      latencyMs: 812
+      latencyMs: 812,
+      currencySymbol: 'MON'
     },
     {
       id: 'tx-3',
       tokenId: 'aurora-blossom',
       tokenSymbol: 'AURORA',
-      tokenImageUrl: INITIAL_TOKENS[2].imageUrl,
+      tokenImageUrl: INITIAL_TOKENS[3].imageUrl,
       type: 'SELL',
       user: '0x12c...aa8',
       monAmount: 0.35,
       tokenAmount: 1428,
       timestamp: '2m ago',
       txHash: '0x44bf...11c',
-      latencyMs: 745
+      latencyMs: 745,
+      currencySymbol: 'ETH'
     }
   ]);
 
@@ -112,7 +171,8 @@ export const App: React.FC = () => {
         tokenAmount: tokenAmt,
         timestamp: 'Just now',
         txHash: `0x${Math.random().toString(16).slice(2, 10)}...`,
-        latencyMs: latency
+        latencyMs: latency,
+        currencySymbol: randomToken.chainSymbol || activeChain.symbol
       };
 
       setRecentTrades(prev => [newTrade, ...prev.slice(0, 15)]);
@@ -136,7 +196,7 @@ export const App: React.FC = () => {
     }, 5500);
 
     return () => clearInterval(interval);
-  }, [tokens]);
+  }, [tokens, activeChain.symbol]);
 
   // Real-time countdown timer for Anti-Sniper Shield active tokens
   useEffect(() => {
@@ -170,9 +230,10 @@ export const App: React.FC = () => {
   };
 
   const claimFaucet = () => {
-    setWallet(prev => ({
+    const added = activeChain.faucetAmount;
+    setChainBalances(prev => ({
       ...prev,
-      monBalance: prev.monBalance + 10.0
+      [activeChain.id]: (prev[activeChain.id] ?? 0) + added
     }));
   };
 
@@ -181,13 +242,18 @@ export const App: React.FC = () => {
       ...newToken,
       shieldActive: true,
       shieldRemainingSeconds: 60,
-      maxShieldBuyMon: 0.5
+      maxShieldBuyMon: 0.5,
+      chain: activeChain.id,
+      chainSymbol: activeChain.symbol
     };
 
     if (initialBuyMon > 0) {
+      setChainBalances(prev => ({
+        ...prev,
+        [activeChain.id]: Math.max(0, (prev[activeChain.id] ?? 0) - initialBuyMon)
+      }));
       setWallet(prev => ({
         ...prev,
-        monBalance: prev.monBalance - initialBuyMon,
         tokens: {
           ...prev.tokens,
           [tokenWithShield.id]: Math.round(initialBuyMon / tokenWithShield.priceMon)
@@ -199,11 +265,18 @@ export const App: React.FC = () => {
   };
 
   const handleExecuteTrade = (tokenId: string, type: 'BUY' | 'SELL', monAmount: number, tokenAmount: number) => {
+    setChainBalances(prev => {
+      const current = prev[activeChain.id] ?? 0;
+      return {
+        ...prev,
+        [activeChain.id]: type === 'BUY' ? Math.max(0, current - monAmount) : current + monAmount
+      };
+    });
+
     setWallet(prev => {
       const currentTokenBal = prev.tokens[tokenId] || 0;
       return {
         ...prev,
-        monBalance: type === 'BUY' ? prev.monBalance - monAmount : prev.monBalance + monAmount,
         tokens: {
           ...prev.tokens,
           [tokenId]: type === 'BUY' ? currentTokenBal + tokenAmount : Math.max(0, currentTokenBal - tokenAmount)
@@ -241,7 +314,8 @@ export const App: React.FC = () => {
         tokenAmount,
         timestamp: 'Just now',
         txHash: `0x${Math.random().toString(16).slice(2, 10)}...`,
-        latencyMs: 792
+        latencyMs: 792,
+        currencySymbol: activeTok.chainSymbol || activeChain.symbol
       };
       setRecentTrades(prev => [newTrade, ...prev.slice(0, 15)]);
     }
@@ -262,19 +336,10 @@ export const App: React.FC = () => {
 
   const kingOfTheHillToken = tokens.find(t => t.id === 'chog-monad') || tokens[0] || INITIAL_TOKENS[0];
 
-  const handleSelectSidebarTab = (tab: 'home' | 'explore' | 'leaderboard' | 'callouts' | 'terminal') => {
-    setActiveTab(tab);
-    if (tab === 'home' || tab === 'explore') {
-      setViewMode('grid');
-    } else {
-      setViewMode('terminal');
-    }
-  };
-
   return (
-    <div className="min-h-screen flex bg-[#080B11] clean-grid-bg text-slate-100 relative overflow-x-hidden font-sans">
+    <div className="min-h-screen flex bg-[#141310] clean-grid-bg text-[#FAFAFA] relative overflow-x-hidden font-sans">
       
-      {/* Advanced Simple Interactive Background (Subtle cursor-following ambient glow & particles) */}
+      {/* Advanced Simple Interactive Background */}
       <SimpleInteractiveBackground />
 
       {/* LEFT SIDEBAR: Collapsible */}
@@ -282,7 +347,7 @@ export const App: React.FC = () => {
         isExpanded={isSidebarExpanded}
         onToggleExpand={() => setIsSidebarExpanded(!isSidebarExpanded)}
         activeTab={activeTab}
-        onSelectTab={handleSelectSidebarTab}
+        onSelectTab={handleSelectTab}
         onOpenLaunchModal={() => setIsLaunchOpen(true)}
         onOpenHowItWorks={() => setIsHowItWorksOpen(true)}
         onOpenContractsModal={() => setShowContractsModal(true)}
@@ -298,7 +363,7 @@ export const App: React.FC = () => {
         `}
       >
         
-        {/* TOP BAR: Clean Minimalist Top Strip */}
+        {/* TOP BAR: Clean Minimalist Top Strip with Multi-Chain Selector */}
         <PumpTopHeader
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -312,6 +377,8 @@ export const App: React.FC = () => {
           }}
           wallet={wallet}
           onConnectWallet={toggleWallet}
+          activeChain={activeChain}
+          onSelectChain={setActiveChain}
         />
 
         {/* Real-time Ticker: Compact Live Swaps Bar */}
@@ -321,34 +388,112 @@ export const App: React.FC = () => {
           onSelectToken={(t) => setSelectedToken(t)}
         />
 
-        {/* Hero: King of the Hill Spotlight Card */}
-        <KingOfTheHill
-          token={tokens.find(t => t.id === kingOfTheHillToken.id) || kingOfTheHillToken}
-          onSelectToken={(t) => setSelectedToken(t)}
-          onQuickBuy={(t) => setSelectedToken(t)}
-        />
+        {/* Hero: King of the Hill Spotlight Card (SHOWN ONLY ON HOME TAB) */}
+        {activeTab === 'home' && (
+          <KingOfTheHill
+            token={tokens.find(t => t.id === kingOfTheHillToken.id) || kingOfTheHillToken}
+            onSelectToken={(t) => setSelectedToken(t)}
+            onQuickBuy={(t) => setSelectedToken(t)}
+            currencySymbol={activeChain.symbol}
+          />
+        )}
 
-        {/* Main Content Viewport: Terminal vs Grid */}
+        {/* Main Content Router Viewport */}
         <main className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-5 w-full flex-1">
-          {viewMode === 'terminal' ? (
-            <PumpTerminal
-              tokens={filteredTokens}
-              callouts={callouts}
+          
+          {/* 1. LEADERBOARD ROUTE */}
+          {activeTab === 'leaderboard' && (
+            <LeaderboardView
               leaderboard={leaderboard}
-              onSelectToken={(t) => setSelectedToken(t)}
+              currencySymbol={activeChain.symbol}
+              activeChain={activeChain}
+              onSelectTokenSymbol={(sym) => {
+                const tok = tokens.find(t => t.symbol === sym);
+                if (tok) setSelectedToken(tok);
+              }}
+            />
+          )}
+
+          {/* 2. LIVE FEED ROUTE */}
+          {activeTab === 'live-feed' && (
+            <LiveFeedView
+              recentTrades={recentTrades}
+              tokens={tokens}
+              callouts={callouts}
+              activeChain={activeChain}
+              currencySymbol={activeChain.symbol}
+              onSelectToken={(tok) => setSelectedToken(tok)}
+            />
+          )}
+
+          {/* 3. TERMINAL ROUTE */}
+          {activeTab === 'terminal' && (
+            <div className="space-y-4 animate-in fade-in duration-200">
+              <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
+                <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
+                  <span>VELOX</span>
+                  <span>/</span>
+                  <span className="text-[#68CFEB] font-semibold">Pro Terminal</span>
+                  <span>/</span>
+                  <span>{activeChain.name}</span>
+                </div>
+                <span className="text-xs font-mono text-emerald-400">
+                  ● Real-Time Pipelining
+                </span>
+              </div>
+              <PumpTerminal
+                tokens={filteredTokens}
+                callouts={callouts}
+                leaderboard={leaderboard}
+                onSelectToken={(t) => setSelectedToken(t)}
+                onOpenLaunchModal={() => setIsLaunchOpen(true)}
+                currencySymbol={activeChain.symbol}
+              />
+            </div>
+          )}
+
+          {/* 4. REWARDS ROUTE */}
+          {activeTab === 'rewards' && (
+            <RewardsView
+              userAddress={wallet.address}
+              activeChain={activeChain}
               onOpenLaunchModal={() => setIsLaunchOpen(true)}
             />
-          ) : (
-            <div>
+          )}
+
+          {/* 5. HOME & EXPLORE ROUTES (TOKEN DISCOVERY MATRIX) */}
+          {(activeTab === 'home' || activeTab === 'explore') && (
+            <div className="space-y-6 animate-in fade-in duration-200">
+              
+              {/* Explore Header (Only on Explore tab) */}
+              {activeTab === 'explore' && (
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-white/[0.06]">
+                  <div>
+                    <div className="flex items-center gap-2 text-xs font-mono text-slate-400 mb-1">
+                      <span>VELOX</span>
+                      <span>/</span>
+                      <span className="text-[#68CFEB] font-semibold">Explore</span>
+                    </div>
+                    <h1 className="text-2xl font-black text-[#FAFAFA] flex items-center gap-2">
+                      <Compass className="w-6 h-6 text-[#68CFEB]" />
+                      Explore All Coins
+                    </h1>
+                    <p className="text-xs text-slate-400">
+                      Discover new bonding curve coins launched across all supported blockchains.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* Controls: Filter Tabs in Grid View */}
-              <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 mb-6">
+              <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
                 
                 {/* Filter Tabs */}
-                <div className="flex items-center gap-1 p-1 rounded-xl bg-[#0D111A] border border-white/[0.08] overflow-x-auto text-xs font-medium">
+                <div className="flex items-center gap-1 p-1 rounded-xl bg-[#1F1E19] border border-white/[0.08] overflow-x-auto text-xs font-medium">
                   <button
                     onClick={() => setActiveFilter('trending')}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition-all whitespace-nowrap ${
-                      activeFilter === 'trending' ? 'bg-[#836EF9] text-white shadow-sm font-bold' : 'text-slate-400 hover:text-white'
+                      activeFilter === 'trending' ? 'bg-[#68CFEB] text-[#1F1E19] shadow-sm font-bold' : 'text-slate-400 hover:text-white'
                     }`}
                   >
                     <Flame className="w-3.5 h-3.5 text-amber-400" /> Trending
@@ -356,7 +501,7 @@ export const App: React.FC = () => {
                   <button
                     onClick={() => setActiveFilter('new')}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition-all whitespace-nowrap ${
-                      activeFilter === 'new' ? 'bg-[#836EF9] text-white shadow-sm font-bold' : 'text-slate-400 hover:text-white'
+                      activeFilter === 'new' ? 'bg-[#68CFEB] text-[#1F1E19] shadow-sm font-bold' : 'text-slate-400 hover:text-white'
                     }`}
                   >
                     <Sparkles className="w-3.5 h-3.5 text-emerald-400" /> Newly Launched
@@ -364,7 +509,7 @@ export const App: React.FC = () => {
                   <button
                     onClick={() => setActiveFilter('graduating')}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition-all whitespace-nowrap ${
-                      activeFilter === 'graduating' ? 'bg-[#836EF9] text-white shadow-sm font-bold' : 'text-slate-400 hover:text-white'
+                      activeFilter === 'graduating' ? 'bg-[#68CFEB] text-[#1F1E19] shadow-sm font-bold' : 'text-slate-400 hover:text-white'
                     }`}
                   >
                     <Trophy className="w-3.5 h-3.5 text-amber-300" /> Near Graduation (60%+)
@@ -372,7 +517,7 @@ export const App: React.FC = () => {
                   <button
                     onClick={() => setActiveFilter('graduated')}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition-all whitespace-nowrap ${
-                      activeFilter === 'graduated' ? 'bg-[#836EF9] text-white shadow-sm font-bold' : 'text-slate-400 hover:text-white'
+                      activeFilter === 'graduated' ? 'bg-[#68CFEB] text-[#1F1E19] shadow-sm font-bold' : 'text-slate-400 hover:text-white'
                     }`}
                   >
                     <CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> Graduated
@@ -387,7 +532,7 @@ export const App: React.FC = () => {
                     placeholder="Filter coin or symbol..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#0D111A] border border-white/[0.08] text-white placeholder-slate-500 text-xs focus:outline-none focus:border-[#836EF9] transition-colors"
+                    className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#25241E] border border-white/[0.08] text-[#FAFAFA] placeholder-slate-400 text-xs focus:outline-none focus:border-[#68CFEB] transition-colors"
                   />
                 </div>
 
@@ -401,21 +546,22 @@ export const App: React.FC = () => {
                       key={token.id}
                       token={token}
                       onSelect={(tok) => setSelectedToken(tok)}
+                      currencySymbol={activeChain.symbol}
                     />
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-16 rounded-2xl bg-[#0D111A] border border-white/[0.08] space-y-4 mb-10">
-                  <div className="w-12 h-12 mx-auto rounded-xl bg-[#131926] flex items-center justify-center text-[#836EF9]">
+                <div className="text-center py-16 rounded-2xl bg-[#1F1E19] border border-white/[0.08] space-y-4 mb-10">
+                  <div className="w-12 h-12 mx-auto rounded-xl bg-[#25241E] flex items-center justify-center text-[#68CFEB]">
                     <Search className="w-5 h-5" />
                   </div>
-                  <h3 className="text-base font-bold text-white">No tokens matched</h3>
+                  <h3 className="text-base font-bold text-[#FAFAFA]">No tokens matched</h3>
                   <p className="text-xs text-slate-400 max-w-sm mx-auto">
-                    Be the first to launch a token for this keyword on the Monad bonding curve!
+                    Be the first to launch a token for this keyword on the bonding curve!
                   </p>
                   <button 
                     onClick={() => setIsLaunchOpen(true)} 
-                    className="px-4 py-2 rounded-xl bg-[#836EF9] hover:bg-[#7259f7] text-white text-xs font-bold transition-all active:scale-95 shadow-md shadow-[#836EF9]/20 inline-block"
+                    className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] hover:from-[#90DEF2] hover:to-[#2B6882] text-[#1F1E19] text-xs font-extrabold transition-all active:scale-95 shadow-md shadow-[#68CFEB]/20 inline-block"
                   >
                     Launch Coin 🚀
                   </button>
@@ -423,22 +569,23 @@ export const App: React.FC = () => {
               )}
             </div>
           )}
+
         </main>
 
         {/* Footer */}
-        <footer className="border-t border-white/[0.08] bg-[#080B11]/90 py-6 mt-10 text-xs text-slate-400">
+        <footer className="border-t border-white/[0.08] bg-[#1F1E19]/90 py-6 mt-10 text-xs text-slate-400">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <span className="font-bold text-white">monad.pump 💜</span>
-              <span>— Instant Fair-Launchpad & DEX for Monad Parallel L1</span>
+              <span className="font-bold text-[#FAFAFA]">VELOX ⚡</span>
+              <span>— Multi-Chain Instant Fair-Launchpad & DEX</span>
             </div>
             <div className="flex items-center gap-4 text-slate-400 font-mono text-[11px]">
-              <span>RPC: testnet-rpc.monad.xyz</span>
+              <span>Active: {activeChain.name} ({activeChain.symbol})</span>
               <span>•</span>
-              <span className="text-emerald-400 font-medium">10,000 TPS Parallel EVM</span>
+              <span className="text-emerald-400 font-medium">{activeChain.tps}</span>
               <span>•</span>
               <button onClick={() => setIsHowItWorksOpen(true)} className="hover:text-white transition-colors">
-                Docs
+                Architecture & Docs
               </button>
             </div>
           </div>
@@ -452,14 +599,17 @@ export const App: React.FC = () => {
         onClose={() => setIsLaunchOpen(false)}
         onLaunch={handleLaunchToken}
         userBalance={wallet.monBalance}
+        currencySymbol={activeChain.symbol}
+        chainName={activeChain.name}
       />
 
       <TradeModal
-        token={tokens.find(t => t.id === selectedToken?.id) || selectedToken}
-        isOpen={!!selectedToken}
+        token={selectedToken}
+        isOpen={Boolean(selectedToken)}
         onClose={() => setSelectedToken(null)}
         wallet={wallet}
         onExecuteTrade={handleExecuteTrade}
+        currencySymbol={activeChain.symbol}
       />
 
       <HowItWorksModal
@@ -470,115 +620,32 @@ export const App: React.FC = () => {
       <AuthModal
         isOpen={isAuthOpen}
         onClose={() => setIsAuthOpen(false)}
-        onAuthSuccess={(user) => setCurrentUser(user)}
+        onAuthSuccess={(user: User) => {
+          setCurrentUser(user);
+          setIsAuthOpen(false);
+        }}
       />
 
-      {/* Smart Contracts View Modal */}
+      {/* Solidity Contracts Modal */}
       {showContractsModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-          <div className="relative w-full max-w-2xl rounded-2xl bg-[#0D111A] border border-white/10 p-6 sm:p-7 shadow-2xl my-8">
-            <div className="flex items-center justify-between pb-4 border-b border-white/[0.08] mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="relative w-full max-w-2xl rounded-2xl bg-[#1F1E19] border border-white/10 p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
               <div className="flex items-center gap-2">
-                <Code2 className="w-5 h-5 text-[#836EF9]" />
-                <h2 className="text-base font-bold text-white">Smart Contracts Architecture (Solidity)</h2>
+                <Code2 className="w-5 h-5 text-[#68CFEB]" />
+                <h3 className="font-bold text-sm text-[#FAFAFA]">Velox Verified Smart Contracts</h3>
               </div>
               <button onClick={() => setShowContractsModal(false)} className="text-slate-400 hover:text-white">✕</button>
             </div>
-            
-            <p className="text-xs text-slate-400 mb-3">
-              Deployable directly to Monad Testnet via <code className="text-purple-300">forge script</code>.
-            </p>
-
-            <div className="p-3.5 rounded-xl bg-[#080B11] border border-white/[0.06] overflow-x-auto font-mono text-[11px] text-slate-300 max-h-80">
-              <pre>{`// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
-
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-
-contract VeloxToken is ERC20 {
-    address public factory;
-    
-    constructor(string memory name, string memory symbol, address _factory) ERC20(name, symbol) {
-        factory = _factory;
-    }
-
-    function mint(address to, uint256 amount) external {
-        require(msg.sender == factory, "Only factory");
-        _mint(to, amount);
-    }
-
-    function burn(address from, uint256 amount) external {
-        require(msg.sender == factory, "Only factory");
-        _burn(from, amount);
-    }
-}
-
-contract VeloxFactory {
-    uint256 public constant GRADUATION_TARGET = 50 ether; // 50 MON to graduate
-    uint256 public constant TOTAL_SUPPLY = 1_000_000_000 ether;
-    uint256 public constant MAX_SHIELD_BUY = 0.5 ether; // Anti-Sniper Shield cap
-    uint256 public constant SHIELD_DURATION = 60; // 60 seconds
-
-    struct TokenState {
-        address token;
-        string name;
-        string symbol;
-        uint256 monRaised;
-        bool graduated;
-        uint256 shieldEndTime;
-    }
-
-    mapping(address => TokenState) public tokens;
-
-    event TokenLaunched(address indexed token, string name, string symbol, address creator);
-    event TradeExecuted(address indexed token, address trader, bool isBuy, uint256 monAmount, uint256 tokenAmount);
-    event TokenGraduated(address indexed token, uint256 monLocked);
-
-    function createToken(string memory name, string memory symbol) external payable returns (address) {
-        VeloxToken token = new VeloxToken(name, symbol, address(this));
-        tokens[address(token)] = TokenState(address(token), name, symbol, 0, false, block.timestamp + SHIELD_DURATION);
-        emit TokenLaunched(address(token), name, symbol, msg.sender);
-
-        if (msg.value > 0) {
-            _buy(address(token), msg.sender, msg.value);
-        }
-        return address(token);
-    }
-
-    function buy(address token) external payable {
-        _buy(token, msg.sender, msg.value);
-    }
-
-    function _buy(address token, address buyer, uint256 monIn) internal {
-        TokenState storage state = tokens[token];
-        require(!state.graduated, "Token graduated to DEX AMM");
-
-        // Anti-Sniper Shield (FairSlot Genesis) check
-        if (block.timestamp < state.shieldEndTime) {
-            require(monIn <= MAX_SHIELD_BUY, "Anti-Sniper Shield: Max 0.5 MON during first 60s");
-        }
-
-        state.monRaised += monIn;
-        uint256 tokensOut = (monIn * TOTAL_SUPPLY) / GRADUATION_TARGET;
-        VeloxToken(token).mint(buyer, tokensOut);
-
-        emit TradeExecuted(token, buyer, true, monIn, tokensOut);
-
-        if (state.monRaised >= GRADUATION_TARGET) {
-            state.graduated = true;
-            emit TokenGraduated(token, state.monRaised);
-        }
-    }
-}`}</pre>
-            </div>
-
-            <div className="mt-4 flex justify-end">
-              <button 
-                onClick={() => setShowContractsModal(false)} 
-                className="px-4 py-2 rounded-xl bg-white/[0.08] hover:bg-white/15 text-white text-xs font-semibold"
-              >
-                Close
-              </button>
+            <div className="space-y-3 font-mono text-xs">
+              <div className="p-3 rounded-xl bg-[#141310] border border-white/5 space-y-1">
+                <span className="text-slate-400 text-[11px]">Factory & Parallel AMM</span>
+                <div className="text-[#68CFEB] select-all font-bold">0x71C283F01bc7d92837fE76281bAA8192A0B577719</div>
+              </div>
+              <div className="p-3 rounded-xl bg-[#141310] border border-white/5 space-y-1">
+                <span className="text-slate-400 text-[11px]">Anti-Sniper FairSlot Shield Guard</span>
+                <div className="text-emerald-400 select-all font-bold">0x8892aF01827419A918fAA8192A0B577719BCA019</div>
+              </div>
             </div>
           </div>
         </div>

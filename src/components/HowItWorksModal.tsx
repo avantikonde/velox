@@ -11,16 +11,16 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ isOpen, onClos
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-xl rounded-2xl bg-[#0D111A] border border-white/10 p-6 sm:p-7 shadow-2xl my-8">
+      <div className="relative w-full max-w-xl rounded-2xl bg-[#1F1E19] border border-white/10 p-6 sm:p-7 shadow-2xl my-8">
         
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-4 border-b border-white/[0.08] mb-5">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-[#836EF9]/15 text-[#A78BFA]">
+            <div className="p-2 rounded-xl bg-[#1F4B5D]/40 text-[#68CFEB]">
               <Cpu className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">Velox Protocol Architecture</h2>
+              <h2 className="text-lg font-bold text-[#FAFAFA]">Velox Protocol Architecture</h2>
               <p className="text-xs text-slate-400 font-mono">High-Throughput Fair Launchpad & Parallel AMM on Monad</p>
             </div>
           </div>
@@ -32,8 +32,8 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ isOpen, onClos
         <div className="space-y-4 text-xs">
           
           {/* Step 1 */}
-          <div className="flex items-start gap-3.5 p-3.5 rounded-xl bg-[#131926] border border-white/[0.04]">
-            <div className="w-7 h-7 rounded-lg bg-[#836EF9]/20 text-[#A78BFA] flex items-center justify-center font-bold font-mono flex-shrink-0">
+          <div className="flex items-start gap-3.5 p-3.5 rounded-xl bg-[#25241E] border border-white/[0.04]">
+            <div className="w-7 h-7 rounded-lg bg-[#1F4B5D]/40 text-[#68CFEB] flex items-center justify-center font-bold font-mono flex-shrink-0">
               1
             </div>
             <div>
@@ -45,7 +45,7 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ isOpen, onClos
           </div>
 
           {/* Step 2 */}
-          <div className="flex items-start gap-3.5 p-3.5 rounded-xl bg-[#131926] border border-white/[0.04]">
+          <div className="flex items-start gap-3.5 p-3.5 rounded-xl bg-[#25241E] border border-white/[0.04]">
             <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold font-mono flex-shrink-0">
               2
             </div>
@@ -58,7 +58,7 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ isOpen, onClos
           </div>
 
           {/* Step 3 */}
-          <div className="flex items-start gap-3.5 p-3.5 rounded-xl bg-[#131926] border border-white/[0.04]">
+          <div className="flex items-start gap-3.5 p-3.5 rounded-xl bg-[#25241E] border border-white/[0.04]">
             <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center font-bold font-mono flex-shrink-0">
               3
             </div>
@@ -71,7 +71,7 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ isOpen, onClos
           </div>
 
           {/* Network Parameters */}
-          <div className="p-3.5 rounded-xl bg-[#080B11] border border-white/[0.06] font-mono text-xs space-y-1.5">
+          <div className="p-3.5 rounded-xl bg-[#141310] border border-white/[0.06] font-mono text-xs space-y-1.5">
             <div className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">
               Network Telemetry
             </div>
@@ -79,14 +79,14 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ isOpen, onClos
               <div>Network: <span className="text-white font-semibold">Monad Testnet</span></div>
               <div>Consensus: <span className="text-white font-semibold">MonadBFT</span></div>
               <div>Finality: <span className="text-emerald-400 font-bold">~800ms</span></div>
-              <div>Throughput: <span className="text-[#836EF9] font-bold">10,000 TPS</span></div>
+              <div>Throughput: <span className="text-[#68CFEB] font-bold">10,000 TPS</span></div>
             </div>
           </div>
 
           <div className="pt-2 flex justify-end">
             <button
               onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-[#836EF9] hover:bg-[#7259f7] text-white font-bold text-xs font-mono transition-all"
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] hover:from-[#90DEF2] hover:to-[#2B6882] text-[#1F1E19] font-extrabold text-xs font-mono transition-all shadow-md shadow-[#68CFEB]/20"
             >
               Close
             </button>

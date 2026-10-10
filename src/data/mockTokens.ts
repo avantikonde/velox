@@ -5,7 +5,7 @@ export const INITIAL_TOKENS: Token[] = [
     id: 'fairslot-genesis',
     name: 'FairSlot Genesis',
     symbol: 'FAIR',
-    description: 'Freshly launched with active Anti-Sniper Shield. 0.5 MON max allocation per buy for fair genesis distribution.',
+    description: 'Freshly launched with active Anti-Sniper Shield. 0.5 max allocation per buy for fair genesis distribution.',
     imageUrl: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=400&auto=format&fit=crop&q=80',
     creator: '0xFA1R...987A',
     createdAt: '15s ago',
@@ -21,13 +21,15 @@ export const INITIAL_TOKENS: Token[] = [
     repliesCount: 12,
     shieldActive: true,
     shieldRemainingSeconds: 45,
-    maxShieldBuyMon: 0.5
+    maxShieldBuyMon: 0.5,
+    chain: 'monad',
+    chainSymbol: 'MON'
   },
   {
     id: 'chog-monad',
     name: 'Chog the Mascot',
     symbol: 'CHOG',
-    description: 'The iconic purple mascot of the Monad community. 10,000 TPS, sub-second finality, and relentless parallel power.',
+    description: 'The iconic mascot of the Velox community. 10,000 TPS, sub-second finality, and relentless parallel power.',
     imageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&auto=format&fit=crop&q=80',
     creator: '0x71C...a89B',
     createdAt: '12m ago',
@@ -40,7 +42,9 @@ export const INITIAL_TOKENS: Token[] = [
     volume24h: 128.4,
     priceChange24h: 312.4,
     isGraduated: false,
-    repliesCount: 89
+    repliesCount: 89,
+    chain: 'monad',
+    chainSymbol: 'MON'
   },
   {
     id: 'giga-parallel',
@@ -59,13 +63,15 @@ export const INITIAL_TOKENS: Token[] = [
     volume24h: 76.2,
     priceChange24h: 84.7,
     isGraduated: false,
-    repliesCount: 42
+    repliesCount: 42,
+    chain: 'monad',
+    chainSymbol: 'MON'
   },
   {
     id: 'aurora-blossom',
     name: 'Aurora Blossom',
     symbol: 'AURORA',
-    description: 'The sublime aesthetic of Monad. Iridescent lilac and deep ocean gradients flowing on-chain.',
+    description: 'The sublime aesthetic of high speed. Iridescent aqua and deep ocean gradients flowing on-chain.',
     imageUrl: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=400&auto=format&fit=crop&q=80',
     creator: '0x88F...b12C',
     createdAt: '1h ago',
@@ -78,7 +84,9 @@ export const INITIAL_TOKENS: Token[] = [
     volume24h: 210.5,
     priceChange24h: 520.1,
     isGraduated: true,
-    repliesCount: 156
+    repliesCount: 156,
+    chain: 'base',
+    chainSymbol: 'ETH'
   },
   {
     id: 'monad-speedy',
@@ -97,7 +105,9 @@ export const INITIAL_TOKENS: Token[] = [
     volume24h: 42.1,
     priceChange24h: -12.3,
     isGraduated: false,
-    repliesCount: 27
+    repliesCount: 27,
+    chain: 'solana',
+    chainSymbol: 'SOL'
   },
   {
     id: 'molandak-duck',
@@ -116,7 +126,9 @@ export const INITIAL_TOKENS: Token[] = [
     volume24h: 55.8,
     priceChange24h: 45.2,
     isGraduated: false,
-    repliesCount: 31
+    repliesCount: 31,
+    chain: 'ethereum',
+    chainSymbol: 'ETH'
   },
   {
     id: 'monad-bft',
@@ -135,7 +147,9 @@ export const INITIAL_TOKENS: Token[] = [
     volume24h: 22.0,
     priceChange24h: 18.9,
     isGraduated: false,
-    repliesCount: 19
+    repliesCount: 19,
+    chain: 'arbitrum',
+    chainSymbol: 'ARB'
   }
 ];
 
@@ -145,7 +159,7 @@ export const MOCK_HOT_CALLOUTS: HotCallout[] = [
     author: 'jeetcannon',
     avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80',
     timeAgo: '2m ago',
-    content: 'CHOG bonding curve is breaking 88%!! Graduation to Monad AMM in minutes. Do not sleep on this.',
+    content: 'CHOG bonding curve is breaking 88%!! Graduation to AMM in minutes. Anti-Sniper Shield protected the genesis buyers.',
     tokenSymbol: 'CHOG',
     tokenName: 'Chog the Mascot',
     tokenImageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&auto=format&fit=crop&q=80',
@@ -153,7 +167,8 @@ export const MOCK_HOT_CALLOUTS: HotCallout[] = [
     profitMon: 4.82,
     isPositive: true,
     replies: 14,
-    likes: 89
+    likes: 89,
+    currencySymbol: 'MON'
   },
   {
     id: 'call-2',
@@ -168,14 +183,15 @@ export const MOCK_HOT_CALLOUTS: HotCallout[] = [
     profitMon: 1.15,
     isPositive: true,
     replies: 6,
-    likes: 47
+    likes: 47,
+    currencySymbol: 'MON'
   },
   {
     id: 'call-3',
     author: 'solana_convert',
     avatarUrl: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100&auto=format&fit=crop&q=80',
     timeAgo: '15m ago',
-    content: 'Moved my meme trading from pump.fun to Velox. Same speed, but EVM Solidity composability is undefeated.',
+    content: 'Moved my meme trading to Velox. Multi-chain liquidity across Monad, Solana, Base, and Ethereum. Unstoppable speed.',
     tokenSymbol: 'AURORA',
     tokenName: 'Aurora Blossom',
     tokenImageUrl: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=400&auto=format&fit=crop&q=80',
@@ -183,7 +199,8 @@ export const MOCK_HOT_CALLOUTS: HotCallout[] = [
     profitMon: 8.90,
     isPositive: true,
     replies: 28,
-    likes: 134
+    likes: 134,
+    currencySymbol: 'ETH'
   }
 ];
 
@@ -194,7 +211,10 @@ export const MOCK_LEADERBOARD: LeaderboardEntry[] = [
     avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
     profitMon: 482.5,
     winRate: 84.2,
-    tradesCount: 148
+    tradesCount: 148,
+    volumeMon: 1420.0,
+    badge: '👑 Whale King',
+    favToken: 'CHOG'
   },
   {
     rank: 2,
@@ -202,7 +222,10 @@ export const MOCK_LEADERBOARD: LeaderboardEntry[] = [
     avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
     profitMon: 319.2,
     winRate: 78.5,
-    tradesCount: 92
+    tradesCount: 92,
+    volumeMon: 980.5,
+    badge: '⚡ Speed Sniper',
+    favToken: 'PARALLEL'
   },
   {
     rank: 3,
@@ -210,7 +233,10 @@ export const MOCK_LEADERBOARD: LeaderboardEntry[] = [
     avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&auto=format&fit=crop&q=80',
     profitMon: 264.8,
     winRate: 72.0,
-    tradesCount: 110
+    tradesCount: 110,
+    volumeMon: 810.2,
+    badge: '🛡️ Shield Master',
+    favToken: 'FAIR'
   },
   {
     rank: 4,
@@ -218,7 +244,10 @@ export const MOCK_LEADERBOARD: LeaderboardEntry[] = [
     avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80',
     profitMon: 198.4,
     winRate: 69.4,
-    tradesCount: 76
+    tradesCount: 76,
+    volumeMon: 640.8,
+    badge: '💎 Diamond Hands',
+    favToken: 'AURORA'
   },
   {
     rank: 5,
@@ -226,6 +255,42 @@ export const MOCK_LEADERBOARD: LeaderboardEntry[] = [
     avatarUrl: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=100&auto=format&fit=crop&q=80',
     profitMon: 142.1,
     winRate: 65.1,
-    tradesCount: 54
+    tradesCount: 54,
+    volumeMon: 430.0,
+    badge: '🎯 Curve Rider',
+    favToken: 'SPEED'
+  },
+  {
+    rank: 6,
+    handle: 'velocity_dev',
+    avatarUrl: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=100&auto=format&fit=crop&q=80',
+    profitMon: 118.9,
+    winRate: 63.8,
+    tradesCount: 68,
+    volumeMon: 395.4,
+    badge: '🚀 Multi-Chain Arb',
+    favToken: 'VELO'
+  },
+  {
+    rank: 7,
+    handle: 'parallel_god',
+    avatarUrl: 'https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=100&auto=format&fit=crop&q=80',
+    profitMon: 96.4,
+    winRate: 61.2,
+    tradesCount: 44,
+    volumeMon: 310.2,
+    badge: '🔥 Fast Scalper',
+    favToken: 'CHOG'
+  },
+  {
+    rank: 8,
+    handle: 'aurorafrost',
+    avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80',
+    profitMon: 84.2,
+    winRate: 59.5,
+    tradesCount: 39,
+    volumeMon: 280.0,
+    badge: '✨ Early Bird',
+    favToken: 'AURORA'
   }
 ];
