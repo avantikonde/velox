@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Trade, Token, HotCallout } from '../types';
 import { Radio, ArrowUpRight, ArrowDownRight, Zap, ShieldCheck, ExternalLink, Activity, Filter, MessageSquare, Heart } from 'lucide-react';
 import { ChainConfig } from '../data/chains';
+import { formatTimeAgo, formatExactTime } from '../utils/timeAgo';
 
 interface LiveFeedViewProps {
   recentTrades: Trade[];
@@ -21,6 +22,15 @@ export const LiveFeedView: React.FC<LiveFeedViewProps> = ({
   onSelectToken
 }) => {
   const [filterType, setFilterType] = useState<'all' | 'buy' | 'sell' | 'whale'>('all');
+  const [, setTick] = useState(0);
+
+  // Live timer tick every second so relative timestamps continuously update
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTick(prev => prev + 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const filteredTrades = recentTrades.filter((t) => {
     if (filterType === 'buy') return t.type === 'BUY';
@@ -163,8 +173,17 @@ export const LiveFeedView: React.FC<LiveFeedViewProps> = ({
                       className="hover:bg-white/[0.03] transition-colors cursor-pointer group"
                     >
                       {/* Timestamp */}
-                      <td className="py-3 px-4 text-slate-500 whitespace-nowrap">
-                        {t.timestamp}
+                      <td className="py-3 px-4 text-slate-400 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-slate-200">
+                            {t.timestampMs ? formatTimeAgo(t.timestampMs) : t.timestamp}
+                          </span>
+                          {t.timestampMs && (
+                            <span className="text-[10px] text-slate-500 font-mono">
+                              ({formatExactTime(t.timestampMs)})
+                            </span>
+                          )}
+                        </div>
                       </td>
 
                       {/* Buy / Sell Badge */}

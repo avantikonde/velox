@@ -19,6 +19,7 @@ import { SUPPORTED_CHAINS, DEFAULT_CHAIN, ChainConfig } from './data/chains';
 import { Token, Trade, WalletState, ViewMode, HotCallout, LeaderboardEntry, User, NavigationTab } from './types';
 import { authService } from './services/authService';
 import { neonService } from './services/neonService';
+import { formatTimeAgo } from './utils/timeAgo';
 import { Search, Flame, Sparkles, Trophy, CheckCircle, Code2, Compass } from 'lucide-react';
 
 const VALID_TABS: NavigationTab[] = ['home', 'explore', 'leaderboard', 'live-feed', 'terminal', 'rewards'];
@@ -150,6 +151,7 @@ export const App: React.FC = () => {
       monAmount: 2.5,
       tokenAmount: 29070,
       timestamp: 'Just now',
+      timestampMs: Date.now() - 4000,
       txHash: '0x918f...28b',
       latencyMs: 780,
       currencySymbol: 'SOL'
@@ -164,6 +166,7 @@ export const App: React.FC = () => {
       monAmount: 1.2,
       tokenAmount: 298500000,
       timestamp: '1m ago',
+      timestampMs: Date.now() - 65000,
       txHash: '0x38fa...99a',
       latencyMs: 812,
       currencySymbol: 'ETH'
@@ -178,11 +181,26 @@ export const App: React.FC = () => {
       monAmount: 0.85,
       tokenAmount: 155900000,
       timestamp: '2m ago',
+      timestampMs: Date.now() - 130000,
       txHash: '0x44bf...11c',
       latencyMs: 745,
       currencySymbol: 'ETH'
     }
   ]);
+
+  // Dynamically update relative trade timestamps every second so they tick live in real-time
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setRecentTrades(prev => prev.map(t => {
+        if (!t.timestampMs) return t;
+        const newTimeStr = formatTimeAgo(t.timestampMs);
+        if (newTimeStr === t.timestamp) return t;
+        return { ...t, timestamp: newTimeStr };
+      }));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   // Simulate continuous high-throughput trade activity
   useEffect(() => {
@@ -193,9 +211,10 @@ export const App: React.FC = () => {
       const monAmt = parseFloat((Math.random() * 0.8 + 0.1).toFixed(2));
       const tokenAmt = Math.round(monAmt / randomToken.priceMon);
       const latency = Math.floor(Math.random() * 140 + 740);
+      const now = Date.now();
 
       const newTrade: Trade = {
-        id: `tx-${Date.now()}`,
+        id: `tx-${now}`,
         tokenId: randomToken.id,
         tokenSymbol: randomToken.symbol,
         tokenImageUrl: randomToken.imageUrl,
@@ -204,6 +223,7 @@ export const App: React.FC = () => {
         monAmount: monAmt,
         tokenAmount: tokenAmt,
         timestamp: 'Just now',
+        timestampMs: now,
         txHash: `0x${Math.random().toString(16).slice(2, 10)}...`,
         latencyMs: latency,
         currencySymbol: randomToken.chainSymbol || activeChain.symbol
