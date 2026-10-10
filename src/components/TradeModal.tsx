@@ -28,7 +28,7 @@ export const TradeModal: React.FC<TradeModalProps> = ({
   const userTokenBalance = wallet.tokens[token.id] || 0;
   const isBuy = tab === 'BUY';
   const isShieldActive = Boolean(token.shieldActive);
-  const shieldCap = token.maxShieldBuyMon || 0.2;
+  const shieldCap = token.maxShieldBuyMon || 0.5;
 
   // Enforce/clamp default amount when shield is active
   useEffect(() => {
@@ -87,7 +87,7 @@ export const TradeModal: React.FC<TradeModalProps> = ({
   };
 
   const presetAmounts = isBuy 
-    ? (isShieldActive ? ['0.05', '0.1', '0.15', '0.2'] : ['0.1', '0.5', '1.0', '2.5']) 
+    ? (isShieldActive ? ['0.1', '0.2', '0.3', '0.5'] : ['0.1', '0.5', '1.0', '2.5']) 
     : ['25%', '50%', '75%', '100%'];
 
   const handlePreset = (val: string) => {

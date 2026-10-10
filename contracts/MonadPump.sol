@@ -58,7 +58,7 @@ contract BondingCurveToken {
 contract MonadPumpFactory {
     uint256 public constant GRADUATION_TARGET = 50 ether; // 50 MON to graduate to DEX
     uint256 public constant TOTAL_SUPPLY = 1_000_000_000 * 10**18;
-    uint256 public constant MAX_SHIELD_BUY = 0.2 ether; // Anti-Sniper Shield max buy cap
+    uint256 public constant MAX_SHIELD_BUY = 0.5 ether; // Anti-Sniper Shield max buy cap
     uint256 public constant SHIELD_DURATION = 60; // 60 seconds Genesis Anti-Sniper Shield window
 
     struct TokenInfo {
@@ -119,7 +119,7 @@ contract MonadPumpFactory {
 
         // Anti-Sniper Shield (FairSlot Genesis) enforcement
         if (block.timestamp < info.shieldEndTime) {
-            require(monIn <= MAX_SHIELD_BUY, "Anti-Sniper Shield: Max 0.2 MON during first 60s");
+            require(monIn <= MAX_SHIELD_BUY, "Anti-Sniper Shield: Max 0.5 MON during first 60s");
         }
 
         info.monRaised += monIn;

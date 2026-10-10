@@ -39,7 +39,7 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ isOpen, onClos
             <div>
               <h3 className="font-bold text-white text-sm mb-1">Zero-Capital Fair Launch & Anti-Sniper Shield</h3>
               <p className="text-slate-400 leading-relaxed">
-                Tokens deploy in a single transaction without seed liquidity. A mathematical bonding curve with a 60-second Anti-Sniper Shield (0.2 MON cap) ensures bot-resistant fair distribution from genesis.
+                Tokens deploy in a single transaction without seed liquidity. A mathematical bonding curve with a 60-second Anti-Sniper Shield (0.5 MON cap) ensures bot-resistant fair distribution from genesis.
               </p>
             </div>
           </div>

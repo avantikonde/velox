@@ -5,7 +5,7 @@ export const INITIAL_TOKENS: Token[] = [
     id: 'fairslot-genesis',
     name: 'FairSlot Genesis',
     symbol: 'FAIR',
-    description: 'Freshly launched with active Anti-Sniper Shield. 0.2 MON max allocation per buy for fair genesis distribution.',
+    description: 'Freshly launched with active Anti-Sniper Shield. 0.5 MON max allocation per buy for fair genesis distribution.',
     imageUrl: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=400&auto=format&fit=crop&q=80',
     creator: '0xFA1R...987A',
     createdAt: '15s ago',
@@ -21,7 +21,7 @@ export const INITIAL_TOKENS: Token[] = [
     repliesCount: 12,
     shieldActive: true,
     shieldRemainingSeconds: 45,
-    maxShieldBuyMon: 0.2
+    maxShieldBuyMon: 0.5
   },
   {
     id: 'chog-monad',

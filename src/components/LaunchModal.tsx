@@ -41,8 +41,8 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
     }
 
     const buyAmount = parseFloat(initialBuy) || 0;
-    if (buyAmount > 0.2) {
-      setError('Anti-Sniper Shield: Initial genesis buy is capped at 0.2 MON to ensure fair launch.');
+    if (buyAmount > 0.5) {
+      setError('Anti-Sniper Shield: Initial genesis buy is capped at 0.5 MON to ensure fair launch.');
       return;
     }
     if (buyAmount > userBalance) {
@@ -75,7 +75,7 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
         repliesCount: 0,
         shieldActive: true,
         shieldRemainingSeconds: 60,
-        maxShieldBuyMon: 0.2
+        maxShieldBuyMon: 0.5
       };
 
       setIsDeploying(false);
@@ -247,7 +247,7 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-xs text-[#F9D4E0] bg-[#193153]/85 p-2.5 rounded-xl border border-[#EB96FF]/40 shadow-[0_0_12px_rgba(235,150,255,0.15)]">
               <Shield className="w-4 h-4 text-[#EB96FF] flex-shrink-0 animate-pulse" />
-              <span>Auto-enables 60-Second Anti-Sniper Shield on launch (Max 0.2 MON cap)</span>
+              <span>Auto-enables 60-Second Anti-Sniper Shield on launch (Max 0.5 MON cap)</span>
             </div>
 
             <div className="flex items-center gap-2 text-xs text-emerald-300 bg-emerald-500/10 p-2.5 rounded-xl border border-emerald-500/20">

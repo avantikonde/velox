@@ -57,7 +57,7 @@ export const KingOfTheHill: React.FC<KingOfTheHillProps> = ({
                 {token.shieldActive && (
                   <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-[#193153]/90 border border-[#EB96FF]/40 text-[#F9D4E0] shadow-[0_0_10px_rgba(235,150,255,0.25)]">
                     <ShieldCheck className="w-3 h-3 text-[#EB96FF] animate-pulse" />
-                    <span>Anti-Sniper Shield (Max {token.maxShieldBuyMon || 0.2} MON)</span>
+                    <span>Anti-Sniper Shield (Max {token.maxShieldBuyMon || 0.5} MON)</span>
                     {token.shieldRemainingSeconds !== undefined && token.shieldRemainingSeconds > 0 && (
                       <span className="text-[#EB96FF] font-bold">({token.shieldRemainingSeconds}s)</span>
                     )}

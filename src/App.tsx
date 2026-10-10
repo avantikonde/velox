@@ -181,7 +181,7 @@ export const App: React.FC = () => {
       ...newToken,
       shieldActive: true,
       shieldRemainingSeconds: 60,
-      maxShieldBuyMon: 0.2
+      maxShieldBuyMon: 0.5
     };
 
     if (initialBuyMon > 0) {
@@ -516,7 +516,7 @@ contract MonadPumpToken is ERC20 {
 contract MonadPumpFactory {
     uint256 public constant GRADUATION_TARGET = 50 ether; // 50 MON to graduate
     uint256 public constant TOTAL_SUPPLY = 1_000_000_000 ether;
-    uint256 public constant MAX_SHIELD_BUY = 0.2 ether; // Anti-Sniper Shield cap
+    uint256 public constant MAX_SHIELD_BUY = 0.5 ether; // Anti-Sniper Shield cap
     uint256 public constant SHIELD_DURATION = 60; // 60 seconds
 
     struct TokenState {
@@ -555,7 +555,7 @@ contract MonadPumpFactory {
 
         // Anti-Sniper Shield (FairSlot Genesis) check
         if (block.timestamp < state.shieldEndTime) {
-            require(monIn <= MAX_SHIELD_BUY, "Anti-Sniper Shield: Max 0.2 MON during first 60s");
+            require(monIn <= MAX_SHIELD_BUY, "Anti-Sniper Shield: Max 0.5 MON during first 60s");
         }
 
         state.monRaised += monIn;
