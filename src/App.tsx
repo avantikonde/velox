@@ -9,6 +9,7 @@ import { LiveFeedView } from './components/LiveFeedView';
 import { RewardsView } from './components/RewardsView';
 import { LaunchModal } from './components/LaunchModal';
 import { TradeModal } from './components/TradeModal';
+import { ConnectWalletModal } from './components/ConnectWalletModal';
 import { HowItWorksModal } from './components/HowItWorksModal';
 import { LiveActivityTicker } from './components/LiveActivityTicker';
 import { AuthModal } from './components/AuthModal';
@@ -101,6 +102,7 @@ export const App: React.FC = () => {
   // Modals
   const [isLaunchOpen, setIsLaunchOpen] = useState(false);
   const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
+  const [isConnectWalletOpen, setIsConnectWalletOpen] = useState(false);
   const [selectedToken, setSelectedToken] = useState<Token | null>(null);
   const [showContractsModal, setShowContractsModal] = useState(false);
 
@@ -193,10 +195,56 @@ export const App: React.FC = () => {
         }
         return t;
       }));
-    }, 5500);
+    }, 4500);
 
     return () => clearInterval(interval);
   }, [tokens, activeChain.symbol]);
+
+  // Real-time live price tracking across all coins (DOGE, PEPE, SHIB, BONK, FLOKI, FAIR)
+  useEffect(() => {
+    const liveTracker = setInterval(() => {
+      setTokens(prevTokens => prevTokens.map(token => {
+        // Micro-fluctuation between -0.3% and +0.3% to simulate live orderbook flow
+        const jitterRatio = (Math.random() - 0.49) * 0.005;
+        const currentUsd = token.usdPrice ?? token.priceMon;
+        const newUsdPrice = Math.max(0.00000001, currentUsd * (1 + jitterRatio));
+        const newPriceMon = token.priceMon * (1 + jitterRatio);
+        
+        // Update 24h change & volume
+        const newChange24h = parseFloat((token.priceChange24h + jitterRatio * 15).toFixed(2));
+        const addedVol = Math.floor(Math.random() * 450 + 50);
+        const newVol24h = token.volume24h + addedVol;
+        const newUsdVol = (token.usd24hVol ?? 0) + addedVol * 5;
+
+        // Recalculate market caps
+        const newMarketCapMon = parseFloat((token.marketCapMon * (1 + jitterRatio)).toFixed(1));
+        const newUsdMarketCap = token.usdMarketCap ? Math.round(token.usdMarketCap * (1 + jitterRatio)) : undefined;
+
+        // Append to sparkline7d for real-time live charting
+        let newSparkline = token.sparkline7d;
+        if (token.sparkline7d && token.sparkline7d.length > 0) {
+          const sparkCopy = [...token.sparkline7d];
+          // Update the last point with current price
+          sparkCopy[sparkCopy.length - 1] = newUsdPrice;
+          newSparkline = sparkCopy;
+        }
+
+        return {
+          ...token,
+          usdPrice: newUsdPrice,
+          priceMon: newPriceMon,
+          priceChange24h: newChange24h,
+          volume24h: newVol24h,
+          usd24hVol: newUsdVol,
+          marketCapMon: newMarketCapMon,
+          usdMarketCap: newUsdMarketCap,
+          sparkline7d: newSparkline
+        };
+      }));
+    }, 2500);
+
+    return () => clearInterval(liveTracker);
+  }, []);
 
   // Real-time countdown timer for Anti-Sniper Shield active tokens
   useEffect(() => {
@@ -222,10 +270,22 @@ export const App: React.FC = () => {
     return () => clearInterval(shieldTimer);
   }, []);
 
-  const toggleWallet = () => {
+  const handleOpenConnectWallet = () => {
+    setIsConnectWalletOpen(true);
+  };
+
+  const handleWalletConnected = (newWallet: Partial<WalletState>) => {
     setWallet(prev => ({
       ...prev,
-      isConnected: !prev.isConnected
+      ...newWallet,
+      isConnected: true
+    }));
+  };
+
+  const handleDisconnectWallet = () => {
+    setWallet(prev => ({
+      ...prev,
+      isConnected: false
     }));
   };
 
@@ -376,7 +436,7 @@ export const App: React.FC = () => {
             setCurrentUser(null);
           }}
           wallet={wallet}
-          onConnectWallet={toggleWallet}
+          onConnectWallet={handleOpenConnectWallet}
           activeChain={activeChain}
           onSelectChain={setActiveChain}
         />
@@ -601,6 +661,8 @@ export const App: React.FC = () => {
         userBalance={wallet.monBalance}
         currencySymbol={activeChain.symbol}
         chainName={activeChain.name}
+        wallet={wallet}
+        onOpenConnectWallet={handleOpenConnectWallet}
       />
 
       <TradeModal
@@ -610,6 +672,14 @@ export const App: React.FC = () => {
         wallet={wallet}
         onExecuteTrade={handleExecuteTrade}
         currencySymbol={activeChain.symbol}
+        onOpenConnectWallet={handleOpenConnectWallet}
+      />
+
+      <ConnectWalletModal
+        isOpen={isConnectWalletOpen}
+        onClose={() => setIsConnectWalletOpen(false)}
+        onWalletConnected={handleWalletConnected}
+        activeChainSymbol={activeChain.symbol}
       />
 
       <HowItWorksModal

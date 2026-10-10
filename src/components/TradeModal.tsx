@@ -11,6 +11,7 @@ interface TradeModalProps {
   wallet: WalletState;
   onExecuteTrade: (tokenId: string, type: 'BUY' | 'SELL', monAmount: number, tokenAmount: number) => void;
   currencySymbol?: string;
+  onOpenConnectWallet?: () => void;
 }
 
 export const TradeModal: React.FC<TradeModalProps> = ({
@@ -19,7 +20,8 @@ export const TradeModal: React.FC<TradeModalProps> = ({
   onClose,
   wallet,
   onExecuteTrade,
-  currencySymbol
+  currencySymbol,
+  onOpenConnectWallet
 }) => {
   const [tab, setTab] = useState<'BUY' | 'SELL'>('BUY');
   const [amount, setAmount] = useState('0.5');
@@ -287,17 +289,26 @@ export const TradeModal: React.FC<TradeModalProps> = ({
           {/* Action Button */}
           <div className="pt-1">
             <button
-              type="submit"
+              type={wallet?.isConnected ? "submit" : "button"}
+              onClick={() => {
+                if (!wallet?.isConnected && onOpenConnectWallet) {
+                  onOpenConnectWallet();
+                }
+              }}
               disabled={isExecuting}
               className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold font-mono transition-all active:scale-98 disabled:opacity-50 shadow-md ${
-                isBuy 
-                  ? 'bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] hover:from-[#90DEF2] hover:to-[#2B6882] text-[#1F1E19] font-extrabold shadow-[#68CFEB]/20' 
-                  : 'bg-rose-500 hover:bg-rose-600 text-white'
+                !wallet?.isConnected
+                  ? 'bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] hover:from-[#90DEF2] hover:to-[#2B6882] text-[#1F1E19] font-extrabold shadow-[#68CFEB]/20'
+                  : isBuy 
+                    ? 'bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] hover:from-[#90DEF2] hover:to-[#2B6882] text-[#1F1E19] font-extrabold shadow-[#68CFEB]/20' 
+                    : 'bg-rose-500 hover:bg-rose-600 text-white'
               }`}
             >
               {isExecuting 
                 ? 'Executing at 10,000 TPS...' 
-                : isBuy ? `Quick Buy ${token.symbol}` : `Sell ${token.symbol}`}
+                : !wallet?.isConnected
+                  ? `Connect Device Wallet to Trade 🦊👻`
+                  : isBuy ? `Quick Buy ${token.symbol}` : `Sell ${token.symbol}`}
             </button>
           </div>
         </form>

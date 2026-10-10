@@ -164,16 +164,43 @@ export const PumpTerminal: React.FC<PumpTerminalProps> = ({
               key={c.id}
               className="p-3.5 rounded-xl bg-[#25241E]/50 border border-white/[0.04] hover:border-white/10 transition-all space-y-2.5"
             >
-              {/* Author row */}
+              {/* Author row with real X handle */}
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <img src={c.avatarUrl} alt={c.author} className="w-6 h-6 rounded-full object-cover border border-white/10" />
-                  <span className="text-xs font-bold text-slate-200 font-mono">@{c.author}</span>
-                  <span className="text-[10px] text-slate-500 font-mono">{c.timeAgo}</span>
-                </div>
+                <a
+                  href={c.xProfileUrl || `https://x.com/${c.xHandle || c.author}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 group/author hover:opacity-90 transition-opacity"
+                  title={`View @${c.xHandle || c.author} on X (Twitter)`}
+                >
+                  <div className="relative">
+                    <img
+                      src={c.avatarUrl}
+                      alt={c.author}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80';
+                      }}
+                      className="w-6 h-6 rounded-full object-cover border border-white/10 group-hover/author:border-[#68CFEB]/60 transition-colors"
+                    />
+                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-black rounded-full flex items-center justify-center border border-white/20">
+                      <svg className="w-1.5 h-1.5 fill-white" viewBox="0 0 24 24">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 24.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs font-bold text-slate-200 group-hover/author:text-[#68CFEB] transition-colors font-mono">
+                      @{c.xHandle || c.author}
+                    </span>
+                    <ArrowUpRight className="w-3 h-3 text-slate-500 group-hover/author:text-[#68CFEB] transition-colors" />
+                  </div>
+                </a>
 
-                <div className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
-                  +{c.profitMon} {c.currencySymbol || currSymbol}
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-slate-500 font-mono">{c.timeAgo}</span>
+                  <div className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
+                    +{c.profitMon} {c.currencySymbol || currSymbol}
+                  </div>
                 </div>
               </div>
 

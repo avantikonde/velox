@@ -108,8 +108,15 @@ export const KingOfTheHill: React.FC<KingOfTheHillProps> = ({
             {/* Market Cap & Trade Action */}
             <div className="flex items-center justify-between lg:justify-end gap-4 w-full">
               <div className="text-left lg:text-right font-mono">
-                <div className="text-[11px] text-slate-500">
-                  {token.usdPrice ? `Price: $${token.usdPrice}` : 'Market Cap'}
+                <div className="text-[11px] text-slate-400 flex items-center lg:justify-end gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block flex-shrink-0" title="Live Tracking"></span>
+                  {token.usdPrice ? (
+                    <span className="font-bold text-[#68CFEB]">
+                      ${token.usdPrice >= 1 ? token.usdPrice.toFixed(2) : token.usdPrice >= 0.01 ? token.usdPrice.toFixed(4) : token.usdPrice.toFixed(8)}
+                    </span>
+                  ) : (
+                    <span>{token.priceMon} {currSymbol}</span>
+                  )}
                 </div>
                 <div className="text-base font-bold text-[#FAFAFA]">
                   {token.usdMarketCap ? (

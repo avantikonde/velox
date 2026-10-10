@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { X, Sparkles, Shield, AlertCircle, Wand2 } from 'lucide-react';
-import { Token } from '../types';
+import { X, Sparkles, Shield, AlertCircle, Wand2, Wallet, ExternalLink } from 'lucide-react';
+import { Token, WalletState } from '../types';
 import confetti from 'canvas-confetti';
 
 interface LaunchModalProps {
@@ -10,6 +10,8 @@ interface LaunchModalProps {
   userBalance: number;
   currencySymbol?: string;
   chainName?: string;
+  wallet?: WalletState;
+  onOpenConnectWallet?: () => void;
 }
 
 const PRESET_AVATARS = [
@@ -25,7 +27,9 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
   onLaunch,
   userBalance,
   currencySymbol = 'MON',
-  chainName = 'Monad'
+  chainName = 'Monad',
+  wallet,
+  onOpenConnectWallet
 }) => {
   const [name, setName] = useState('');
   const [symbol, setSymbol] = useState('');
@@ -39,6 +43,12 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!wallet?.isConnected) {
+      setError('Please connect your device wallet (MetaMask, Phantom, etc.) before launching.');
+      if (onOpenConnectWallet) onOpenConnectWallet();
+      return;
+    }
+
     if (!name.trim() || !symbol.trim()) {
       setError('Token name and symbol are required');
       return;
@@ -57,15 +67,19 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
     setError('');
     setIsDeploying(true);
 
-    // Simulate Monad parallel smart contract deployment
+    // Simulate parallel smart contract deployment
     setTimeout(() => {
+      const creatorAddress = wallet?.address 
+        ? `${wallet.address.slice(0, 6)}...${wallet.address.slice(-4)}`
+        : '0xYou...Me';
+
       const newToken: Token = {
         id: `token-${Date.now()}`,
         name: name.trim(),
         symbol: symbol.trim().toUpperCase(),
-        description: description.trim() || 'A high-speed community coin launched on Monad Parallel L1.',
+        description: description.trim() || `A high-speed community coin launched on ${chainName} Parallel L1.`,
         imageUrl,
-        creator: '0xYou...Me',
+        creator: creatorAddress,
         createdAt: 'Just now',
         marketCapMon: buyAmount > 0 ? 5.0 + buyAmount * 2 : 5.0,
         priceMon: 0.0001,
@@ -109,14 +123,14 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
       <div className="relative w-full max-w-xl rounded-2xl bg-[#1F1E19] border border-white/10 p-6 sm:p-7 shadow-2xl my-8">
         
         {/* Modal Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-white/[0.08] mb-5">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-[#1F4B5D]/40 text-[#68CFEB]">
-              <Sparkles className="w-5 h-5" />
+        <div className="flex items-center justify-between pb-4 border-b border-white/[0.08] mb-4">
+          <div className="flex items-center gap-3">
+            <div className="relative w-9 h-9 rounded-xl overflow-hidden border border-[#68CFEB]/40 flex-shrink-0 shadow-md shadow-[#68CFEB]/20">
+              <img src="/logo.png" alt="VELOX Logo" className="w-full h-full object-cover" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-[#FAFAFA]">Launch a Coin on Monad</h2>
-              <p className="text-xs text-slate-400">Fair launch bonding curve • Zero seed capital needed</p>
+              <h2 className="text-base sm:text-lg font-bold text-[#FAFAFA] font-mono">Launch a Coin on {chainName}</h2>
+              <p className="text-[11px] text-slate-400">Fair launch bonding curve • Zero seed capital needed</p>
             </div>
           </div>
           <button
@@ -126,6 +140,58 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
             <X className="w-5 h-5" />
           </button>
         </div>
+
+        {/* Deployer Wallet Section */}
+        {wallet?.isConnected ? (
+          <div className="mb-4 p-3 rounded-xl bg-[#25241E] border border-white/[0.08] flex items-center justify-between font-mono text-xs">
+            <div className="flex items-center gap-2.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <div>
+                <div className="text-[10px] text-slate-400">
+                  Deployer: <span className="text-slate-200 font-bold">{wallet.connectorName || 'Connected Wallet'}</span>
+                </div>
+                <div className="text-[#FAFAFA] font-bold text-xs">
+                  {wallet.address.slice(0, 8)}...{wallet.address.slice(-6)}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <span className="text-emerald-400 font-bold text-xs">
+                {userBalance.toFixed(2)} {currencySymbol}
+              </span>
+              {onOpenConnectWallet && (
+                <button
+                  type="button"
+                  onClick={onOpenConnectWallet}
+                  className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-[10px] text-[#68CFEB] border border-white/10 transition-colors"
+                >
+                  Switch
+                </button>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="mb-4 p-3.5 rounded-xl bg-[#1F4B5D]/40 border border-[#68CFEB]/40 flex items-center justify-between font-mono text-xs shadow-md shadow-[#68CFEB]/10">
+            <div className="flex items-center gap-2.5">
+              <Wallet className="w-4 h-4 text-[#68CFEB] flex-shrink-0" />
+              <div>
+                <div className="text-[#FAFAFA] font-bold text-xs">Wallet Not Connected</div>
+                <div className="text-[10px] text-slate-300">Connect MetaMask or Phantom to deploy on-chain</div>
+              </div>
+            </div>
+
+            {onOpenConnectWallet && (
+              <button
+                type="button"
+                onClick={onOpenConnectWallet}
+                className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] text-[#1F1E19] text-xs font-extrabold shadow-sm active:scale-95 transition-all"
+              >
+                Connect Wallet
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Quick autofill */}
         <div className="mb-4 flex justify-end">
@@ -263,11 +329,20 @@ export const LaunchModal: React.FC<LaunchModalProps> = ({
           {/* Action Button */}
           <div className="pt-1">
             <button
-              type="submit"
+              type={wallet?.isConnected ? "submit" : "button"}
+              onClick={() => {
+                if (!wallet?.isConnected && onOpenConnectWallet) {
+                  onOpenConnectWallet();
+                }
+              }}
               disabled={isDeploying}
               className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#68CFEB] to-[#1F4B5D] hover:from-[#90DEF2] hover:to-[#2B6882] text-[#1F1E19] text-xs font-extrabold font-mono transition-all active:scale-98 disabled:opacity-50 shadow-md shadow-[#68CFEB]/20"
             >
-              {isDeploying ? `Deploying to ${chainName} Parallel Engine...` : 'Launch Token in 1 Click 🚀'}
+              {isDeploying 
+                ? `Deploying to ${chainName} Parallel Engine...` 
+                : wallet?.isConnected 
+                  ? 'Launch Token in 1 Click 🚀' 
+                  : 'Connect Device Wallet to Launch 🦊👻'}
             </button>
           </div>
         </form>

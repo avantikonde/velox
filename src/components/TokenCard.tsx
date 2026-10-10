@@ -56,10 +56,11 @@ export const TokenCard: React.FC<TokenCardProps> = ({
             </div>
 
             <div className="flex items-center justify-between gap-2 font-mono">
-              <div className="text-xs font-bold text-[#FAFAFA]">
+              <div className="text-xs font-bold text-[#FAFAFA] flex items-center">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block mr-1.5 flex-shrink-0" title="Live Price Tracking"></span>
                 {token.usdPrice ? (
                   <span>
-                    ${token.usdPrice >= 0.01 ? token.usdPrice.toFixed(4) : token.usdPrice.toExponential(2)}
+                    ${token.usdPrice >= 1 ? token.usdPrice.toFixed(2) : token.usdPrice >= 0.01 ? token.usdPrice.toFixed(4) : token.usdPrice.toFixed(8)}
                   </span>
                 ) : (
                   <span>{token.priceMon} {currSymbol}</span>

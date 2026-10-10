@@ -61,29 +61,13 @@ export const PumpSidebar: React.FC<PumpSidebarProps> = ({
             onClick={() => onSelectTab('home')}
             className="flex items-center gap-2.5 cursor-pointer group min-w-0"
           >
-            {/* Monad Isometric Seal */}
-            <div className="relative flex items-center justify-center w-8 h-8 flex-shrink-0 group-hover:scale-105 transition-transform">
-              <svg className="w-8 h-8" viewBox="0 0 36 36" fill="none">
-                <rect
-                  x="8"
-                  y="8"
-                  width="20"
-                  height="20"
-                  rx="6"
-                  transform="rotate(45 18 18)"
-                  stroke="url(#simpleMonadGrad)"
-                  strokeWidth="4.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <defs>
-                  <linearGradient id="simpleMonadGrad" x1="4" y1="4" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#68CFEB" />
-                    <stop offset="0.6" stopColor="#4BB5D3" />
-                    <stop offset="1" stopColor="#1F4B5D" />
-                  </linearGradient>
-                </defs>
-              </svg>
+            {/* Velox 3D Ribbon Logo */}
+            <div className="relative flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden flex-shrink-0 group-hover:scale-105 transition-transform shadow-md shadow-[#68CFEB]/20 border border-[#68CFEB]/30">
+              <img
+                src="/logo.png"
+                alt="VELOX Logo"
+                className="w-full h-full object-cover"
+              />
             </div>
 
             {/* Brand Title */}

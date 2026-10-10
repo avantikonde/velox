@@ -64,6 +64,8 @@ export interface HotCallout {
   replies: number;
   likes: number;
   currencySymbol?: string;
+  xHandle?: string;
+  xProfileUrl?: string;
 }
 
 export interface LeaderboardEntry {
@@ -94,6 +96,8 @@ export interface WalletState {
   monBalance: number;
   chainBalances?: Record<string, number>; // chainId -> balance
   tokens: Record<string, number>; // tokenId -> user balance
+  walletType?: 'metamask' | 'phantom' | 'coinbase' | 'injected' | 'demo';
+  connectorName?: string;
 }
 
 export type ViewMode = 'terminal' | 'grid';
